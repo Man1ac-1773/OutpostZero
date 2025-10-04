@@ -7,7 +7,7 @@ Map::Map(){
     int totalHeight = GRID_ROWS*TILE_SIZE; 
 
     grid.resize(GRID_ROWS); 
-    /// Create and initialise the entire map to buildable
+    // create and allocate memory 
     for (int row = 0; row < GRID_ROWS; row++){
         grid[row].resize(GRID_COLS); 
         for (int col = 0; col < GRID_COLS; col++){
@@ -19,38 +19,37 @@ Map::Map(){
             }; 
         }
     }
-    // Entry point: top-left, one tile in from the edge
-    int entryCol = 1;
-    int pathCol = entryCol;
+    // Entry point top-left, but one
+    int pathCol = 1;
     
-    // Create zigzag path pattern
     bool goingDown = true;
-    int segmentSpacing = 3; // Number of tiles between vertical path segments
+    int segmentSpacing = 3; // Tiles between vertical path segments
     
-    while (pathCol < GRID_COLS - 1) {
+    /// loop to assign walking path as TileType::PATH
+    while (pathCol < GRID_COLS ) {
         if (goingDown) {
-            // DOWN segment (from top to bottom)
-            for (int row = 0; row < GRID_ROWS; row++) {
+            // going down 
+            for (int row = 1; row < GRID_ROWS-1; row++) {
                 grid[row][pathCol].type = TileType::PATH;
             }
             
-            // Horizontal connection at BOTTOM (going right)
+            // going right
             if (pathCol + segmentSpacing < GRID_COLS){
                 for (int col = pathCol; col < pathCol + segmentSpacing; col++) {
-                    grid[GRID_ROWS - 1][col].type = TileType::PATH;
+                    grid[GRID_ROWS - 2][col].type = TileType::PATH;
                 }
             }
         } 
         else {
-            // UP segment (from bottom to top)
-            for (int row = 0; row < GRID_ROWS; row++) {
+            // going down 
+            for (int row = 1; row < GRID_ROWS-1; row++) {
                 grid[row][pathCol].type = TileType::PATH;
             }
             
-            // Horizontal connection at TOP (going right)
+            // going right
             if (pathCol + segmentSpacing < GRID_COLS) {
                 for (int col = pathCol; col < pathCol + segmentSpacing; col++) {
-                    grid[0][col].type = TileType::PATH;
+                    grid[1][col].type = TileType::PATH;
                 }
             }
         }
@@ -59,7 +58,8 @@ Map::Map(){
         goingDown = !goingDown;
     }
     
-    // Mark entry tile (top-left corner where enemy enters)
-    grid[0][entryCol].type = TileType::PATH;
+    // entry-exit tile 
+    grid[0][1].type = TileType::PATH;
+    grid[GRID_ROWS-1][GRID_COLS-2].type = TileType::PATH; 
 
 }    

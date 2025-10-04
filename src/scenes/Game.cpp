@@ -15,7 +15,7 @@ using namespace std;
 
 // Tile system constants
 const int TILE_SIZE = 40;  // Each tile is 40x40 pixels 
-const int GRID_COLS = 24;  // Number of columns 
+const int GRID_COLS = 21; // Number of columns 
 const int GRID_ROWS = 14;  // Number of rows 
 
 // Tile types
@@ -34,9 +34,7 @@ static vector<vector<Tile>> grid; // 2D grid of tiles
 static vector<Rectangle> walls;   // Visual walls (for drawing)
 
 static Color green = Color{ 57, 255, 20, 255 };
-static Color pathColor = Color{ 100, 100, 100, 255 };
-static Color buildableColor = Color{ 80, 80, 80, 255 };
-static Color gridLineColor = Color{ 60, 60, 60, 100 };
+
 
 /** 
  * @brief Initialize the tile grid and path
@@ -82,29 +80,29 @@ void GenerateMap() {
     bool goingDown = true;
     int segmentSpacing = 3; // Number of tiles between vertical path segments
     
-    while (pathCol < GRID_COLS - 1) {
+    while (pathCol < GRID_COLS ) {
         if (goingDown) {
             // DOWN segment (from top to bottom)
-            for (int row = 0; row < GRID_ROWS; row++) {
+            for (int row = 1; row < GRID_ROWS-1; row++) {
                 grid[row][pathCol].type = PATH;
             }
             
             // Horizontal connection at BOTTOM (going right)
             if (pathCol + segmentSpacing < GRID_COLS) {
                 for (int col = pathCol; col < pathCol + segmentSpacing; col++) {
-                    grid[GRID_ROWS - 1][col].type = PATH;
+                    grid[GRID_ROWS - 2][col].type = PATH;
                 }
             }
         } else {
             // UP segment (from bottom to top)
-            for (int row = 0; row < GRID_ROWS; row++) {
+            for (int row = 1; row < GRID_ROWS-1; row++) {
                 grid[row][pathCol].type = PATH;
             }
             
             // Horizontal connection at TOP (going right)
             if (pathCol + segmentSpacing < GRID_COLS) {
                 for (int col = pathCol; col < pathCol + segmentSpacing; col++) {
-                    grid[0][col].type = PATH;
+                    grid[1][col].type = PATH;
                 }
             }
         }
@@ -115,6 +113,8 @@ void GenerateMap() {
     
     // Mark entry tile (top-left corner where enemy enters)
     grid[0][entryCol].type = PATH;
+    grid[GRID_ROWS-1][GRID_COLS-2].type = PATH; 
+
     
     // Generate visual walls on all buildable tiles adjacent to path
     for (int row = 0; row < GRID_ROWS; row++) {

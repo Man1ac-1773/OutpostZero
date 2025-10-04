@@ -1,5 +1,5 @@
 #include "Config.h"
-
+#include <raylib.h>
 //initial screen dimensions
     int screenWidth = 1000;
     int screenHeight = 600;
@@ -13,4 +13,8 @@
     const int introZoomSpeed = 4;
 // game
     const int ENEMY_COLUMNS = 5; 
-    
+
+// colors
+    const Color pathColor = Color{ 100, 100, 100, 255 };
+    const Color buildableColor = Color{ 80, 80, 80, 255 }; 
+    const Color gridLineColor = Color{ 60, 60, 60, 100 }; // colour of border of each tile

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <raylib.h>
 //initial screen dimensions
     extern int screenWidth;
     extern int screenHeight;
@@ -12,5 +12,8 @@
     extern const int introMaxHeight;
     extern const int introZoomSpeed;
 // game
-    extern const int ENEMY_COLUMNS; 
-    extern const float ENEMY_PATH_WIDTH;
+
+// colors
+    extern const Color pathColor;
+    extern const Color buildableColor; 
+    extern const Color gridLineColor;
