@@ -1,2 +1,2 @@
-# game_dev_1101
-Repository for work of CS1101 project
+# 2D Tower defense gane for CS1101
+- Temporary README, will be populated later
