@@ -1,0 +1,7 @@
+*.o
+*.out
+**/*cache*/
+output
+/build/
+.direnv
+compile_commands.json
