@@ -31,6 +31,7 @@ public:
     
     Map(); 
 
+    Tile* getTileFromMouse(Vector2 pos); 
     void Draw(); 
 
 };

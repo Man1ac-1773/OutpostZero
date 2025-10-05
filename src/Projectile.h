@@ -17,7 +17,7 @@ public:
     start_pos = startPos; 
     position = startPos; // starting position
     radius = 1.5f; // radius of the projectile
-    color = BLACK; // color of the projectile
+    color = YELLOW; // color of the projectile
     active = true; // state of the projectile
 
     velocity = velFromSpeed(startPos, targetPos, speed); // set velocity towards target

@@ -1,4 +1,6 @@
 #include "Map.h"
+#include "Config.h"
+#include <raylib.h>
 
 
 Map::Map(){
@@ -62,4 +64,42 @@ Map::Map(){
     grid[0][1].type = TileType::PATH;
     grid[GRID_ROWS-1][GRID_COLS-2].type = TileType::PATH; 
 
-}    
+}   
+
+void Map::Draw(){
+    for (int r = 0; r < GRID_ROWS; r++){
+        for (int c = 0; c < GRID_COLS; c++){
+            Tile& tile = grid[r][c]; 
+            if (tile.type == TileType::PATH){
+                DrawRectangleRec(tile.rect, pathColor); 
+            }
+            else if (tile.type == TileType::BUILDABLE){
+                DrawRectangleRec(tile.rect,buildableColor); 
+            }
+            // grid line with boundary draw
+            DrawRectangleLinesEx(tile.rect, 1, gridLineColor);
+
+            // highlight on hover
+            if (tile.type == TileType::BUILDABLE && !tile.hasTurret){
+                if (CheckCollisionPointRec(GetMousePosition(), tile.rect)){
+                    DrawRectangleRec(tile.rect, Color{100,255,100,50});
+                }
+            }
+        }
+        
+    }
+}
+
+Tile* Map::getTileFromMouse(Vector2 pos){
+    int t = pos.x/TILE_SIZE; 
+    int row = t>(GRID_COLS*TILE_SIZE)?-1:t; 
+    int c = pos.y/TILE_SIZE; 
+    int col = t > (GRID_ROWS*TILE_SIZE) ? -1 :c; 
+    if (row > -1 && col > -1){
+        return &grid[row][col]; 
+    }
+    else return nullptr; 
+    
+
+}
+
