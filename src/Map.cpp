@@ -90,7 +90,7 @@ void Map::Draw(){
             // highlight on hover
             if (tile.type == TileType::BUILDABLE && !tile.hasTurret){
                 if (CheckCollisionPointRec(GetMousePosition(), tile.rect)){
-                    DrawRectangleRec(tile.rect, Color{100,255,100,50});
+                    DrawRectangleRec(tile.rect, mouseHoverColor);
                 }
             }
         }

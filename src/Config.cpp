@@ -16,6 +16,7 @@
     const Color pathColor = Color{ 100, 100, 100, 255 };
     const Color buildableColor = Color{ 80, 80, 80, 255 }; 
     const Color gridLineColor = Color{ 60, 60, 60, 100 }; // colour of border of each tile
+    const Color mouseHoverColor = Color{100,255,100,50};
 
 // targets
     std::vector<Vector2> targets;
@@ -27,7 +28,12 @@
     const int TILE_SIZE = 40;
 
 // constants for enemies
-    // for class standard_enemy
+    // for standard_enemy
     const float standard_enemy_radius = 5.0f;
     const Color standard_enemy_color = RED; 
-    const float standard_enemy_speed = 100.0f; 
+    const float standard_enemy_speed = 100.0f;
+    
+    // for fast_enemy
+    const float fast_enemy_radius = 2.5f; 
+    const Color fast_enemy_color = BLUE; 
+    const float fast_enemy_speed = 2*standard_enemy_speed; 

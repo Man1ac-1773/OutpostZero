@@ -18,6 +18,7 @@
     extern const Color pathColor;
     extern const Color buildableColor; 
     extern const Color gridLineColor;
+    extern const Color mouseHoverColor; 
 
 // path followed by enemy
     extern std::vector<Vector2> targets; 
@@ -29,7 +30,12 @@
     extern const int GRID_ROWS;
 
 // constants for enemies
-    // for class standard_enemy
+    // for standard_enemy
     extern const float standard_enemy_radius;
     extern const Color standard_enemy_color; 
     extern const float standard_enemy_speed; 
+
+    // for fast_enemy
+    extern const float fast_enemy_radius; 
+    extern const float fast_enemy_speed; 
+    extern const Color fast_enemy_color; 

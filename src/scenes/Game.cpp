@@ -38,9 +38,11 @@ Scene Game(){
     
     // Spawn enemy at mouse 
     if (IsKeyDown(KEY_X)) {
-        float enemySpeed = 100.0f;
         entities.push_back(
                 make_unique<standard_enemy>());
+    }
+    if (IsKeyDown(KEY_Z)){
+        entities.push_back(make_unique<fast_enemy>()); 
     }
 
     // Spawn turret at mouse (only on buildable tiles)

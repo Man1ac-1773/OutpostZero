@@ -52,10 +52,18 @@ void Update(){
 class standard_enemy : public Enemy{
     public : 
         standard_enemy(){
-            position = startPos;
             radius = standard_enemy_radius;
             color = standard_enemy_color;
             speed = standard_enemy_speed;
         } 
 
-}; 
+};
+
+class fast_enemy : public Enemy{
+    public: 
+        fast_enemy(){
+            radius = fast_enemy_radius;
+            color = fast_enemy_color; 
+            speed = fast_enemy_speed;
+        }
+};
