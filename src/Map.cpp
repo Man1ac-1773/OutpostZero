@@ -6,9 +6,6 @@
 Map::Map(){
     grid.clear();
     targets.clear(); 
-    int totalWidth = GRID_COLS*TILE_SIZE; 
-    int totalHeight = GRID_ROWS*TILE_SIZE; 
-
     grid.resize(GRID_ROWS); 
     // create and allocate memory 
     for (int row = 0; row < GRID_ROWS; row++){
@@ -22,11 +19,9 @@ Map::Map(){
             }; 
         }
     }
-    // Entry point top-left, but one
     int pathCol = 1;
-    
     bool goingDown = true;
-    int segmentSpacing = 3; // Tiles between vertical path segments
+    int segmentSpacing = 3; 
     
     /// loop to assign walking path as TileType::PATH
     while (pathCol < GRID_COLS ) {
@@ -64,7 +59,10 @@ Map::Map(){
         }
         
         pathCol += segmentSpacing;
+        
+        // add the right segment motion after either down or up loop is finished
         targets.push_back({grid[row][pathCol].rect.x + (float)TILE_SIZE/2, grid[row][pathCol+col].rect.y + (float)TILE_SIZE/2});
+        
         goingDown = !goingDown;
     }
     

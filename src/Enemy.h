@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream> 
 #include "Entity.h"
 #include "raylib.h"
 #include "Config.h"
@@ -15,12 +14,10 @@ Color color;
 int counter = 0;
 Vector2 targetPos = targets[counter]; 
 
-Enemy(float speed_, float r, Color c){
+Enemy(){
 
     position = startPos;
-    radius = r;
-    color = c;
-    speed = speed_;
+   
 }
 float GetRadius() const { return radius; }
 void Update(float deltaTime) override { 
@@ -51,3 +48,14 @@ void Update(){
 }
 
 };
+
+class standard_enemy : public Enemy{
+    public : 
+        standard_enemy(){
+            position = startPos;
+            radius = standard_enemy_radius;
+            color = standard_enemy_color;
+            speed = standard_enemy_speed;
+        } 
+
+}; 

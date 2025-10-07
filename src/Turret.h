@@ -4,6 +4,7 @@
 #include "Projectile.h"
 #include "raylib.h"
 #include "raymath.h"
+#include <Config.h>
 #include "utils.h"
 #include <memory> // for std::unique_ptr
 #include <vector>
@@ -22,20 +23,20 @@ public:
   // gun properties
   Rectangle gunRec; 
   float gunRotation;
-  float rotationSpeed = 5.0f; // making it an inherent property of class for inheritance
+  float rotationSpeed; // making it an inherent property of class for inheritance
   Color gunColor;
 
-  Turret(Vector2 pos, float r, float rg, Color c)
+  Turret(Vector2 pos)
   {
     position = pos; // position of the turret
-    radius = r; // radius of the base of turret
-    range = rg; // range of turret
-    color = c; // colour of the base of turret
+    radius = (float)TILE_SIZE/2; 
+    range = 3*TILE_SIZE;
+    color = BLUE; 
     fireRate = 0.25f;  // shoots 1/x per second
     fireTimer = 0.0f; // initial timer, ready to fire
-
+    rotationSpeed = 0.5f; 
     // gun properties
-    float gunHeight = radius*0.5f, gunWidth = radius; // dimensions of the gun
+    float gunHeight = radius*0.15f, gunWidth = 1.15f*radius; // dimensions of the gun
     gunRec = Rectangle{ position.x, position.y, gunWidth, gunHeight  }; // rectangle representing the gun
     gunRotation = 0.0f; // initial rotation of the gun
     gunColor = BLACK; // colour of the gun
@@ -83,7 +84,7 @@ public:
   void Draw() override
   {
     // Draw the range first (semi-transparent)
-    DrawCircleV(position, range, Fade(color, 0.2f));
+    // DrawCircleV(position, range, Fade(color, 0.2f));
     // Draw the base
     DrawCircleV(position, radius, color);
     // Draw the gun
@@ -93,7 +94,7 @@ public:
                      gunColor);
   }
 
-private:
+protected:
   // Intelligent turrets; can be used as an upgrade
   Vector2 CalculateInterceptPoint(Vector2 enemyPos,
                                   Vector2 enemyVel,

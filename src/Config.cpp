@@ -11,8 +11,6 @@
     const int introMaxWidth = 275;
     const int introMaxHeight = 100;
     const int introZoomSpeed = 4;
-// game
-    const int ENEMY_COLUMNS = 5; 
 
 // colors
     const Color pathColor = Color{ 100, 100, 100, 255 };
@@ -27,3 +25,9 @@
     const int GRID_ROWS = 14; 
     const int GRID_COLS = 21; 
     const int TILE_SIZE = 40;
+
+// constants for enemies
+    // for class standard_enemy
+    const float standard_enemy_radius = 5.0f;
+    const Color standard_enemy_color = RED; 
+    const float standard_enemy_speed = 100.0f; 

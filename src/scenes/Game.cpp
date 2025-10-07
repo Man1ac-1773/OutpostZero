@@ -40,9 +40,9 @@ Scene Game(){
     if (IsKeyDown(KEY_X)) {
         float enemySpeed = 100.0f;
         entities.push_back(
-        make_unique<Enemy>(enemySpeed, 5.0f, RED));
+                make_unique<standard_enemy>());
     }
-    
+
     // Spawn turret at mouse (only on buildable tiles)
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
         Vector2 mousePos = GetMousePosition();  
@@ -55,7 +55,7 @@ Scene Game(){
                 tile->rect.y + tile->rect.height / 2
             };
             entities.push_back(
-                make_unique<Turret>(turretPos, TILE_SIZE * 0.4f, 200.0f, BLUE));
+                make_unique<Turret>(turretPos));
             tile->hasTurret = true;
         }
     }

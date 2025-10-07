@@ -23,8 +23,13 @@
     extern std::vector<Vector2> targets; 
     extern Vector2 startPos; 
 
-// Tile system constants
+// map constants  
     extern const int TILE_SIZE;  // Each tile is NxN pixels 
-    extern const int GRID_COLS;  // Number of columns 
-    extern const int GRID_ROWS;  // Number of rows 
+    extern const int GRID_COLS;  
+    extern const int GRID_ROWS;
 
+// constants for enemies
+    // for class standard_enemy
+    extern const float standard_enemy_radius;
+    extern const Color standard_enemy_color; 
+    extern const float standard_enemy_speed; 
