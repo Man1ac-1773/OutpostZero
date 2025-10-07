@@ -55,7 +55,7 @@ Scene Game(){
                 tile->rect.y + tile->rect.height / 2
             };
             entities.push_back(
-                make_unique<Turret>(turretPos, gameMap.TILE_SIZE * 0.4f, 200.0f, BLUE));
+                make_unique<Turret>(turretPos, TILE_SIZE * 0.4f, 200.0f, BLUE));
             tile->hasTurret = true;
         }
     }

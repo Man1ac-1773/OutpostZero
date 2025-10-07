@@ -25,5 +25,5 @@
 
 // Tile system
     const int GRID_ROWS = 14; 
-    const int GRID_COLS = 23; 
+    const int GRID_COLS = 21; 
     const int TILE_SIZE = 40;
