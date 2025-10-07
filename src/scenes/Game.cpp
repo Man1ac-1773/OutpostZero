@@ -32,6 +32,8 @@ Scene Game(){
         camera.rotation = 0.0f; 
         camera.zoom = 1.0f; 
         initialized = true;
+        duoTurret::loadTextures(); 
+
     }
 
     // ---- INPUT PASS ----
@@ -57,7 +59,7 @@ Scene Game(){
                 tile->rect.y + tile->rect.height / 2
             };
             entities.push_back(
-                make_unique<Turret>(turretPos));
+                make_unique<duoTurret>(turretPos));
             tile->hasTurret = true;
         }
     }
@@ -139,7 +141,7 @@ Scene Game(){
     EndMode2D();
     
     DrawFPS(screenWidth-80, 10);
-    DrawText("Left Click: Place Turret | X: Spawn Enemy", 10, 10, 20, BLACK);
+    DrawText("Z: Spawn Fast enemy | X: Spawn Standard Enemy", 10, 10, 20, BLACK);
     
     return Scene::GAME;
 }

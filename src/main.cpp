@@ -1,5 +1,6 @@
 #include "Config.h" // Include data declaration
 
+#include "Turret.h"
 #include "scenes.h"
 #include "scenes/Game.h"
 #include "scenes/intro.h"
@@ -31,12 +32,12 @@ main()
         currentScene = Settings();
         break;
       case Scene::EXIT:
-        // The loop will terminate
         break;
     }
+    
     EndDrawing();
   }
-
+  duoTurret::destroyTextures();  
   CloseWindow();
   return 0;
 }

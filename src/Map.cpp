@@ -40,6 +40,7 @@ Map::Map(){
                     grid[GRID_ROWS - 2][pathCol+col].type = TileType::PATH;
                 }
             }
+            else {break;}
         } 
         else {
             // going up 
@@ -55,7 +56,8 @@ Map::Map(){
                 for (col = 0; col < segmentSpacing; col++) {
                     grid[1][pathCol+col].type = TileType::PATH;
                 }
-                            }
+            }
+            else {break;}
         }
         
         pathCol += segmentSpacing;

@@ -122,3 +122,51 @@ protected:
     }
   }
 };
+
+
+class duoTurret : public Entity {
+    public:
+         
+        duoTurret(Vector2 pos){
+            position = pos; 
+        }
+        static void loadTextures(){
+            base_img = LoadImage("assets/turrets/base-1.png");
+            gun_img = LoadImage("assets/turrets/duo.png");
+            base_tx = LoadTextureFromImage(base_img);
+            gun_tx = LoadTextureFromImage(gun_img);
+            UnloadImage(base_img); 
+            UnloadImage(gun_img);
+        }
+        static void destroyTextures(){
+            UnloadTexture(gun_tx);
+            UnloadTexture(base_tx);
+        }
+        void Draw() override {
+            Vector2 baseOrigin = { (float)base_tx.width / 2.0f, (float)base_tx.height / 2.0f };
+            
+            DrawTexturePro(base_tx,
+                   { 0, 0, (float)base_tx.width, (float)base_tx.height }, 
+                   { position.x, position.y, (float)base_tx.width, (float)base_tx.height }, 
+                   baseOrigin,
+                   0.0f, 
+                   WHITE);
+
+            Vector2 barrelOrigin = { (float)gun_tx.width / 2.0f, (float)gun_tx.height * 0.75f };
+            DrawTexturePro(gun_tx,
+                   { 0, 0, (float)gun_tx.width, (float)gun_tx.height }, 
+                   { position.x, position.y, (float)gun_tx.width, (float)gun_tx.height }, 
+                   barrelOrigin,
+                   0.0f, 
+                   WHITE);  
+
+        }
+        void Update(float deltaTime) override {}
+
+    private:
+        inline static Image base_img;
+        inline static Texture2D base_tx;
+        inline static Image gun_img;
+        inline static Texture2D gun_tx;
+
+};
