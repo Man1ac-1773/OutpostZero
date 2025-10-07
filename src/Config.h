@@ -1,5 +1,6 @@
 #pragma once
 #include <raylib.h>
+#include <vector>
 //initial screen dimensions
     extern int screenWidth;
     extern int screenHeight;
@@ -17,3 +18,7 @@
     extern const Color pathColor;
     extern const Color buildableColor; 
     extern const Color gridLineColor;
+
+// path followed by enemy
+    extern std::vector<Vector2> targets; 
+    extern Vector2 startPos; 

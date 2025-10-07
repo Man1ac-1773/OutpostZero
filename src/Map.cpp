@@ -4,7 +4,8 @@
 
 
 Map::Map(){
-    grid.clear(); 
+    grid.clear();
+    targets.clear(); 
     int totalWidth = GRID_COLS*TILE_SIZE; 
     int totalHeight = GRID_ROWS*TILE_SIZE; 
 
@@ -29,30 +30,39 @@ Map::Map(){
     
     /// loop to assign walking path as TileType::PATH
     while (pathCol < GRID_COLS ) {
+        int row;   
         if (goingDown) {
-            // going down 
-            for (int row = 1; row < GRID_ROWS-1; row++) {
+            // going down
+            for (row = 1; row < GRID_ROWS-1; row++) {
                 grid[row][pathCol].type = TileType::PATH;
             }
-            
+            row--;
+            targets.push_back({grid[row][pathCol].rect.x + TILE_SIZE/2, grid[row][pathCol].rect.y + TILE_SIZE/2}); 
             // going right
             if (pathCol + segmentSpacing < GRID_COLS){
-                for (int col = pathCol; col < pathCol + segmentSpacing; col++) {
-                    grid[GRID_ROWS - 2][col].type = TileType::PATH;
+                int col; 
+                for (col = 0; col < segmentSpacing; col++) {
+                    grid[GRID_ROWS - 2][pathCol+col].type = TileType::PATH;
                 }
+                targets.push_back({grid[row][pathCol].rect.x + TILE_SIZE/2, grid[row][pathCol+col].rect.y + TILE_SIZE/2});
             }
         } 
         else {
             // going down 
-            for (int row = 1; row < GRID_ROWS-1; row++) {
+            for (row = GRID_ROWS-2 ; row >= 1; row--) {
                 grid[row][pathCol].type = TileType::PATH;
             }
-            
+            row++;
+            targets.push_back({grid[row][pathCol].rect.x + TILE_SIZE/2, grid[row][pathCol].rect.y + TILE_SIZE/2}); 
+
             // going right
             if (pathCol + segmentSpacing < GRID_COLS) {
-                for (int col = pathCol; col < pathCol + segmentSpacing; col++) {
-                    grid[1][col].type = TileType::PATH;
+                int col; 
+                for (col = 0; col < segmentSpacing; col++) {
+                    grid[1][pathCol+col].type = TileType::PATH;
                 }
+                targets.push_back({grid[row][pathCol].rect.x + TILE_SIZE/2, grid[row][pathCol+col].rect.y + TILE_SIZE/2});
+
             }
         }
         
@@ -63,7 +73,7 @@ Map::Map(){
     // entry-exit tile 
     grid[0][1].type = TileType::PATH;
     grid[GRID_ROWS-1][GRID_COLS-2].type = TileType::PATH; 
-
+    startPos = Vector2{grid[0][1].rect.x + TILE_SIZE/2, grid[0][1].rect.y + TILE_SIZE/2};
 }   
 
 void Map::Draw(){
@@ -91,14 +101,12 @@ void Map::Draw(){
 }
 
 Tile* Map::getTileFromMouse(Vector2 pos){
-    int t = pos.x/TILE_SIZE; 
-    int row = t>(GRID_COLS*TILE_SIZE)?-1:t; 
-    int c = pos.y/TILE_SIZE; 
-    int col = t > (GRID_ROWS*TILE_SIZE) ? -1 :c; 
+    int col = pos.x > GRID_COLS*TILE_SIZE ? -1 : pos.x/TILE_SIZE; 
+    int row = pos.y > GRID_ROWS*TILE_SIZE ? -1 : pos.y/TILE_SIZE;
     if (row > -1 && col > -1){
-        return &grid[row][col]; 
+        return &grid[row][col];
     }
-    else return nullptr; 
+    return nullptr; 
     
 
 }

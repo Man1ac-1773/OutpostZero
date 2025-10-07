@@ -21,7 +21,7 @@ class Map{
 public: 
     // Tile system constants
     static const int TILE_SIZE = 40;  // Each tile is NxN pixels 
-    static const int GRID_COLS = 21;  // Number of columns 
+    static const int GRID_COLS = 23;  // Number of columns 
     static const int GRID_ROWS = 14;  // Number of rows 
                                //
     std::vector<std::vector<Tile>> grid; // 2D grid of tiles

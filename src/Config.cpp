@@ -18,3 +18,7 @@
     const Color pathColor = Color{ 100, 100, 100, 255 };
     const Color buildableColor = Color{ 80, 80, 80, 255 }; 
     const Color gridLineColor = Color{ 60, 60, 60, 100 }; // colour of border of each tile
+
+// targets
+    std::vector<Vector2> targets;
+    Vector2 startPos; 

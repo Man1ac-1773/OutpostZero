@@ -39,19 +39,17 @@ Scene Game(){
     
     // Spawn enemy at mouse 
     if (IsKeyDown(KEY_X)) {
-        Vector2 spawnPoint;
         float enemySpeed = 100.0f;
-        spawnPoint = GetScreenToWorld2D(GetMousePosition(), camera);
         entities.push_back(
-        make_unique<Enemy>(spawnPoint, screenCenter, enemySpeed, 5.0f, RED));
+        make_unique<Enemy>(startPos, enemySpeed, 5.0f, RED));
     }
     
     // Spawn turret at mouse (only on buildable tiles)
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-        Vector2 mousePos = GetMousePosition();
+        Vector2 mousePos = GetMousePosition();  
         Tile* tile = gameMap.getTileFromMouse(mousePos);
         
-        if (tile && tile->type == TileType::BUILDABLE && !tile->hasTurret) {
+        if (tile != nullptr && tile->type == TileType::BUILDABLE && !tile->hasTurret) {
             // Place turret at center of tile
             Vector2 turretPos = {
                 tile->rect.x + tile->rect.width / 2,
@@ -95,7 +93,7 @@ Scene Game(){
     
     // Update enemy with new player location
     for (auto& enemy : enemy_ptrs) {
-        enemy->Update(screenCenter);
+        enemy->Update();
     }
 
     // Projectiles interact with enemies
@@ -144,6 +142,6 @@ Scene Game(){
     
     DrawFPS(screenWidth-80, 10);
     DrawText("Left Click: Place Turret | X: Spawn Enemy", 10, 10, 20, BLACK);
-
+    
     return Scene::GAME;
 }
