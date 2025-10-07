@@ -30,21 +30,20 @@ Map::Map(){
     
     /// loop to assign walking path as TileType::PATH
     while (pathCol < GRID_COLS ) {
-        int row;   
+        int row;  
+        int col=0;
         if (goingDown) {
             // going down
             for (row = 1; row < GRID_ROWS-1; row++) {
                 grid[row][pathCol].type = TileType::PATH;
             }
             row--;
-            targets.push_back({grid[row][pathCol].rect.x + TILE_SIZE/2, grid[row][pathCol].rect.y + TILE_SIZE/2}); 
+            targets.push_back({grid[row][pathCol].rect.x + (float)TILE_SIZE/2, grid[row][pathCol].rect.y + (float)TILE_SIZE/2}); 
             // going right
             if (pathCol + segmentSpacing < GRID_COLS){
-                int col; 
                 for (col = 0; col < segmentSpacing; col++) {
                     grid[GRID_ROWS - 2][pathCol+col].type = TileType::PATH;
                 }
-                targets.push_back({grid[row][pathCol].rect.x + TILE_SIZE/2, grid[row][pathCol+col].rect.y + TILE_SIZE/2});
             }
         } 
         else {
@@ -53,29 +52,28 @@ Map::Map(){
                 grid[row][pathCol].type = TileType::PATH;
             }
             row++;
-            targets.push_back({grid[row][pathCol].rect.x + TILE_SIZE/2, grid[row][pathCol].rect.y + TILE_SIZE/2}); 
+            targets.push_back({grid[row][pathCol].rect.x + (float)TILE_SIZE/2, grid[row][pathCol].rect.y + (float)TILE_SIZE/2}); 
 
             // going right
             if (pathCol + segmentSpacing < GRID_COLS) {
-                int col; 
+                 
                 for (col = 0; col < segmentSpacing; col++) {
                     grid[1][pathCol+col].type = TileType::PATH;
                 }
-                targets.push_back({grid[row][pathCol].rect.x + TILE_SIZE/2, grid[row][pathCol+col].rect.y + TILE_SIZE/2});
-
-            }
+                            }
         }
         
         pathCol += segmentSpacing;
+        targets.push_back({grid[row][pathCol].rect.x + (float)TILE_SIZE/2, grid[row][pathCol+col].rect.y + (float)TILE_SIZE/2});
         goingDown = !goingDown;
     }
     
     // entry-exit tile 
     grid[0][1].type = TileType::PATH;
     grid[GRID_ROWS-1][GRID_COLS-2].type = TileType::PATH; 
-    startPos = Vector2{grid[0][1].rect.x + TILE_SIZE/2, grid[0][1].rect.y + TILE_SIZE/2};
+    startPos = Vector2{grid[0][1].rect.x + (float)TILE_SIZE/2, grid[0][1].rect.y + (float)TILE_SIZE/2};
     // add final exit target to the targets vector
-    targets.push_back({grid[GRID_ROWS-1][GRID_COLS-2].rect.x + TILE_SIZE/2, grid[GRID_ROWS-1][GRID_COLS-2].rect.y + TILE_SIZE/2}); 
+    targets.push_back({grid[GRID_ROWS-1][GRID_COLS-2].rect.x + (float)TILE_SIZE/2, grid[GRID_ROWS-1][GRID_COLS-2].rect.y + (float)TILE_SIZE/2}); 
 }   
 
 void Map::Draw(){
