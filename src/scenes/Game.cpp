@@ -1,9 +1,9 @@
 // Game.cpp
-/// Global includes
+// standard includes
 #include <vector>
 #include <algorithm>
 #include <memory> 
-/// Custom includes
+// custom includes
 #include "raylib.h"
 #include "scenes.h"
 #include "Config.h" 
@@ -14,11 +14,10 @@
 #include "Map.h"
 using namespace std; 
 
-static vector<Rectangle> walls;   // Visual walls (for drawing)
 static Map gameMap; 
-static Color green = Color{ 57, 255, 20, 255 };
+static Color green = Color{ 57, 255, 20, 255 }; // for walls, if required
 
-static const float cameraSpeed = 500.0f;
+static const float cameraSpeed = 500.0f; // if camera movement implemented
 static bool initialized = false;
 static Camera2D camera = {0}; 
 Vector2 screenCenter = {(float)screenWidth/2, (float)screenHeight/2};
@@ -35,13 +34,13 @@ Scene Game(){
         initialized = true;
     }
 
-    /// ---- INPUT PASS ----
+    // ---- INPUT PASS ----
     
     // Spawn enemy at mouse 
     if (IsKeyDown(KEY_X)) {
         float enemySpeed = 100.0f;
         entities.push_back(
-        make_unique<Enemy>(startPos, enemySpeed, 5.0f, RED));
+        make_unique<Enemy>(enemySpeed, 5.0f, RED));
     }
     
     // Spawn turret at mouse (only on buildable tiles)
@@ -86,22 +85,19 @@ Scene Game(){
         }
     }
     
-    // Update turrets with knowledge of enemies and projectiles
+    // Update turrets with knowledge of enemies 
     for (auto& turret : turret_ptrs) {
         turret->Update(GetFrameTime(), enemy_ptrs, newProjectiles);
     }
     
-    // Update enemy with new player location
+    // Update enemy 
     for (auto& enemy : enemy_ptrs) {
         enemy->Update();
     }
 
     // Projectiles interact with enemies
     for (auto* projectile : projectile_ptrs) {
-        if (Vector2DistanceSqr(projectile->GetPosition(), projectile->start_pos) > 1 << 20) {
-            projectile->Destroy();
-            continue;
-        }
+        // checking each projectile with each enemy is highly inefficient, but I don't know how to optimise this yet
         for (auto* enemy : enemy_ptrs) {
             if (!enemy->IsActive() || !projectile->IsActive())
                 continue;

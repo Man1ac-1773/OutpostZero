@@ -22,3 +22,9 @@
 // path followed by enemy
     extern std::vector<Vector2> targets; 
     extern Vector2 startPos; 
+
+// Tile system constants
+    extern const int TILE_SIZE;  // Each tile is NxN pixels 
+    extern const int GRID_COLS;  // Number of columns 
+    extern const int GRID_ROWS;  // Number of rows 
+

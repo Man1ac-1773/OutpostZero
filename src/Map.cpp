@@ -48,7 +48,7 @@ Map::Map(){
             }
         } 
         else {
-            // going down 
+            // going up 
             for (row = GRID_ROWS-2 ; row >= 1; row--) {
                 grid[row][pathCol].type = TileType::PATH;
             }
@@ -74,6 +74,8 @@ Map::Map(){
     grid[0][1].type = TileType::PATH;
     grid[GRID_ROWS-1][GRID_COLS-2].type = TileType::PATH; 
     startPos = Vector2{grid[0][1].rect.x + TILE_SIZE/2, grid[0][1].rect.y + TILE_SIZE/2};
+    // add final exit target to the targets vector
+    targets.push_back({grid[GRID_ROWS-1][GRID_COLS-2].rect.x + TILE_SIZE/2, grid[GRID_ROWS-1][GRID_COLS-2].rect.y + TILE_SIZE/2}); 
 }   
 
 void Map::Draw(){

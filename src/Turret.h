@@ -35,7 +35,7 @@ public:
     fireTimer = 0.0f; // initial timer, ready to fire
 
     // gun properties
-    float gunHeight = radius*0.75f, gunWidth = 3*radius; // dimensions of the gun
+    float gunHeight = radius*0.5f, gunWidth = radius; // dimensions of the gun
     gunRec = Rectangle{ position.x, position.y, gunWidth, gunHeight  }; // rectangle representing the gun
     gunRotation = 0.0f; // initial rotation of the gun
     gunColor = BLACK; // colour of the gun

@@ -22,3 +22,8 @@
 // targets
     std::vector<Vector2> targets;
     Vector2 startPos; 
+
+// Tile system
+    const int GRID_ROWS = 14; 
+    const int GRID_COLS = 23; 
+    const int TILE_SIZE = 40;
