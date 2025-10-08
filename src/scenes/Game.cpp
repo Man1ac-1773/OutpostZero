@@ -32,7 +32,7 @@ Scene Game(){
         camera.rotation = 0.0f; 
         camera.zoom = 1.0f; 
         initialized = true;
-        basic_turret::loadTextures(); 
+        Turret::loadTextures(); 
 
     }
 
@@ -59,7 +59,7 @@ Scene Game(){
                 tile->rect.y + tile->rect.height / 2
             };
             entities.push_back(
-                make_unique<basic_turret>(turretPos));
+                make_unique<basic_turret>(turretPos, *tile));
             tile->hasTurret = true;
         }
     }
@@ -136,6 +136,10 @@ Scene Game(){
         // Draw entities
         for (auto& entity : entities) {
             entity->Draw();
+        }
+        // draw range of turrets if mouseHover
+        for (auto& turret : turret_ptrs) {
+            turret->drawRangeOnHover(GetMousePosition()); 
         }
         
     EndMode2D();

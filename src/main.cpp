@@ -37,7 +37,7 @@ main()
     
     EndDrawing();
   }
-  basic_turret::destroyTextures();  
+  Turret::destroyTextures();  
   CloseWindow();
   return 0;
 }
