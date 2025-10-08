@@ -23,23 +23,14 @@ public:
   // gun properties
   Rectangle gunRec; 
   float gunRotation;
-  float rotationSpeed; // making it an inherent property of class for inheritance
+  float rotationSpeed; 
   Color gunColor;
 
   Turret(Vector2 pos)
   {
     position = pos; // position of the turret
-    // radius = (float)TILE_SIZE/2; 
-    range = 3*TILE_SIZE;
-    // color = BLUE; 
-    fireRate = 0.25f;  // shoots 1/x per second
-    fireTimer = 0.0f; // initial timer, ready to fire
-    rotationSpeed = 0.5f; 
-    // gun properties
-    // float gunHeight = radius*0.15f, gunWidth = 1.15f*radius; // dimensions of the gun
-    // gunRec = Rectangle{ position.x, position.y, gunWidth, gunHeight  }; // rectangle representing the gun
+     
     gunRotation = 0.0f; // initial rotation of the gun
-    gunColor = BLACK; // colour of the gun
   }
 
   void Update(float deltaTime) override
@@ -127,7 +118,12 @@ protected:
 class basic_turret : public Turret {
     public:
          
-        basic_turret(Vector2 pos) : Turret(pos){}
+        basic_turret(Vector2 pos) : Turret(pos){
+            range = 3*TILE_SIZE;
+            fireRate = 0.25f;  // shoots 1/x per second
+            fireTimer = 0.0f; // initial timer, ready to fire
+            rotationSpeed = 0.5f;
+        }
         
         static void loadTextures(){
             base_img = LoadImage("assets/turrets/base-1.png");
