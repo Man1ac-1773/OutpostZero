@@ -25,6 +25,8 @@ public:
   Rectangle gunRec; 
   float gunRotation;
   float rotationSpeed; 
+  float recoilOffset;
+  float m_recoilOffset; 
   Color gunColor;
   Tile tileOfTurret; 
 
@@ -40,6 +42,7 @@ void Update(float deltaTime) override
     // primitive update function 
     if (fireTimer > 0) {
       fireTimer -= deltaTime;
+      recoilOffset = Lerp(recoilOffset, 0, 0.2f);
     }
   }
 void Update(float deltaTime,
@@ -71,6 +74,8 @@ void Update(float deltaTime,
           newProjectiles.push_back(
           std::make_unique<Projectile>(position, aimPoint, projectileSpeed));
           fireTimer = fireRate; // reset the cooldown
+          recoilOffset = m_recoilOffset; 
+
         }
       }
   }
@@ -158,6 +163,7 @@ class basic_turret : public Turret {
             fireRate = 0.25f;  // shoots 1/x per second
             fireTimer = 0.0f; // initial timer, ready to fire
             rotationSpeed = 0.5f;
+            m_recoilOffset = 8.0f;
         }
         
         
@@ -170,11 +176,23 @@ class basic_turret : public Turret {
                    baseOrigin,
                    0.0f, 
                    WHITE);
+                
+            // calculating change in gun_rec to account for recoil
+            //
+            float angleRad = gunRotation * DEG2RAD;
+            Vector2 direction = { cosf(angleRad), sinf(angleRad) };
+            Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
+            Rectangle gunDestRec = {
+                                    gunDrawPosition.x,
+                                    gunDrawPosition.y,
+                                    (float)basicTurretGunTexture.width,
+                                    (float)basicTurretGunTexture.height
+                                    };
 
             Vector2 gunOrigin = { (float)basicTurretGunTexture.width / 2.0f, (float)basicTurretGunTexture.height * 0.75f - 2.0f };
             DrawTexturePro(basicTurretGunTexture,
-                   { 0, 0, (float)basicTurretGunTexture.width, (float)basicTurretGunTexture.height }, 
-                   { position.x-2.0f, position.y, (float)basicTurretGunTexture.width, (float)basicTurretGunTexture.height }, 
+                   { 0, 0, (float)basicTurretGunTexture.width, (float)basicTurretGunTexture.height }, // gun source rectangle 
+                   gunDestRec,
                    gunOrigin,
                    gunRotation + 90.0f, 
                    WHITE);  
