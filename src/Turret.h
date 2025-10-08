@@ -29,15 +29,15 @@ public:
   Turret(Vector2 pos)
   {
     position = pos; // position of the turret
-    radius = (float)TILE_SIZE/2; 
+    // radius = (float)TILE_SIZE/2; 
     range = 3*TILE_SIZE;
-    color = BLUE; 
+    // color = BLUE; 
     fireRate = 0.25f;  // shoots 1/x per second
     fireTimer = 0.0f; // initial timer, ready to fire
     rotationSpeed = 0.5f; 
     // gun properties
-    float gunHeight = radius*0.15f, gunWidth = 1.15f*radius; // dimensions of the gun
-    gunRec = Rectangle{ position.x, position.y, gunWidth, gunHeight  }; // rectangle representing the gun
+    // float gunHeight = radius*0.15f, gunWidth = 1.15f*radius; // dimensions of the gun
+    // gunRec = Rectangle{ position.x, position.y, gunWidth, gunHeight  }; // rectangle representing the gun
     gunRotation = 0.0f; // initial rotation of the gun
     gunColor = BLACK; // colour of the gun
   }
@@ -124,12 +124,11 @@ protected:
 };
 
 
-class duoTurret : public Entity {
+class basic_turret : public Turret {
     public:
          
-        duoTurret(Vector2 pos){
-            position = pos; 
-        }
+        basic_turret(Vector2 pos) : Turret(pos){}
+        
         static void loadTextures(){
             base_img = LoadImage("assets/turrets/base-1.png");
             gun_img = LoadImage("assets/turrets/duo.png");
@@ -152,18 +151,20 @@ class duoTurret : public Entity {
                    0.0f, 
                    WHITE);
 
-            Vector2 barrelOrigin = { (float)gun_tx.width / 2.0f, (float)gun_tx.height * 0.75f };
+            Vector2 gunOrigin = { (float)gun_tx.width / 2.0f, (float)gun_tx.height * 0.75f - 2.0f };
             DrawTexturePro(gun_tx,
                    { 0, 0, (float)gun_tx.width, (float)gun_tx.height }, 
-                   { position.x, position.y, (float)gun_tx.width, (float)gun_tx.height }, 
-                   barrelOrigin,
-                   0.0f, 
+                   { position.x-2.0f, position.y, (float)gun_tx.width, (float)gun_tx.height }, 
+                   gunOrigin,
+                   gunRotation + 90.0f, 
                    WHITE);  
 
         }
-        void Update(float deltaTime) override {}
+        
 
     private:
+        // static so that every object has the same memory of textures
+        // inline so that memory is allocated at this point only, and loadTextures() does not create local variables, but instead edits these.
         inline static Image base_img;
         inline static Texture2D base_tx;
         inline static Image gun_img;

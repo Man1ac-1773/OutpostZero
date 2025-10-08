@@ -32,7 +32,7 @@ Scene Game(){
         camera.rotation = 0.0f; 
         camera.zoom = 1.0f; 
         initialized = true;
-        duoTurret::loadTextures(); 
+        basic_turret::loadTextures(); 
 
     }
 
@@ -59,7 +59,7 @@ Scene Game(){
                 tile->rect.y + tile->rect.height / 2
             };
             entities.push_back(
-                make_unique<duoTurret>(turretPos));
+                make_unique<basic_turret>(turretPos));
             tile->hasTurret = true;
         }
     }
