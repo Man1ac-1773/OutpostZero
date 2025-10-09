@@ -32,8 +32,10 @@
     const float standard_enemy_radius = 5.0f;
     const Color standard_enemy_color = RED; 
     const float standard_enemy_speed = 100.0f;
+    const float standard_enemy_health = 20.0f; 
     
     // for fast_enemy
     const float fast_enemy_radius = 2.5f; 
     const Color fast_enemy_color = BLUE; 
     const float fast_enemy_speed = 2*standard_enemy_speed; 
+    const float fast_enemy_health = 5.0f; 

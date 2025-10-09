@@ -12,6 +12,7 @@ float radius;
 float speed;
 Color color;
 int counter = 0;
+float hp;
 Vector2 targetPos = targets[counter]; 
 
 Enemy(){
@@ -24,7 +25,9 @@ void Update(float deltaTime) override {
     if (position.y >= GRID_ROWS*TILE_SIZE){
         Destroy();
     }
-    
+    if (hp <= 0){
+        Destroy();
+    } 
     position.x += velocity.x * deltaTime;
     position.y += velocity.y * deltaTime;
 }
@@ -55,6 +58,7 @@ class standard_enemy : public Enemy{
             radius = standard_enemy_radius;
             color = standard_enemy_color;
             speed = standard_enemy_speed;
+            hp = standard_enemy_health; 
         } 
 
 };
@@ -65,5 +69,6 @@ class fast_enemy : public Enemy{
             radius = fast_enemy_radius;
             color = fast_enemy_color; 
             speed = fast_enemy_speed;
+            hp = fast_enemy_health;
         }
 };

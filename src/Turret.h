@@ -178,7 +178,7 @@ class basic_turret : public Turret {
             fireRate = 0.25f;  // shoots 1/x per second
             fireTimer = 0.0f; // initial timer, ready to fire
             rotationSpeed = 0.5f;
-            m_recoilOffset = 8.0f;
+            m_recoilOffset = 4.0f;
         }
         
         
@@ -224,7 +224,7 @@ class laser_turret : public Turret {
             fireRate = 0.5f;  // shoots 1/x per second
             fireTimer = 0.0f; // initial timer, ready to fire
             rotationSpeed = 1.0f;
-            m_recoilOffset = 4.0f;
+            m_recoilOffset = 8.0f; 
         }
         void Draw() override {
             Vector2 baseOrigin = { (float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f };

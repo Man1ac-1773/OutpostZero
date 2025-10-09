@@ -34,8 +34,10 @@
     extern const float standard_enemy_radius;
     extern const Color standard_enemy_color; 
     extern const float standard_enemy_speed; 
+    extern const float standard_enemy_health;
 
     // for fast_enemy
     extern const float fast_enemy_radius; 
     extern const float fast_enemy_speed; 
     extern const Color fast_enemy_color; 
+    extern const float fast_enemy_health; 

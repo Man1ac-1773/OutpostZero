@@ -39,11 +39,11 @@ Scene Game(){
     // ---- INPUT PASS ----
     
     // Spawn enemy at mouse 
-    if (IsKeyDown(KEY_X)) {
+    if (IsKeyPressed(KEY_X)) {
         entities.push_back(
                 make_unique<standard_enemy>());
     }
-    if (IsKeyDown(KEY_Z)){
+    if (IsKeyPressed(KEY_Z)){
         entities.push_back(make_unique<fast_enemy>()); 
     }
 
@@ -125,7 +125,7 @@ Scene Game(){
                                         enemy->GetPosition(),
                                         enemy->GetRadius())) {
                 projectile->Destroy();
-                enemy->Destroy();
+                enemy->hp -= 5.0f; // <damage of that projectile>  
                 break;
             }
         }
