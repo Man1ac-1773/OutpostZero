@@ -63,6 +63,21 @@ Scene Game(){
             tile->hasTurret = true;
         }
     }
+    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)){
+        Vector2 mousePos = GetMousePosition();  
+        Tile* tile = gameMap.getTileFromMouse(mousePos);
+        
+        if (tile != nullptr && tile->type == TileType::BUILDABLE && !tile->hasTurret) {
+            // Place turret at center of tile
+            Vector2 turretPos = {
+                tile->rect.x + tile->rect.width / 2,
+                tile->rect.y + tile->rect.height / 2
+            };
+            entities.push_back(
+                make_unique<laser_turret>(turretPos, *tile));
+            tile->hasTurret = true;
+        }
+    }
 
     // ------ UPDATE PASS ------
     // Calling simple Update for all entities

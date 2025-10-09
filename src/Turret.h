@@ -100,17 +100,28 @@ void drawRangeOnHover(Vector2 pos){
 }
 
 static void loadTextures(){
+    // load the base, common to all
     turretBaseIMG = LoadImage("assets/turrets/base-1.png");
     turretBaseTexture = LoadTextureFromImage(turretBaseIMG);
+    UnloadImage(turretBaseIMG); 
 
+    // basic_turret
     basicTurretGunIMG = LoadImage("assets/turrets/duo.png");
     basicTurretGunTexture = LoadTextureFromImage(basicTurretGunIMG);
-    UnloadImage(turretBaseIMG); 
     UnloadImage(basicTurretGunIMG);
+
+    // laser_turret
+    laserTurretGunIMG = LoadImage("assets/turrets/cyclone.png"); 
+    ImageResize(&laserTurretGunIMG, TILE_SIZE+5.0f, TILE_SIZE+5.0f );
+    laserTurretGunTexture = LoadTextureFromImage(laserTurretGunIMG);
 }
 static void destroyTextures(){
+    // unload base
     UnloadTexture(turretBaseTexture);
+    // unload basic_turret
     UnloadTexture(basicTurretGunTexture);
+    // unload laser_turret
+    UnloadTexture(laserTurretGunTexture);
 }
 
 protected:
@@ -118,9 +129,13 @@ protected:
     inline static Image turretBaseIMG; 
     inline static Texture2D turretBaseTexture; 
 
-    // basic_turret stuff
+    // basic_turret (duo) stuff
     inline static Image basicTurretGunIMG; 
     inline static Texture2D basicTurretGunTexture; 
+
+    // laser_turret (cyclone) stuff
+    inline static Image laserTurretGunIMG; 
+    inline static Texture2D laserTurretGunTexture; 
 
 
     // Aim functionality, can be made worse to be poor turret 
@@ -147,7 +162,7 @@ protected:
                 return Vector2Add(enemyPos, Vector2Scale(enemyVel, t));
             } 
             else {
-            return enemyPos; // Both times are negative, aim directly at the enemy
+            return enemyPos; 
             }
         }
     }
@@ -198,5 +213,50 @@ class basic_turret : public Turret {
                    WHITE);  
 
         }
+
+};
+
+
+class laser_turret : public Turret {
+    public: 
+        laser_turret(Vector2 pos, Tile& tile) : Turret(pos, tile){
+            range = 7*TILE_SIZE;
+            fireRate = 0.5f;  // shoots 1/x per second
+            fireTimer = 0.0f; // initial timer, ready to fire
+            rotationSpeed = 1.0f;
+            m_recoilOffset = 4.0f;
+        }
+        void Draw() override {
+            Vector2 baseOrigin = { (float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f };
+            
+            DrawTexturePro(turretBaseTexture,
+                   { 0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height }, 
+                   { position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height }, 
+                   baseOrigin,
+                   0.0f, 
+                   WHITE);
+                
+            // calculating change in gun_rec to account for recoil
+            //
+            float angleRad = gunRotation * DEG2RAD;
+            Vector2 direction = { cosf(angleRad), sinf(angleRad) };
+            Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
+            Rectangle gunDestRec = {
+                                    gunDrawPosition.x,
+                                    gunDrawPosition.y,
+                                    (float)laserTurretGunTexture.width,
+                                    (float)laserTurretGunTexture.height
+                                    };
+
+            Vector2 gunOrigin = { (float)laserTurretGunTexture.width / 2.0f, (float)laserTurretGunTexture.height * 0.75f - 2.0f };
+            DrawTexturePro(laserTurretGunTexture,
+                   { 0, 0, (float)laserTurretGunTexture.width, (float)laserTurretGunTexture.height }, // gun source rectangle 
+                   gunDestRec,
+                   gunOrigin,
+                   gunRotation + 90.0f, 
+                   WHITE);  
+
+        }
+
 
 };
