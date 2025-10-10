@@ -4,6 +4,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "utils.h"
+#include "Particles.h"
 
 class Projectile : public Entity
 {
@@ -31,9 +32,10 @@ public:
             Destroy();
             return;
         }
-        position.x += velocity.x * deltaTime;
-        position.y += velocity.y * deltaTime;
-    }
+        position += Vector2Scale(velocity, deltaTime);
+        particles.SpawnTrail(position, velocity);
+        
+   }
     void Draw() override
     {
         if (active) {

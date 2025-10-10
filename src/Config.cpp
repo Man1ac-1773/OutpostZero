@@ -1,4 +1,5 @@
 #include "Config.h"
+#include "Particles.h"
 #include <raylib.h>
 //initial screen dimensions
     int screenWidth = 1000;
@@ -39,3 +40,5 @@
     const Color fast_enemy_color = BLUE; 
     const float fast_enemy_speed = 2*standard_enemy_speed; 
     const float fast_enemy_health = 5.0f; 
+
+    ParticleSystem particles; 

@@ -39,11 +39,11 @@ Scene Game(){
     // ---- INPUT PASS ----
     
     // Spawn enemy at mouse 
-    if (IsKeyPressed(KEY_X)) {
+    if (IsKeyDown(KEY_X)) {
         entities.push_back(
                 make_unique<standard_enemy>());
     }
-    if (IsKeyPressed(KEY_Z)){
+    if (IsKeyDown(KEY_Z)){
         entities.push_back(make_unique<fast_enemy>()); 
     }
 
@@ -84,6 +84,7 @@ Scene Game(){
     for (auto& entity : entities) {
         entity->Update(GetFrameTime());
     }
+    particles.Update(GetFrameTime()); 
 
     // ---- INTERACTION PASS -----
     // Separate entities into turrets, enemies, and projectiles
@@ -125,8 +126,8 @@ Scene Game(){
                                         enemy->GetPosition(),
                                         enemy->GetRadius())) {
                 projectile->Destroy();
-                enemy->hp -= 5.0f; // <damage of that projectile>  
-                break;
+                particles.SpawnExplosion(projectile->GetPosition()); 
+                enemy->hp = 0; // change to subtract hp instead; 
             }
         }
     }
@@ -156,6 +157,7 @@ Scene Game(){
         for (auto& turret : turret_ptrs) {
             turret->drawRangeOnHover(GetMousePosition()); 
         }
+        particles.Draw(); 
         
     EndMode2D();
     

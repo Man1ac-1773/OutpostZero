@@ -1,6 +1,7 @@
 #pragma once
 #include <raylib.h>
 #include <vector>
+#include <Particles.h>
 //initial screen dimensions
     extern int screenWidth;
     extern int screenHeight;
@@ -41,3 +42,6 @@
     extern const float fast_enemy_speed; 
     extern const Color fast_enemy_color; 
     extern const float fast_enemy_health; 
+
+// particles
+    extern ParticleSystem particles;

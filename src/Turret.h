@@ -28,7 +28,8 @@ public:
   float recoilOffset;
   float m_recoilOffset; 
   Color gunColor;
-  Tile tileOfTurret; 
+  Tile tileOfTurret;
+  
 
 Turret(Vector2 pos, Tile& tile)
   {
@@ -217,7 +218,7 @@ class basic_turret : public Turret {
 };
 
 
-class laser_turret : public Turret {
+class laser_turret : public Turret { // fires short beams of light
     public: 
         laser_turret(Vector2 pos, Tile& tile) : Turret(pos, tile){
             range = 7*TILE_SIZE;
