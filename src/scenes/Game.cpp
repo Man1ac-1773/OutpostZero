@@ -32,7 +32,8 @@ Scene Game(){
         camera.rotation = 0.0f; 
         camera.zoom = 1.0f; 
         initialized = true;
-        Turret::loadTextures(); 
+        Turret::loadTextures();
+        Projectile::LoadTextures();
 
     }
 
@@ -126,7 +127,7 @@ Scene Game(){
                                         enemy->GetPosition(),
                                         enemy->GetRadius())) {
                 projectile->Destroy();
-                particles.SpawnExplosion(projectile->GetPosition()); 
+                // particles.SpawnExplosion(projectile->GetPosition()); 
                 enemy->hp = 0; // change to subtract hp instead; 
             }
         }

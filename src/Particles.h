@@ -46,7 +46,8 @@ class ParticleSystem {
         }
         
         void SpawnExplosion(Vector2 center) {
-            for (int i = 0; i < 10; i++) {
+            int num_particles = 10; // control number of particles per explosion
+            for (int i = 0; i < num_particles; i++) {
                 Vector2 dir = {cosf(GetRandomValue(0, 360) * DEG2RAD),
                                sinf(GetRandomValue(0, 360) * DEG2RAD)};
                 float spd = GetRandomValue(50,200);
@@ -57,7 +58,7 @@ class ParticleSystem {
 
         void SpawnTrail(Vector2 pos, Vector2 vel) {
             Color c = {255, 240, 80, 255};
-            Vector2 jitter = { GetRandomValue(-10, 10) / 100.0f, GetRandomValue(-10, 10) / 100.0f };
+            Vector2 jitter = { GetRandomValue(-10, 0) / 100.0f, GetRandomValue(-10, 0) / 100.0f };
             Spawn(pos, Vector2Add(vel, jitter), c, 0.2f, 2.0f);
         }
 };

@@ -10,6 +10,11 @@
 #include <memory> // for std::unique_ptr
 #include <vector>
 
+enum class TurretType{
+    BASIC,
+    LASER,
+};
+
 class Turret : public Entity
 {
 public:
@@ -29,13 +34,16 @@ public:
   float m_recoilOffset; 
   Color gunColor;
   Tile tileOfTurret;
+  TurretType turret; 
   
 
-Turret(Vector2 pos, Tile& tile)
+Turret(Vector2 pos, Tile& tile, float speed, TurretType t)
   {
     position = pos; // position of the turret
     gunRotation = 0.0f; // initial rotation of the gun
-    tileOfTurret = tile; 
+    tileOfTurret = tile;
+    projectileSpeed = speed; 
+    turret = t; 
   }
 
 void Update(float deltaTime) override
@@ -61,7 +69,7 @@ void Update(float deltaTime,
         }
       }
       if (target != nullptr) {
-        float projectileSpeed = 400.0f;
+         
         Vector2 aimPoint = CalculateInterceptPoint(
           target->GetPosition(), target->GetVelocity(), projectileSpeed);
           
@@ -72,21 +80,33 @@ void Update(float deltaTime,
         gunRotation = MoveAngle(gunRotation, targetAngle, rotationSpeed);
         float angleDifference = normaliseAngle(targetAngle - gunRotation);
         if (fireTimer <= 0 && angleDifference < 8.0f) {
-          newProjectiles.push_back(
-          std::make_unique<Projectile>(position, aimPoint, projectileSpeed));
-          fireTimer = fireRate; // reset the cooldown
-          recoilOffset = m_recoilOffset; 
+            
+            switch (turret){
+                case TurretType::BASIC: 
+                {
+                  newProjectiles.push_back(
+                        std::make_unique<normal_bullet>(position, aimPoint));
+                    break;
+
+                }
+                case TurretType::LASER : 
+                {
+                    newProjectiles.push_back(
+                       std::make_unique<laser_bullet>(position, aimPoint));
+                    break;
+                }
+            }
+            
+            fireTimer = fireRate; 
+            recoilOffset = m_recoilOffset; 
 
         }
       }
   }
 void Draw() override
 {
-    // Draw the range first (semi-transparent)
-    // DrawCircleV(position, range, Fade(color, 0.2f));
-    // Draw the base
+    
     DrawCircleV(position, radius, color);
-    // Draw the gun
     DrawRectanglePro(gunRec,
                      Vector2{ 0, gunRec.height / 2 },
                      gunRotation,
@@ -107,12 +127,11 @@ static void loadTextures(){
     UnloadImage(turretBaseIMG); 
 
     // basic_turret
-    basicTurretGunIMG = LoadImage("assets/turrets/duo.png");
-    basicTurretGunTexture = LoadTextureFromImage(basicTurretGunIMG);
-    UnloadImage(basicTurretGunIMG);
+    basicTurretGunTexture = LoadTexture("assets/turrets/duo.png");
 
     // laser_turret
-    laserTurretGunIMG = LoadImage("assets/turrets/cyclone.png"); 
+    laserTurretGunIMG = LoadImage("assets/turrets/cyclone.png");
+
     ImageResize(&laserTurretGunIMG, TILE_SIZE+5.0f, TILE_SIZE+5.0f );
     laserTurretGunTexture = LoadTextureFromImage(laserTurretGunIMG);
 }
@@ -124,14 +143,14 @@ static void destroyTextures(){
     // unload laser_turret
     UnloadTexture(laserTurretGunTexture);
 }
-
+private : 
+    float projectileSpeed; 
 protected:
     // the base of each turret. Common
     inline static Image turretBaseIMG; 
     inline static Texture2D turretBaseTexture; 
 
     // basic_turret (duo) stuff
-    inline static Image basicTurretGunIMG; 
     inline static Texture2D basicTurretGunTexture; 
 
     // laser_turret (cyclone) stuff
@@ -174,7 +193,7 @@ protected:
 class basic_turret : public Turret {
     public:
          
-        basic_turret(Vector2 pos, Tile& tile) : Turret(pos, tile){
+        basic_turret(Vector2 pos, Tile& tile) : Turret(pos, tile, normal_bullet_speed, TurretType::BASIC){
             range = 3*TILE_SIZE;
             fireRate = 0.25f;  // shoots 1/x per second
             fireTimer = 0.0f; // initial timer, ready to fire
@@ -220,9 +239,9 @@ class basic_turret : public Turret {
 
 class laser_turret : public Turret { // fires short beams of light
     public: 
-        laser_turret(Vector2 pos, Tile& tile) : Turret(pos, tile){
+        laser_turret(Vector2 pos, Tile& tile) : Turret(pos, tile, laser_bullet_speed, TurretType::LASER){
             range = 7*TILE_SIZE;
-            fireRate = 0.5f;  // shoots 1/x per second
+            fireRate = 2.0f;  // shoots 1/x per second
             fireTimer = 0.0f; // initial timer, ready to fire
             rotationSpeed = 1.0f;
             m_recoilOffset = 8.0f; 

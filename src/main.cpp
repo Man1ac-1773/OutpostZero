@@ -1,5 +1,6 @@
 #include "Config.h" // Include data declaration
 
+#include "Projectile.h"
 #include "Turret.h"
 #include "scenes.h"
 #include "scenes/Game.h"
@@ -37,7 +38,8 @@ main()
     
     EndDrawing();
   }
-  Turret::destroyTextures();  
+  Turret::destroyTextures();
+  Projectile::LoadTextures(); 
   CloseWindow();
   return 0;
 }

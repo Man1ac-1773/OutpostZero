@@ -41,4 +41,10 @@
     const float fast_enemy_speed = 2*standard_enemy_speed; 
     const float fast_enemy_health = 5.0f; 
 
+// particle system
     ParticleSystem particles; 
+
+// projectiles
+    // normal
+    const float normal_bullet_speed = 400.0f;
+    const float laser_bullet_speed = 800.0f;

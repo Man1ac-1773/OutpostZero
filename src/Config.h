@@ -45,3 +45,10 @@
 
 // particles
     extern ParticleSystem particles;
+
+// projectiles
+    // normal bullet
+    extern const float normal_bullet_speed;
+
+    // laser bullets; 
+    extern const float laser_bullet_speed; 

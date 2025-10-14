@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -I$(SRC_DIR)
+CXXFLAGS = -Wall -I$(SRC_DIR) -MMD -MP
 LDLIBS = -lraylib
 
 BUILD_DIR = build
@@ -11,6 +11,8 @@ SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
 
 OBJ_DIR := $(BUILD_DIR)/obj
 OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
+
+DEPS := $(OBJS:.o=.d)
 
 all: $(TARGET)
 
@@ -27,3 +29,5 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 .PHONY: all clean
+
+-include $(DEPS)
