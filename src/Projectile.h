@@ -154,7 +154,7 @@ class laser_bullet: public Projectile {
 
 
     private:
-        inline static float m_spawnTimer = 0.5f ; 
+        inline static float m_spawnTimer = 0.05f ; 
         float spawnTimer; 
         ProjectileState state; 
         
