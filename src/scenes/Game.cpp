@@ -1,5 +1,6 @@
 // Game.cpp
 // standard includes
+#include <string>
 #include <vector>
 #include <algorithm>
 #include <memory> 
@@ -127,14 +128,15 @@ Scene Game(){
                                         enemy->GetPosition(),
                                         enemy->GetRadius())) {
                 projectile->Destroy();
-                // particles.SpawnExplosion(projectile->GetPosition()); 
-                enemy->hp = 0; // change to subtract hp instead; 
+                particles.SpawnExplosion(enemy->GetPosition(), projectile->getProjType()); 
+                enemy->hp -= projectile->doDamage();
+                // enemy->DamageAnimation();
             }
         }
     }
     
     // --- CLEANUP AND ADDITION PASS ---
-    for (auto& p : newProjectiles) {
+    for (auto& p : newProjectiles){
         entities.push_back(std::move(p));
     }
 
@@ -164,6 +166,9 @@ Scene Game(){
     
     DrawFPS(screenWidth-80, 10);
     DrawText("Z: Spawn Fast enemy | X: Spawn Standard Enemy", 10, 10, 20, BLACK);
-    
+    int e; 
+    if (enemy_ptrs.empty()){e=0;}
+    else{e=enemy_ptrs[0]->enemy_count;}
+    DrawText(TextFormat("Enemies : %d", e), screenWidth-MeasureText("Enemies : xx", 20), 30, 20, BLACK);
     return Scene::GAME;
 }

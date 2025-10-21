@@ -45,10 +45,18 @@
 
 // particles
     extern ParticleSystem particles;
+// turrets
+    // DUO turret
+    extern const float duo_turret_fire_rate; 
+
+    // Cyclone turret
+    extern const float cyclone_turret_fire_rate; 
 
 // projectiles
     // normal bullet
     extern const float normal_bullet_speed;
+    extern const float normal_bullet_damage;
 
     // laser bullets; 
     extern const float laser_bullet_speed; 
+    extern const float laser_bullet_damage; 

@@ -23,7 +23,7 @@ public:
   float range;
   Color color;
   // shooting properties
-  float fireRate;
+  float cooldownTimer;
   float fireTimer;
 
   // gun properties
@@ -97,7 +97,7 @@ void Update(float deltaTime,
                 }
             }
             
-            fireTimer = fireRate; 
+            fireTimer = cooldownTimer; 
             recoilOffset = m_recoilOffset; 
 
         }
@@ -195,10 +195,11 @@ class basic_turret : public Turret {
          
         basic_turret(Vector2 pos, Tile& tile) : Turret(pos, tile, normal_bullet_speed, TurretType::BASIC){
             range = 3*TILE_SIZE;
-            fireRate = 0.25f;  // shoots 1/x per second
+            cooldownTimer = 1/duo_turret_fire_rate; 
             fireTimer = 0.0f; // initial timer, ready to fire
             rotationSpeed = 0.5f;
             m_recoilOffset = 4.0f;
+        
         }
         
         
@@ -241,7 +242,7 @@ class laser_turret : public Turret { // fires short beams of light
     public: 
         laser_turret(Vector2 pos, Tile& tile) : Turret(pos, tile, laser_bullet_speed, TurretType::LASER){
             range = 7*TILE_SIZE;
-            fireRate = 2.0f;  // shoots 1/x per second
+            cooldownTimer = 1/cyclone_turret_fire_rate;  
             fireTimer = 0.0f; // initial timer, ready to fire
             rotationSpeed = 1.0f;
             m_recoilOffset = 8.0f; 

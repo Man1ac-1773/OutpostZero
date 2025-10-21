@@ -8,16 +8,17 @@ using namespace std;
 class Enemy : public Entity
 {
 public:
-float radius;
-float speed;
-Color color;
-int counter = 0;
-float hp;
-Vector2 targetPos = targets[counter]; 
-
+    float radius;
+    float speed;
+    Color color;
+    int counter = 0;
+    float hp;
+    Vector2 targetPos = targets[counter]; 
+    inline static int enemy_count = 0; 
 Enemy(){
 
     position = startPos;
+    enemy_count++; 
    
 }
 float GetRadius() const { return radius; }
@@ -27,6 +28,7 @@ void Update(float deltaTime) override {
     }
     if (hp <= 0){
         Destroy();
+        // DeathAnimation(); 
     } 
     position.x += velocity.x * deltaTime;
     position.y += velocity.y * deltaTime;
@@ -48,6 +50,10 @@ void Update(){
 
     velocity = velFromSpeed(position, targetPos , speed);
 
+}
+void Destroy() override {
+    is_active = false; 
+    enemy_count--; 
 }
 
 };

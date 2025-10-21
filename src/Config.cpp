@@ -43,8 +43,16 @@
 
 // particle system
     ParticleSystem particles; 
-
+// turrets
+    // duo turret
+    const float duo_turret_fire_rate = 4.0f; // bullets/second
+                                             //
+    // cyclone turret
+    const float cyclone_turret_fire_rate = 1.0f; // bullets/second 
 // projectiles
     // normal
     const float normal_bullet_speed = 400.0f;
-    const float laser_bullet_speed = 800.0f;
+    const float normal_bullet_damage = 4.0f;
+    // laser
+    const float laser_bullet_speed = 1000.0f;
+    const float laser_bullet_damage = 10.0f;

@@ -12,6 +12,7 @@ enum class ProjectileState{
     FLYING,
 };
 
+
 class Projectile : public Entity
 {
 public:
@@ -19,7 +20,8 @@ public:
     Color color;
     bool active;
     Vector2 start_pos;
-    Vector2 target_pos; 
+    Vector2 target_pos;
+
     
     Projectile(Vector2 startPos, Vector2 targetPos)
     {
@@ -32,6 +34,8 @@ public:
 
         
     }
+    virtual ProjectileType getProjType() = 0;
+    virtual float doDamage() = 0;
     float GetRadius() const { return radius; }
     void Update(float deltaTime) override
     {
@@ -41,7 +45,7 @@ public:
             return;
         }
         position += Vector2Scale(velocity, deltaTime);
-        particles.SpawnTrail(position, velocity);
+        particles.SpawnTrail(position, velocity, getProjType());
         
    }
     void Draw() override
@@ -52,7 +56,7 @@ public:
     }
     static void LoadTextures(){
         BulletImage = LoadImage("assets/projectiles/smallBullet.png");
-        ImageResize(&BulletImage, 16,16);
+        ImageResize(&BulletImage, 10,10);
         BulletTexture = LoadTextureFromImage(BulletImage); 
         UnloadImage(BulletImage); 
 
@@ -81,8 +85,9 @@ protected :
 class normal_bullet : public Projectile {
     public :
         normal_bullet(Vector2 startPos, Vector2 targetPos) : Projectile(startPos, targetPos) {
-
+                
                 velocity = velFromSpeed(startPos, targetPos, normal_bullet_speed); // set velocity towards target
+
         }
         
 
@@ -97,8 +102,11 @@ class normal_bullet : public Projectile {
         
        
         }
-            
+        ProjectileType getProjType() override {return ProjectileType::DUO_BASIC;}
+        float doDamage()override{return normal_bullet_damage;} 
    
+     
+
 };
 
 class laser_bullet: public Projectile {
@@ -151,12 +159,17 @@ class laser_bullet: public Projectile {
             EndBlendMode();
         }
         
-
+        ProjectileType getProjType() override {return ProjectileType::LASER_BASIC;}
+        float doDamage()override{return laser_bullet_damage;} 
 
     private:
-        inline static float m_spawnTimer = 0.05f ; 
+        inline static float m_spawnTimer = 0.04f; 
         float spawnTimer; 
-        ProjectileState state; 
+        ProjectileState state;
+
         
    
 };
+
+
+

@@ -8,7 +8,7 @@ public:
     virtual void Update(float deltaTime) = 0;
     virtual void Draw() = 0;
     bool IsActive() const { return is_active; }
-    void Destroy() { is_active = false; }
+    virtual void Destroy() { is_active = false; }
     Vector2 GetPosition() const { return position; }
     Vector2 GetVelocity() const { return velocity; }
 
