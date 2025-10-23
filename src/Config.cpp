@@ -20,6 +20,7 @@ const Color gridLineColor = Color{60, 60, 60, 100}; // colour of border of each 
 const Color mouseHoverColor = Color{100, 255, 100, 50};
 
 // targets
+// has been declared here because of some (possible?) use in other files, otherwise is local to the enemy class and is used there only.
 std::vector<Vector2> targets;
 Vector2 startPos;
 
@@ -32,7 +33,7 @@ const int GRID_ROWS = 14;
 const int GRID_COLS = 21;
 const float TILE_SIZE = 40.0f;
 
-// constants for enemies
+// ---- CONSTANTS FOR ENEMIES ----
 // for standard_enemy
 const float standard_enemy_radius = 12.0f;
 const float standard_enemy_speed = 100.0f;
@@ -42,16 +43,25 @@ const float standard_enemy_health = 10.0f;
 const float fast_enemy_radius = 6.0f;
 const float fast_enemy_speed = 2 * standard_enemy_speed;
 const float fast_enemy_health = 5.0f;
+// ---- ----
 
 // particle system
 ParticleSystem particles;
-// turrets
+
+/* ---- CONSTANTS FOR TURRETS AND PROJECTILES ----
+ * DISCLAIMER FOR CONSTANT RELATIONS
+ * duo_turret -> normal_bullet
+ * cyclone_turret -> laser_bullet
+ * more types will come later
+ */
 // duo turret
 const float duo_turret_fire_rate = 4.0f; // bullets/second
-                                         //
+const float duo_turret_range = 3 * TILE_SIZE;
 // cyclone turret
 const float cyclone_turret_fire_rate = 1.0f; // bullets/second
-                                             // projectiles
+const float cyclone_turret_range = 7 * TILE_SIZE;
+
+/* Projectiles */
 // normal
 const float normal_bullet_speed = 400.0f;
 const float normal_bullet_damage = 5.0f;

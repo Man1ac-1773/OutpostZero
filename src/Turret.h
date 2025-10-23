@@ -188,7 +188,7 @@ class basic_turret : public Turret
   public:
     basic_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, normal_bullet_speed, TurretType::BASIC)
     {
-        range = 3 * TILE_SIZE;
+        range = duo_turret_range;
         cooldownTimer = 1 / duo_turret_fire_rate;
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 0.5f;
@@ -219,7 +219,7 @@ class laser_turret : public Turret
   public:
     laser_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, laser_bullet_speed, TurretType::LASER)
     {
-        range = 7 * TILE_SIZE;
+        range = cyclone_turret_range;
         cooldownTimer = 1 / cyclone_turret_fire_rate;
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 1.0f;
@@ -232,7 +232,7 @@ class laser_turret : public Turret
         DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, baseOrigin, 0.0f, WHITE);
 
         // calculating change in gun_rec to account for recoil
-        //
+
         float angleRad = gunRotation * DEG2RAD;
         Vector2 direction = {cosf(angleRad), sinf(angleRad)};
         Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));

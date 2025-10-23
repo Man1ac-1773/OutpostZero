@@ -14,13 +14,20 @@
 #include "raylib.h"
 #include "scenes.h"
 using namespace std;
-
+enum class buildState
+{
+    NONE,
+    BASIC,
+    LASER,
+};
 static Map gameMap;
 static Color green = Color{57, 255, 20, 255}; // for walls, if required
 
 static const float cameraSpeed = 500.0f; // if camera movement implemented
 static bool initialized = false;
 static Camera2D camera = {0};
+static buildState current_build;
+
 Vector2 screenCenter = {(float)screenWidth / 2, (float)screenHeight / 2};
 
 static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our entities
@@ -35,13 +42,17 @@ Scene Game()
         camera.rotation = 0.0f;
         camera.zoom = 1.0f;
         initialized = true;
+        current_build = buildState::NONE;
         Turret::LoadTextures();
         Projectile::LoadTextures();
         Enemy::LoadTextures();
     }
 
     // ---- INPUT PASS ----
-
+    if (IsKeyPressed(KEY_ESCAPE))
+    {
+        current_build = buildState::NONE;
+    }
     // Spawn enemy at mouse
     if (IsKeyPressed(KEY_X))
     {
@@ -58,24 +69,23 @@ Scene Game()
         Vector2 mousePos = GetMousePosition();
         Tile *tile = gameMap.getTileFromMouse(mousePos);
 
-        if (tile != nullptr && tile->type == TileType::BUILDABLE && !tile->hasTurret)
+        if (tile != nullptr && tile->type == TileType::BUILDABLE && !tile->hasTurret && current_build != buildState::NONE)
         {
             // Place turret at center of tile
             Vector2 turretPos = {tile->rect.x + tile->rect.width / 2, tile->rect.y + tile->rect.height / 2};
-            entities.push_back(make_unique<basic_turret>(turretPos, *tile));
-            tile->hasTurret = true;
-        }
-    }
-    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
-    {
-        Vector2 mousePos = GetMousePosition();
-        Tile *tile = gameMap.getTileFromMouse(mousePos);
-
-        if (tile != nullptr && tile->type == TileType::BUILDABLE && !tile->hasTurret)
-        {
-            // Place turret at center of tile
-            Vector2 turretPos = {tile->rect.x + tile->rect.width / 2, tile->rect.y + tile->rect.height / 2};
-            entities.push_back(make_unique<laser_turret>(turretPos, *tile));
+            switch (current_build)
+            {
+            case buildState::BASIC:
+            {
+                entities.push_back(make_unique<basic_turret>(turretPos, *tile));
+                break;
+            }
+            case buildState::LASER:
+            {
+                entities.push_back(make_unique<laser_turret>(turretPos, *tile));
+                break;
+            }
+            }
             tile->hasTurret = true;
         }
     }
@@ -166,18 +176,39 @@ Scene Game()
     {
         turret->drawRangeOnHover(GetMousePosition());
     }
+    // draw range if current_build is a turret
+    if (current_build != buildState::NONE)
+    {
+        switch (current_build)
+        {
+        case buildState::BASIC:
+        {
+            DrawCircleLinesV(GetMousePosition(), duo_turret_range, YELLOW);
+            break;
+        }
+        case buildState::LASER:
+        {
+            DrawCircleLinesV(GetMousePosition(), cyclone_turret_range, YELLOW);
+            break;
+        }
+        }
+    }
     particles.Draw();
 
     EndMode2D();
     // ----- DRAW GUI PART -----
     Rectangle basic_turret_buttonRect = {0, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
     Rectangle laser_turret_buttonRect = {TILE_SIZE, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
+
     if (GuiButton(basic_turret_buttonRect, ""))
     {
+        current_build = buildState::BASIC;
     }
     if (GuiButton(laser_turret_buttonRect, ""))
     {
+        current_build = buildState::LASER;
     }
+
     DrawTexturePro(Turret::basicTurretGunTexture, {0, 0, (float)(Turret::basicTurretGunTexture.width), (float)(Turret::basicTurretGunTexture.height)}, {(float)Turret::basicTurretGunTexture.width / 2.0f, (screenHeight - (float)Turret::basicTurretGunTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::basicTurretGunTexture.width / 2.0f, Turret::basicTurretGunTexture.height / 2.0f}, 0.0f, WHITE);
 
     DrawTexturePro(Turret::laserTurretGunTexture, {0, 0, (float)(Turret::laserTurretGunTexture.width), (float)(Turret::laserTurretGunTexture.height)}, {TILE_SIZE + (float)Turret::laserTurretGunTexture.width / 2.0f, (screenHeight - (float)Turret::laserTurretGunTexture.height) + 27.0f, TILE_SIZE, TILE_SIZE}, {Turret::laserTurretGunTexture.width / 2.0f, Turret::laserTurretGunTexture.height / 2.0f}, 0.0f, WHITE);
