@@ -6,4 +6,4 @@ output
 /build/
 .direnv
 compile_commands.json
-assets/.obsidian/*
+/assets/.obsidian/*

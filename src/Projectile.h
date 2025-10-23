@@ -35,7 +35,6 @@ public:
         
     }
     virtual ProjectileType getProjType() = 0;
-    virtual float doDamage() = 0;
     float GetRadius() const { return radius; }
     void Update(float deltaTime) override
     {
@@ -103,7 +102,6 @@ class normal_bullet : public Projectile {
        
         }
         ProjectileType getProjType() override {return ProjectileType::DUO_BASIC;}
-        float doDamage()override{return normal_bullet_damage;} 
    
      
 
@@ -160,7 +158,6 @@ class laser_bullet: public Projectile {
         }
         
         ProjectileType getProjType() override {return ProjectileType::LASER_BASIC;}
-        float doDamage()override{return laser_bullet_damage;} 
 
     private:
         inline static float m_spawnTimer = 0.04f; 

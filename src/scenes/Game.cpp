@@ -1,174 +1,186 @@
 // Game.cpp
 // standard includes
+#include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
-#include <algorithm>
-#include <memory> 
 // custom includes
+#include "Config.h"
+#include "Enemy.h"
+#include "Entity.h"
+#include "Map.h"
+#include "Projectile.h"
+#include "Turret.h"
 #include "raylib.h"
 #include "scenes.h"
-#include "Config.h" 
-#include "Entity.h"
-#include "Turret.h"
-#include "Enemy.h"
-#include "Projectile.h"
-#include "Map.h"
-using namespace std; 
+using namespace std;
 
-static Map gameMap; 
-static Color green = Color{ 57, 255, 20, 255 }; // for walls, if required
+static Map gameMap;
+static Color green = Color{57, 255, 20, 255}; // for walls, if required
 
 static const float cameraSpeed = 500.0f; // if camera movement implemented
 static bool initialized = false;
-static Camera2D camera = {0}; 
-Vector2 screenCenter = {(float)screenWidth/2, (float)screenHeight/2};
+static Camera2D camera = {0};
+Vector2 screenCenter = {(float)screenWidth / 2, (float)screenHeight / 2};
 
 static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our entities
 
-Scene Game(){
-    
-    if (!initialized){
-        camera.target = screenCenter; 
-        camera.offset = screenCenter; 
-        camera.rotation = 0.0f; 
-        camera.zoom = 1.0f; 
-        initialized = true;
-        Turret::loadTextures();
-        Projectile::LoadTextures();
+Scene Game()
+{
 
+    if (!initialized)
+    {
+        camera.target = screenCenter;
+        camera.offset = screenCenter;
+        camera.rotation = 0.0f;
+        camera.zoom = 1.0f;
+        initialized = true;
+        Turret::LoadTextures();
+        Projectile::LoadTextures();
+        Enemy::LoadTextures();
     }
 
     // ---- INPUT PASS ----
-    
-    // Spawn enemy at mouse 
-    if (IsKeyDown(KEY_X)) {
-        entities.push_back(
-                make_unique<standard_enemy>());
+
+    // Spawn enemy at mouse
+    if (IsKeyPressed(KEY_X))
+    {
+        entities.push_back(make_unique<standard_enemy>());
     }
-    if (IsKeyDown(KEY_Z)){
-        entities.push_back(make_unique<fast_enemy>()); 
+    if (IsKeyPressed(KEY_Z))
+    {
+        entities.push_back(make_unique<fast_enemy>());
     }
 
     // Spawn turret at mouse (only on buildable tiles)
-    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)){
-        Vector2 mousePos = GetMousePosition();  
-        Tile* tile = gameMap.getTileFromMouse(mousePos);
-        
-        if (tile != nullptr && tile->type == TileType::BUILDABLE && !tile->hasTurret) {
+    if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+    {
+        Vector2 mousePos = GetMousePosition();
+        Tile *tile = gameMap.getTileFromMouse(mousePos);
+
+        if (tile != nullptr && tile->type == TileType::BUILDABLE && !tile->hasTurret)
+        {
             // Place turret at center of tile
-            Vector2 turretPos = {
-                tile->rect.x + tile->rect.width / 2,
-                tile->rect.y + tile->rect.height / 2
-            };
-            entities.push_back(
-                make_unique<basic_turret>(turretPos, *tile));
+            Vector2 turretPos = {tile->rect.x + tile->rect.width / 2, tile->rect.y + tile->rect.height / 2};
+            entities.push_back(make_unique<basic_turret>(turretPos, *tile));
             tile->hasTurret = true;
         }
     }
-    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)){
-        Vector2 mousePos = GetMousePosition();  
-        Tile* tile = gameMap.getTileFromMouse(mousePos);
-        
-        if (tile != nullptr && tile->type == TileType::BUILDABLE && !tile->hasTurret) {
+    if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON))
+    {
+        Vector2 mousePos = GetMousePosition();
+        Tile *tile = gameMap.getTileFromMouse(mousePos);
+
+        if (tile != nullptr && tile->type == TileType::BUILDABLE && !tile->hasTurret)
+        {
             // Place turret at center of tile
-            Vector2 turretPos = {
-                tile->rect.x + tile->rect.width / 2,
-                tile->rect.y + tile->rect.height / 2
-            };
-            entities.push_back(
-                make_unique<laser_turret>(turretPos, *tile));
+            Vector2 turretPos = {tile->rect.x + tile->rect.width / 2, tile->rect.y + tile->rect.height / 2};
+            entities.push_back(make_unique<laser_turret>(turretPos, *tile));
             tile->hasTurret = true;
         }
     }
 
     // ------ UPDATE PASS ------
     // Calling simple Update for all entities
-    for (auto& entity : entities) {
+    for (auto &entity : entities)
+    {
         entity->Update(GetFrameTime());
     }
-    particles.Update(GetFrameTime()); 
+    particles.Update(GetFrameTime());
 
     // ---- INTERACTION PASS -----
     // Separate entities into turrets, enemies, and projectiles
-    vector<Turret*> turret_ptrs;
-    vector<Enemy*> enemy_ptrs;
-    vector<Projectile*> projectile_ptrs;
+    vector<Turret *> turret_ptrs;
+    vector<Enemy *> enemy_ptrs;
+    vector<Projectile *> projectile_ptrs;
     vector<unique_ptr<Entity>> newProjectiles;
-    
-    for (auto& entity : entities) {
+
+    for (auto &entity : entities)
+    {
         if (!entity->IsActive())
             continue;
-        if (Turret* t = dynamic_cast<Turret*>(entity.get())) {
+        if (Turret *t = dynamic_cast<Turret *>(entity.get()))
+        {
             turret_ptrs.push_back(t);
-        } else if (Enemy* e = dynamic_cast<Enemy*>(entity.get())) {
+        }
+        else if (Enemy *e = dynamic_cast<Enemy *>(entity.get()))
+        {
             enemy_ptrs.push_back(e);
-        } else if (Projectile* p = dynamic_cast<Projectile*>(entity.get())) {
+        }
+        else if (Projectile *p = dynamic_cast<Projectile *>(entity.get()))
+        {
             projectile_ptrs.push_back(p);
         }
     }
-    
-    // Update turrets with knowledge of enemies 
-    for (auto& turret : turret_ptrs) {
+
+    // Update turrets with knowledge of enemies
+    for (auto &turret : turret_ptrs)
+    {
         turret->Update(GetFrameTime(), enemy_ptrs, newProjectiles);
     }
-    
-    // Update enemy 
-    for (auto& enemy : enemy_ptrs) {
+
+    // Update enemy
+    for (auto &enemy : enemy_ptrs)
+    {
         enemy->Update();
     }
 
     // Projectiles interact with enemies
-    for (auto* projectile : projectile_ptrs) {
+    for (auto *projectile : projectile_ptrs)
+    {
         // checking each projectile with each enemy is highly inefficient, but I don't know how to optimise this yet
-        for (auto* enemy : enemy_ptrs) {
+        for (auto *enemy : enemy_ptrs)
+        {
             if (!enemy->IsActive() || !projectile->IsActive())
                 continue;
-            if (CheckCollisionCircles(projectile->GetPosition(),
-                                        projectile->GetRadius(),
-                                        enemy->GetPosition(),
-                                        enemy->GetRadius())) {
+            if (CheckCollisionCircles(projectile->GetPosition(), projectile->GetRadius(), enemy->GetPosition(), enemy->GetRadius()))
+            {
                 projectile->Destroy();
-                particles.SpawnExplosion(enemy->GetPosition(), projectile->getProjType()); 
-                enemy->hp -= projectile->doDamage();
+                enemy->TakeDamage(projectile->getProjType());
                 // enemy->DamageAnimation();
             }
         }
     }
-    
+
     // --- CLEANUP AND ADDITION PASS ---
-    for (auto& p : newProjectiles){
+    for (auto &p : newProjectiles)
+    {
         entities.push_back(std::move(p));
     }
 
-    entities.erase(
-        remove_if(entities.begin(),
-                entities.end(),
-                [](const auto& entity) { return !entity->IsActive(); }),
-        entities.end());
+    entities.erase(remove_if(entities.begin(), entities.end(), [](const auto &entity) { return !entity->IsActive(); }), entities.end());
 
     // ---- DRAWING ----
     ClearBackground(RAYWHITE);
     BeginMode2D(camera);
-    
-        // Draw map
-        gameMap.Draw(); 
-        // Draw entities
-        for (auto& entity : entities) {
-            entity->Draw();
-        }
-        // draw range of turrets if mouseHover
-        for (auto& turret : turret_ptrs) {
-            turret->drawRangeOnHover(GetMousePosition()); 
-        }
-        particles.Draw(); 
-        
+
+    // Draw map
+    gameMap.Draw();
+    // Draw entities
+    for (auto &entity : entities)
+    {
+        entity->Draw();
+    }
+    // draw range of turrets if mouseHover
+    for (auto &turret : turret_ptrs)
+    {
+        turret->drawRangeOnHover(GetMousePosition());
+    }
+    particles.Draw();
+
     EndMode2D();
-    
-    DrawFPS(screenWidth-80, 10);
+
+    DrawFPS(screenWidth - 80, 10);
     DrawText("Z: Spawn Fast enemy | X: Spawn Standard Enemy", 10, 10, 20, BLACK);
-    int e; 
-    if (enemy_ptrs.empty()){e=0;}
-    else{e=enemy_ptrs[0]->enemy_count;}
-    DrawText(TextFormat("Enemies : %d", e), screenWidth-MeasureText("Enemies : xx", 20), 30, 20, BLACK);
+    int e;
+    if (enemy_ptrs.empty())
+    {
+        e = 0;
+    }
+    else
+    {
+        e = enemy_ptrs[0]->enemy_count;
+    }
+    DrawText(TextFormat("Enemies : %d", e), screenWidth - MeasureText("Enemies : xx", 20), 30, 20, BLACK);
     return Scene::GAME;
 }
