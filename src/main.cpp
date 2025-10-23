@@ -7,7 +7,8 @@
 #include "scenes/intro.h"
 #include "scenes/settings.h"
 #include <raylib.h>
-
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
 int main()
 {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);

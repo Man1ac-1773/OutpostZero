@@ -14,6 +14,7 @@ class Enemy : public Entity
     float speed;
     int counter = 0;
     float hp;
+    bool took_damage = false;
     Vector2 targetPos = targets[counter];
     inline static int enemy_count = 0;
     Enemy()
@@ -41,7 +42,10 @@ class Enemy : public Entity
         {
             Destroy();
             particles.SpawnExplosion(position, proj_type);
+            // Death animation
+            return;
         }
+        took_damage = true;
     }
 
     float GetRadius() { return radius; }
@@ -51,7 +55,6 @@ class Enemy : public Entity
         {
             Destroy();
         }
-
         position.x += velocity.x * deltaTime;
         position.y += velocity.y * deltaTime;
     }
@@ -115,7 +118,17 @@ class standard_enemy : public Enemy
     void Draw() override
     {
         float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
-        DrawTexturePro(standard_enemyTX, {0, 0, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {position.x, position.y, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {standard_enemyTX.width / 2.0f, standard_enemyTX.height / 2.0f}, rotation, WHITE);
+        if (!took_damage)
+        {
+            DrawTexturePro(standard_enemyTX, {0, 0, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {position.x, position.y, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {standard_enemyTX.width / 2.0f, standard_enemyTX.height / 2.0f}, rotation, WHITE);
+        }
+        else
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(standard_enemyTX, {0, 0, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {position.x, position.y, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {standard_enemyTX.width / 2.0f, standard_enemyTX.height / 2.0f}, rotation, WHITE);
+            took_damage = false;
+            EndBlendMode();
+        }
     }
 };
 

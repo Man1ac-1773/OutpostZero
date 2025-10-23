@@ -136,10 +136,7 @@ class Turret : public Entity
         UnloadTexture(laserTurretGunTexture);
     }
 
-  private:
-    float projectileSpeed;
-
-  protected:
+    //  protected:
     // the base of each turret. Common
     inline static Image turretBaseIMG;
     inline static Texture2D turretBaseTexture;
@@ -150,6 +147,9 @@ class Turret : public Entity
     // laser_turret (cyclone) stuff
     inline static Image laserTurretGunIMG;
     inline static Texture2D laserTurretGunTexture;
+
+  private:
+    float projectileSpeed;
 
     // Aim functionality, can be made worse to be poor turret
     Vector2 CalculateInterceptPoint(Vector2 enemyPos, Vector2 enemyVel, float projectileSpeed)

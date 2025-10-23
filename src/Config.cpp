@@ -30,7 +30,7 @@ Vector2 startPos;
  */
 const int GRID_ROWS = 14;
 const int GRID_COLS = 21;
-const int TILE_SIZE = 40;
+const float TILE_SIZE = 40.0f;
 
 // constants for enemies
 // for standard_enemy

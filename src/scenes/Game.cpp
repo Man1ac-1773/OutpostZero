@@ -2,7 +2,6 @@
 // standard includes
 #include <algorithm>
 #include <memory>
-#include <string>
 #include <vector>
 // custom includes
 #include "Config.h"
@@ -11,6 +10,7 @@
 #include "Map.h"
 #include "Projectile.h"
 #include "Turret.h"
+#include "raygui.h"
 #include "raylib.h"
 #include "scenes.h"
 using namespace std;
@@ -169,6 +169,18 @@ Scene Game()
     particles.Draw();
 
     EndMode2D();
+    // ----- DRAW GUI PART -----
+    Rectangle basic_turret_buttonRect = {0, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
+    Rectangle laser_turret_buttonRect = {TILE_SIZE, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
+    if (GuiButton(basic_turret_buttonRect, ""))
+    {
+    }
+    if (GuiButton(laser_turret_buttonRect, ""))
+    {
+    }
+    DrawTexturePro(Turret::basicTurretGunTexture, {0, 0, (float)(Turret::basicTurretGunTexture.width), (float)(Turret::basicTurretGunTexture.height)}, {(float)Turret::basicTurretGunTexture.width / 2.0f, (screenHeight - (float)Turret::basicTurretGunTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::basicTurretGunTexture.width / 2.0f, Turret::basicTurretGunTexture.height / 2.0f}, 0.0f, WHITE);
+
+    DrawTexturePro(Turret::laserTurretGunTexture, {0, 0, (float)(Turret::laserTurretGunTexture.width), (float)(Turret::laserTurretGunTexture.height)}, {TILE_SIZE + (float)Turret::laserTurretGunTexture.width / 2.0f, (screenHeight - (float)Turret::laserTurretGunTexture.height) + 27.0f, TILE_SIZE, TILE_SIZE}, {Turret::laserTurretGunTexture.width / 2.0f, Turret::laserTurretGunTexture.height / 2.0f}, 0.0f, WHITE);
 
     DrawFPS(screenWidth - 80, 10);
     DrawText("Z: Spawn Fast enemy | X: Spawn Standard Enemy", 10, 10, 20, BLACK);
