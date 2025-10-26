@@ -47,17 +47,26 @@ extern const float fast_enemy_health;
 
 // particles
 extern ParticleSystem particles;
-// turrets
-// DUO turret
+// TURRETS
+// PROJECTILE TURRETS
+// duo turret
 extern const float duo_turret_fire_rate;
 extern const float duo_turret_range;
+
+// LASER TURRETS
+// Scatter turret
+extern const float scatter_turret_fire_rate;
+extern const float scatter_turret_range;
+
 // Cyclone turret
 extern const float cyclone_turret_fire_rate;
 extern const float cyclone_turret_range;
+
+// SLOWING TURRET
 // slowing turret
-extern const float slowing_turret_active_time;
-extern const float slowing_turret_cooldown_time;
-extern const float slowing_turret_range;
+extern const float tsunami_turret_active_time;
+extern const float tsunami_turret_cooldown_time;
+extern const float tsunami_turret_range;
 // projectiles
 // normal bullet
 extern const float normal_bullet_speed;

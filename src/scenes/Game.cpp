@@ -77,17 +77,17 @@ Scene Game()
             {
             case buildState::BASIC:
             {
-                entities.push_back(make_unique<basic_turret>(turretPos, *tile));
+                entities.push_back(make_unique<basic_turret_lvl1>(turretPos, *tile));
                 break;
             }
             case buildState::LASER:
             {
-                entities.push_back(make_unique<laser_turret>(turretPos, *tile));
+                entities.push_back(make_unique<laser_turret_lvl1>(turretPos, *tile));
                 break;
             }
             case buildState::SLOWING:
             {
-                entities.push_back(make_unique<slowing_turret>(turretPos, *tile));
+                entities.push_back(make_unique<slowing_turret_lvl1>(turretPos, *tile));
                 break;
             }
             }
@@ -198,7 +198,7 @@ Scene Game()
         }
         case buildState::SLOWING:
         {
-            DrawCircleLinesV(GetMousePosition(), slowing_turret_range, BLUE);
+            DrawCircleLinesV(GetMousePosition(), tsunami_turret_range, BLUE);
             break;
         }
         }
@@ -223,10 +223,10 @@ Scene Game()
     {
         current_build = buildState::SLOWING;
     }
-    DrawTexturePro(Turret::basicTurretGunTexture, {0, 0, (float)(Turret::basicTurretGunTexture.width), (float)(Turret::basicTurretGunTexture.height)}, {(float)Turret::basicTurretGunTexture.width / 2.0f, (screenHeight - (float)Turret::basicTurretGunTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::basicTurretGunTexture.width / 2.0f, Turret::basicTurretGunTexture.height / 2.0f}, 0.0f, WHITE);
+    DrawTexturePro(Turret::duoTurretTexture, {0, 0, (float)(Turret::duoTurretTexture.width), (float)(Turret::duoTurretTexture.height)}, {(float)Turret::duoTurretTexture.width / 2.0f, (screenHeight - (float)Turret::duoTurretTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::duoTurretTexture.width / 2.0f, Turret::duoTurretTexture.height / 2.0f}, 0.0f, WHITE);
 
-    DrawTexturePro(Turret::laserTurretGunTexture, {0, 0, (float)(Turret::laserTurretGunTexture.width), (float)(Turret::laserTurretGunTexture.height)}, {TILE_SIZE + (float)Turret::laserTurretGunTexture.width / 2.0f, (screenHeight - (float)Turret::laserTurretGunTexture.height) + 27.0f, TILE_SIZE, TILE_SIZE}, {Turret::laserTurretGunTexture.width / 2.0f, Turret::laserTurretGunTexture.height / 2.0f}, 0.0f, WHITE);
-    DrawTexturePro(Turret::slowTurretTX, {0, 0, (float)(Turret::slowTurretTX.width), (float)(Turret::slowTurretTX.height)}, {2 * TILE_SIZE + (float)Turret::slowTurretTX.width / 2.0f, (screenHeight - (float)Turret::slowTurretTX.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::slowTurretTX.width / 2.0f, Turret::slowTurretTX.height / 2.0f}, 0.0f, WHITE);
+    DrawTexturePro(Turret::scatterTurretTexture, {0, 0, (float)(Turret::scatterTurretTexture.width), (float)(Turret::scatterTurretTexture.height)}, {TILE_SIZE + (float)Turret::scatterTurretTexture.width / 2.0f, (screenHeight - (float)Turret::scatterTurretTexture.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::scatterTurretTexture.width / 2.0f, Turret::scatterTurretTexture.height / 2.0f}, 0.0f, WHITE);
+    DrawTexturePro(Turret::tsunamiTurretTX, {0, 0, (float)(Turret::tsunamiTurretTX.width), (float)(Turret::tsunamiTurretTX.height)}, {2 * TILE_SIZE + (float)Turret::tsunamiTurretTX.width / 2.0f, (screenHeight - (float)Turret::tsunamiTurretTX.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::tsunamiTurretTX.width / 2.0f, Turret::tsunamiTurretTX.height / 2.0f}, 0.0f, WHITE);
 
     DrawFPS(screenWidth - 80, 10);
     DrawText("Z: Spawn Fast enemy | X: Spawn Standard Enemy", 10, 10, 20, BLACK);
