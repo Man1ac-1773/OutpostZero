@@ -31,6 +31,7 @@ class Enemy : public Entity
     inline static int enemy_count = 0;
     Enemy()
     {
+        cout << "Current startPos : {" << startPos.x << ", " << startPos.y << "}" << endl;
         position = startPos;
         enemy_count++;
     }
@@ -93,7 +94,7 @@ class Enemy : public Entity
                 status_timer = 0.0f;
             }
         }
-        if (position.y >= GRID_ROWS * TILE_SIZE || position.x >= GRID_COLS * TILE_SIZE || position.y == NAN || position.x == NAN)
+        if (position.y >= GRID_ROWS * TILE_SIZE)
         {
             Destroy();
         }
