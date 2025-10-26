@@ -41,7 +41,7 @@ const float standard_enemy_health = 10.0f;
 
 // for fast_enemy
 const float fast_enemy_radius = 6.0f;
-const float fast_enemy_speed = 2 * standard_enemy_speed;
+const float fast_enemy_speed = 2.0f * standard_enemy_speed;
 const float fast_enemy_health = 5.0f;
 // ---- ----
 
@@ -56,10 +56,14 @@ ParticleSystem particles;
  */
 // duo turret
 const float duo_turret_fire_rate = 4.0f; // bullets/second
-const float duo_turret_range = 3 * TILE_SIZE;
+const float duo_turret_range = 3.0f * TILE_SIZE;
 // cyclone turret
 const float cyclone_turret_fire_rate = 1.0f; // bullets/second
-const float cyclone_turret_range = 7 * TILE_SIZE;
+const float cyclone_turret_range = 7.0f * TILE_SIZE;
+// slowing turret
+const float slowing_turret_range = 3.0f * TILE_SIZE;
+const float slowing_turret_active_time = 15.0f;
+const float slowing_turret_cooldown_time = 5.0f;
 
 /* Projectiles */
 // normal

@@ -7,6 +7,7 @@
 #include "raymath.h"
 #include "utils.h"
 #include <Config.h>
+#include <iostream>
 #include <memory> // for std::unique_ptr
 #include <vector>
 
@@ -14,6 +15,7 @@ enum class TurretType
 {
     BASIC,
     LASER,
+    SLOWING,
 };
 
 class Turret : public Entity
@@ -55,7 +57,7 @@ class Turret : public Entity
             recoilOffset = Lerp(recoilOffset, 0, 0.2f);
         }
     }
-    void Update(float deltaTime, const std::vector<Enemy *> &targets, std::vector<std::unique_ptr<Entity>> &newProjectiles)
+    virtual void Update(float deltaTime, const std::vector<Enemy *> &targets, std::vector<std::unique_ptr<Entity>> &newProjectiles)
     {
         Enemy *target = nullptr;
         float closestDist = 999999.0f;
@@ -122,9 +124,13 @@ class Turret : public Entity
 
         // laser_turret
         laserTurretGunIMG = LoadImage("assets/turrets/cyclone.png");
-
         ImageResize(&laserTurretGunIMG, TILE_SIZE + 5.0f, TILE_SIZE + 5.0f);
         laserTurretGunTexture = LoadTextureFromImage(laserTurretGunIMG);
+
+        // slow turret
+        slowTurretIMG = LoadImage("assets/turrets/tsunami.png");
+        ImageResize(&slowTurretIMG, TILE_SIZE, TILE_SIZE);
+        slowTurretTX = LoadTextureFromImage(slowTurretIMG);
     }
     static void DestroyTextures()
     {
@@ -147,6 +153,10 @@ class Turret : public Entity
     // laser_turret (cyclone) stuff
     inline static Image laserTurretGunIMG;
     inline static Texture2D laserTurretGunTexture;
+
+    // slow turret (tsunami) stuff
+    inline static Image slowTurretIMG;
+    inline static Texture2D slowTurretTX;
 
   private:
     float projectileSpeed;
@@ -241,5 +251,68 @@ class laser_turret : public Turret
         Vector2 gunOrigin = {(float)laserTurretGunTexture.width / 2.0f, (float)laserTurretGunTexture.height * 0.75f - 2.0f};
         DrawTexturePro(laserTurretGunTexture, {0, 0, (float)laserTurretGunTexture.width, (float)laserTurretGunTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
+    }
+};
+
+class slowing_turret : public Turret
+{
+  public:
+    float active_timer, cooldown_timer;
+    bool is_active = false;
+    slowing_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::SLOWING)
+    {
+        cooldown_timer = 0;
+        this->active_timer = slowing_turret_active_time;
+        range = slowing_turret_range;
+    }
+    void Update(float deltaTime) override
+    {
+        if (is_active)
+        {
+            active_timer -= deltaTime;
+            if (active_timer <= 0)
+            {
+                is_active = false;
+                cooldown_timer = slowing_turret_cooldown_time;
+            }
+        }
+        else
+        {
+            cooldown_timer -= deltaTime;
+            if (cooldown_timer <= 0)
+            {
+                is_active = true;
+                active_timer = slowing_turret_active_time;
+            }
+        }
+    }
+
+    void Update(float deltaTime, const std::vector<Enemy *> &targets, std::vector<std::unique_ptr<Entity>> &newProjectiles) override
+    {
+        if (!is_active)
+        {
+            return;
+        }
+
+        for (auto &enemy : targets)
+        {
+            if (Vector2DistanceSqr(enemy->position, this->position) <= range * range)
+            {
+                enemy->status_effect = StatusEffects::SLOWED;
+            }
+        }
+    }
+    void Draw() override
+    {
+        Vector2 baseOrigin = {(float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f};
+
+        DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, baseOrigin, 0.0f, WHITE);
+
+        DrawTexturePro(slowTurretTX, {0, 0, (float)slowTurretTX.width, (float)slowTurretTX.height}, {position.x, position.y, (float)slowTurretTX.width, (float)slowTurretTX.height}, {(float)slowTurretTX.width / 2, (float)slowTurretTX.height / 2}, 0.0f, WHITE);
+
+        if (is_active)
+        {
+            DrawCircleV(position, range, Fade(BLUE, 0.2f));
+        }
     }
 };

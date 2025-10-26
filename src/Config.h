@@ -52,6 +52,10 @@ extern const float duo_turret_range;
 // Cyclone turret
 extern const float cyclone_turret_fire_rate;
 extern const float cyclone_turret_range;
+// slowing turret
+extern const float slowing_turret_active_time;
+extern const float slowing_turret_cooldown_time;
+extern const float slowing_turret_range;
 // projectiles
 // normal bullet
 extern const float normal_bullet_speed;

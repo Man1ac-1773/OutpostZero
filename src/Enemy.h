@@ -6,20 +6,32 @@
 #include "raymath.h"
 #include "utils.h"
 #include <cmath>
+#include <iostream>
 using namespace std;
+enum class StatusEffects
+{
+    NONE,
+    SLOWED,
+    BURNING,
+    STUNNED,
+
+};
 class Enemy : public Entity
 {
   public:
     float radius;
     float speed;
+    float original_speed;
     int counter = 0;
     float hp;
     bool took_damage = false;
+    StatusEffects status_effect = StatusEffects::NONE;
+    float status_timer = 0.0f;
     Vector2 targetPos = targets[counter];
     inline static int enemy_count = 0;
     Enemy()
     {
-
+        cout << "Current startPos : {" << startPos.x << ", " << startPos.y << "}" << endl;
         position = startPos;
         enemy_count++;
     }
@@ -51,6 +63,37 @@ class Enemy : public Entity
     float GetRadius() { return radius; }
     void Update(float deltaTime) override
     {
+
+        if (status_effect != StatusEffects::NONE && status_timer <= 0)
+        {
+            switch (status_effect)
+            {
+            case StatusEffects::SLOWED:
+            {
+                this->speed = original_speed * 0.5f;
+                status_timer = 5.0f;
+                break;
+            }
+            }
+        }
+
+        if (status_timer > 0)
+        {
+            status_timer -= deltaTime;
+            if (status_timer <= 0)
+            {
+                switch (status_effect)
+                {
+                case StatusEffects::SLOWED:
+                {
+                    speed = original_speed;
+                    break;
+                }
+                }
+                status_effect = StatusEffects::NONE;
+                status_timer = 0.0f;
+            }
+        }
         if (position.y >= GRID_ROWS * TILE_SIZE)
         {
             Destroy();
@@ -76,11 +119,13 @@ class Enemy : public Entity
 
         velocity = velFromSpeed(position, targetPos, speed);
     }
+
     void Destroy() override
     {
         is_active = false;
         enemy_count--;
     }
+
     static void LoadTextures()
     {
         standard_enemyIMG = LoadImage("assets/units/Flare.png");
@@ -92,7 +137,11 @@ class Enemy : public Entity
         ImageResize(&fast_enemyIMG, 24, 24);
         fast_enemyTX = LoadTextureFromImage(fast_enemyIMG);
     }
-    static void DestroyTextures() { UnloadTexture(standard_enemyTX); }
+    static void DestroyTextures()
+    {
+        UnloadTexture(standard_enemyTX);
+        UnloadTexture(fast_enemyTX);
+    }
 
   protected:
     // enemy : flare
@@ -113,7 +162,9 @@ class standard_enemy : public Enemy
     {
         radius = standard_enemy_radius;
         speed = standard_enemy_speed;
+        original_speed = speed;
         hp = standard_enemy_health;
+        // velocity = velFromSpeed(position, targets[counter], speed);
     }
     void Draw() override
     {
@@ -139,7 +190,9 @@ class fast_enemy : public Enemy
     {
         radius = fast_enemy_radius;
         speed = fast_enemy_speed;
+        original_speed = speed;
         hp = fast_enemy_health;
+        // velocity = velFromSpeed(position, targetPos, speed);
     }
 
     void Draw() override
