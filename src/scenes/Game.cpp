@@ -28,7 +28,6 @@ static const float cameraSpeed = 500.0f; // if camera movement implemented
 static bool initialized = false;
 static Camera2D camera = {0};
 static buildState current_build;
-
 Vector2 screenCenter = {(float)screenWidth / 2, (float)screenHeight / 2};
 
 static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our entities
@@ -232,5 +231,16 @@ Scene Game()
     DrawFPS(screenWidth - 80, 10);
     DrawText("Z: Spawn Fast enemy | X: Spawn Standard Enemy", 10, 10, 20, BLACK);
     DrawText(TextFormat("Enemies : %d", Enemy::enemy_count), screenWidth - MeasureText("Enemies : xxx", 20), 30, 20, BLACK);
+    DrawText(TextFormat("Health : %d", player_health), screenWidth - MeasureText("Health : x    ", 20), screenHeight - 28, 20, RED);
+    if (player_health <= 0)
+    {
+        DrawText("GAME OVER !! ", screenWidth / 2.0f - 300, screenHeight / 2.0f - 30, 100, RED);
+        for_each(enemy_ptrs.begin(), enemy_ptrs.end(), [](Enemy *e) { e->Destroy(); });
+    }
+    DrawTexturePro(Enemy::heartTX, {0, 0, (float)Enemy::heartTX.width, (float)Enemy::heartTX.height}, {(float)screenWidth - 20.0f, (float)screenHeight - 20.0f, (float)Enemy::heartTX.width, (float)Enemy::heartTX.height}, {Enemy::heartTX.width / 2.0f, Enemy::heartTX.height / 2.0f}, 0.0f, WHITE);
     return Scene::GAME;
 }
+/* I understand recognise the use of magic numbers and the potential harms that come with it.
+ * I am, in this case, and under this time-constraint, left with no better choice.
+ * I might come back to improve it later
+ */

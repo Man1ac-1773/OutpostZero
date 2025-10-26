@@ -19,6 +19,9 @@ const Color buildableColor = Color{80, 80, 80, 255};
 const Color gridLineColor = Color{60, 60, 60, 100}; // colour of border of each tile
 const Color mouseHoverColor = Color{100, 255, 100, 50};
 
+// players
+int player_health = 5;
+
 // targets
 // has been declared here because of some (possible?) use in other files, otherwise is local to the enemy class and is used there only.
 std::vector<Vector2> targets;

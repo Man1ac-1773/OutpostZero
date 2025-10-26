@@ -24,6 +24,8 @@ extern const Color mouseHoverColor;
 // path followed by enemy
 extern std::vector<Vector2> targets;
 extern Vector2 startPos;
+// player
+extern int player_health;
 
 // map constants
 extern const float TILE_SIZE; // Each tile is NxN pixels

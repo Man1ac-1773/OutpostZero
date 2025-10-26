@@ -93,7 +93,12 @@ class Enemy : public Entity
                 status_timer = 0.0f;
             }
         }
-        if (position.y >= GRID_ROWS * TILE_SIZE || position.x >= GRID_COLS * TILE_SIZE || position.y == NAN || position.x == NAN)
+        if (position.y >= GRID_ROWS * TILE_SIZE)
+        {
+            Destroy();
+            player_health--;
+        }
+        if (position.x >= GRID_COLS * TILE_SIZE || position.y == NAN || position.x == NAN)
         {
             Destroy();
         }
@@ -135,12 +140,22 @@ class Enemy : public Entity
         fast_enemyIMG = LoadImage("assets/units/Mono.png");
         ImageResize(&fast_enemyIMG, 24, 24);
         fast_enemyTX = LoadTextureFromImage(fast_enemyIMG);
+        UnloadImage(fast_enemyIMG);
+
+        heartIMG = LoadImage("assets/others/heart.png");
+        heartTX = LoadTextureFromImage(heartIMG);
+        UnloadImage(heartIMG);
     }
     static void DestroyTextures()
     {
         UnloadTexture(standard_enemyTX);
         UnloadTexture(fast_enemyTX);
+        UnloadTexture(heartTX);
     }
+
+    // heart for player
+    inline static Image heartIMG;
+    inline static Texture2D heartTX;
 
   protected:
     // enemy : flare
