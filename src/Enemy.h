@@ -164,7 +164,7 @@ class standard_enemy : public Enemy
         speed = standard_enemy_speed;
         original_speed = speed;
         hp = standard_enemy_health;
-        // velocity = velFromSpeed(position, targets[counter], speed);
+        velocity = velFromSpeed(position, targets[counter], speed);
     }
     void Draw() override
     {
@@ -192,7 +192,7 @@ class fast_enemy : public Enemy
         speed = fast_enemy_speed;
         original_speed = speed;
         hp = fast_enemy_health;
-        // velocity = velFromSpeed(position, targetPos, speed);
+        velocity = velFromSpeed(position, targetPos, speed);
     }
 
     void Draw() override
