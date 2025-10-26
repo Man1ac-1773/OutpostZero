@@ -69,9 +69,9 @@ const float scatter_turret_range = 6.0f * TILE_SIZE;
 const float cyclone_turret_fire_rate = 0.75f; // bullets/second
 const float cyclone_turret_range = 9.0f * TILE_SIZE;
 // slowing turret
-const float tsunami_turret_range = 3.0f * TILE_SIZE;
-const float tsunami_turret_active_time = 15.0f;
-const float tsunami_turret_cooldown_time = 5.0f;
+const float wave_turret_range = 3.0f * TILE_SIZE;
+const float wave_turret_active_time = 15.0f;
+const float wave_turret_cooldown_time = 5.0f;
 
 /* Projectiles */
 // normal

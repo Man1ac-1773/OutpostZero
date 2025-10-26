@@ -64,9 +64,9 @@ extern const float cyclone_turret_range;
 
 // SLOWING TURRET
 // slowing turret
-extern const float tsunami_turret_active_time;
-extern const float tsunami_turret_cooldown_time;
-extern const float tsunami_turret_range;
+extern const float wave_turret_active_time;
+extern const float wave_turret_cooldown_time;
+extern const float wave_turret_range;
 // projectiles
 // normal bullet
 extern const float normal_bullet_speed;

@@ -127,9 +127,9 @@ class Turret : public Entity
         scatterTurretTexture = LoadTextureFromImage(scatterTurretIMG);
 
         // slow turret
-        tsunamiTurretIMG = LoadImage("assets/turrets/tsunami.png");
-        ImageResize(&tsunamiTurretIMG, TILE_SIZE, TILE_SIZE);
-        tsunamiTurretTX = LoadTextureFromImage(tsunamiTurretIMG);
+        waveTurretIMG = LoadImage("assets/turrets/wave.png");
+        ImageResize(&waveTurretIMG, TILE_SIZE, TILE_SIZE);
+        waveTurretTX = LoadTextureFromImage(waveTurretIMG);
     }
     static void DestroyTextures()
     {
@@ -157,9 +157,9 @@ class Turret : public Entity
     inline static Image cycloneTurretIMG;
     inline static Texture2D cycloneTurretTexture;
 
-    // slow turret (tsunami) stuff
-    inline static Image tsunamiTurretIMG;
-    inline static Texture2D tsunamiTurretTX;
+    // slow turret (wave) stuff
+    inline static Image waveTurretIMG;
+    inline static Texture2D waveTurretTX;
 
   private:
     float projectileSpeed;
@@ -200,10 +200,10 @@ class Turret : public Entity
 /* BASIC TURRET SYSTEMS
  * THREE TURRETS, IN ORDER OF PROGRESSION
  */
-class basic_turret_lvl1 : public Turret
+class duo_turret : public Turret
 {
   public:
-    basic_turret_lvl1(Vector2 pos, Tile &tile) : Turret(pos, tile, normal_bullet_speed, TurretType::BASIC)
+    duo_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, normal_bullet_speed, TurretType::BASIC)
     {
         range = duo_turret_range;
         cooldownTimer = 1 / duo_turret_fire_rate;
@@ -248,10 +248,10 @@ class basic_turret_lvl3 : public Turret
  * Third Turret : Fires a continuous sustained beam from source to dest for a few seconds, after which cools down. Damages everything in the path.
  */
 
-class laser_turret_lvl1 : public Turret
+class scatter_turret : public Turret
 { // fires short beams of light
   public:
-    laser_turret_lvl1(Vector2 pos, Tile &tile) : Turret(pos, tile, laser_bullet_speed, TurretType::LASER)
+    scatter_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, laser_bullet_speed, TurretType::LASER)
     {
         range = cyclone_turret_range;
         cooldownTimer = 1 / cyclone_turret_fire_rate;
@@ -278,11 +278,11 @@ class laser_turret_lvl1 : public Turret
     }
 };
 
-class laser_turret_lvl2 : public Turret
+class cyclone_turret : public Turret
 {
 };
 
-class laser_turret_lvl3 : public Turret
+class meltdown_turret : public Turret
 {
 };
 // ----------------------------------------
@@ -291,16 +291,16 @@ class laser_turret_lvl3 : public Turret
  * Plan to be updated, only prototype here
  */
 
-class slowing_turret_lvl1 : public Turret
+class wave_turret : public Turret
 {
   public:
     float active_timer, cooldown_timer;
     bool is_active = false;
-    slowing_turret_lvl1(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::SLOWING)
+    wave_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::SLOWING)
     {
         cooldown_timer = 0;
-        this->active_timer = tsunami_turret_active_time;
-        range = tsunami_turret_range;
+        this->active_timer = wave_turret_active_time;
+        range = wave_turret_range;
     }
     void Update(float deltaTime) override
     {
@@ -310,7 +310,7 @@ class slowing_turret_lvl1 : public Turret
             if (active_timer <= 0)
             {
                 is_active = false;
-                cooldown_timer = tsunami_turret_cooldown_time;
+                cooldown_timer = wave_turret_cooldown_time;
             }
         }
         else
@@ -319,7 +319,7 @@ class slowing_turret_lvl1 : public Turret
             if (cooldown_timer <= 0)
             {
                 is_active = true;
-                active_timer = tsunami_turret_active_time;
+                active_timer = wave_turret_active_time;
             }
         }
     }
@@ -345,7 +345,7 @@ class slowing_turret_lvl1 : public Turret
 
         DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, baseOrigin, 0.0f, WHITE);
 
-        DrawTexturePro(tsunamiTurretTX, {0, 0, (float)tsunamiTurretTX.width, (float)tsunamiTurretTX.height}, {position.x, position.y, (float)tsunamiTurretTX.width, (float)tsunamiTurretTX.height}, {(float)tsunamiTurretTX.width / 2, (float)tsunamiTurretTX.height / 2}, 0.0f, WHITE);
+        DrawTexturePro(waveTurretTX, {0, 0, (float)waveTurretTX.width, (float)waveTurretTX.height}, {position.x, position.y, (float)waveTurretTX.width, (float)waveTurretTX.height}, {(float)waveTurretTX.width / 2, (float)waveTurretTX.height / 2}, 0.0f, WHITE);
 
         if (is_active)
         {

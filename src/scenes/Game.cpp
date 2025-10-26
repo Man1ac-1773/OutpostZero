@@ -198,7 +198,7 @@ Scene Game()
         }
         case buildState::SLOWING:
         {
-            DrawCircleLinesV(GetMousePosition(), tsunami_turret_range, BLUE);
+            DrawCircleLinesV(GetMousePosition(), wave_turret_range, BLUE);
             break;
         }
         }
@@ -226,7 +226,7 @@ Scene Game()
     DrawTexturePro(Turret::duoTurretTexture, {0, 0, (float)(Turret::duoTurretTexture.width), (float)(Turret::duoTurretTexture.height)}, {(float)Turret::duoTurretTexture.width / 2.0f, (screenHeight - (float)Turret::duoTurretTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::duoTurretTexture.width / 2.0f, Turret::duoTurretTexture.height / 2.0f}, 0.0f, WHITE);
 
     DrawTexturePro(Turret::scatterTurretTexture, {0, 0, (float)(Turret::scatterTurretTexture.width), (float)(Turret::scatterTurretTexture.height)}, {TILE_SIZE + (float)Turret::scatterTurretTexture.width / 2.0f, (screenHeight - (float)Turret::scatterTurretTexture.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::scatterTurretTexture.width / 2.0f, Turret::scatterTurretTexture.height / 2.0f}, 0.0f, WHITE);
-    DrawTexturePro(Turret::tsunamiTurretTX, {0, 0, (float)(Turret::tsunamiTurretTX.width), (float)(Turret::tsunamiTurretTX.height)}, {2 * TILE_SIZE + (float)Turret::tsunamiTurretTX.width / 2.0f, (screenHeight - (float)Turret::tsunamiTurretTX.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::tsunamiTurretTX.width / 2.0f, Turret::tsunamiTurretTX.height / 2.0f}, 0.0f, WHITE);
+    DrawTexturePro(Turret::waveTurretTX, {0, 0, (float)(Turret::waveTurretTX.width), (float)(Turret::waveTurretTX.height)}, {2 * TILE_SIZE + (float)Turret::waveTurretTX.width / 2.0f, (screenHeight - (float)Turret::waveTurretTX.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::waveTurretTX.width / 2.0f, Turret::waveTurretTX.height / 2.0f}, 0.0f, WHITE);
 
     DrawFPS(screenWidth - 80, 10);
     DrawText("Z: Spawn Fast enemy | X: Spawn Standard Enemy", 10, 10, 20, BLACK);
