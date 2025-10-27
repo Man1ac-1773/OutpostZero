@@ -2,6 +2,7 @@
 #include "Enemy.h"
 #include "Entity.h"
 #include "Map.h"
+#include "Particles.h"
 #include "Projectile.h"
 #include "raylib.h"
 #include "raymath.h"
@@ -13,9 +14,13 @@
 
 enum class TurretType
 {
-    BASIC,
-    LASER,
-    SLOWING,
+    DUO,
+    SCATTER,
+    CYCLONE,
+    MELTDOWN,
+    WAVE,
+    SALVO,
+    TSUNAMI,
 };
 
 class Turret : public Entity
@@ -77,7 +82,7 @@ class Turret : public Entity
 
             float targetAngle = atan2f(aimPoint.y - position.y, aimPoint.x - position.x) * RAD2DEG;
 
-            float rotationSpeed = 5.0f;
+            float rotationSpeed = GetRotationSpeed();
             gunRotation = MoveAngle(gunRotation, targetAngle, rotationSpeed);
             float angleDifference = normaliseAngle(targetAngle - gunRotation);
             if (fireTimer <= 0 && angleDifference < 8.0f)
@@ -85,12 +90,12 @@ class Turret : public Entity
 
                 switch (turret)
                 {
-                case TurretType::BASIC:
+                case TurretType::DUO:
                 {
                     newProjectiles.push_back(std::make_unique<normal_bullet>(position, aimPoint));
                     break;
                 }
-                case TurretType::LASER:
+                case TurretType::SCATTER:
                 {
                     newProjectiles.push_back(std::make_unique<laser_bullet>(position, aimPoint));
                     break;
@@ -118,18 +123,27 @@ class Turret : public Entity
         turretBaseTexture = LoadTextureFromImage(turretBaseIMG);
         UnloadImage(turretBaseIMG);
 
-        // basic_turret
         duoTurretTexture = LoadTexture("assets/turrets/duo.png");
 
-        // laser_turret
         scatterTurretIMG = LoadImage("assets/turrets/scatter.png");
         ImageResize(&scatterTurretIMG, TILE_SIZE, TILE_SIZE);
         scatterTurretTexture = LoadTextureFromImage(scatterTurretIMG);
+        UnloadImage(scatterTurretIMG);
 
-        // slow turret
+        cycloneTurretIMG = LoadImage("assets/turrets/cyclone.png");
+        ImageResize(&cycloneTurretIMG, TILE_SIZE, TILE_SIZE);
+        cycloneTurretTexture = LoadTextureFromImage(cycloneTurretIMG);
+        UnloadImage(cycloneTurretIMG);
+
+        meltdownTurretIMG = LoadImage("assets/turrets/meltdown.png");
+        ImageResize(&meltdownTurretIMG, TILE_SIZE + 5.0f, TILE_SIZE + 5.0f);
+        meltdownTurretTexture = LoadTextureFromImage(meltdownTurretIMG);
+        UnloadImage(meltdownTurretIMG);
+
         waveTurretIMG = LoadImage("assets/turrets/wave.png");
         ImageResize(&waveTurretIMG, TILE_SIZE, TILE_SIZE);
         waveTurretTX = LoadTextureFromImage(waveTurretIMG);
+        UnloadImage(waveTurretIMG);
     }
     static void DestroyTextures()
     {
@@ -156,6 +170,9 @@ class Turret : public Entity
     // cyclone
     inline static Image cycloneTurretIMG;
     inline static Texture2D cycloneTurretTexture;
+    // meltdown
+    inline static Image meltdownTurretIMG;
+    inline static Texture2D meltdownTurretTexture;
 
     // slow turret (wave) stuff
     inline static Image waveTurretIMG;
@@ -194,6 +211,7 @@ class Turret : public Entity
             }
         }
     }
+    virtual float GetRotationSpeed() = 0;
 };
 // --------------------------------------------
 
@@ -202,13 +220,14 @@ class Turret : public Entity
  */
 class duo_turret : public Turret
 {
+
   public:
-    duo_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, normal_bullet_speed, TurretType::BASIC)
+    duo_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, normal_bullet_speed, TurretType::DUO)
     {
         range = duo_turret_range;
         cooldownTimer = 1 / duo_turret_fire_rate;
         fireTimer = 0.0f; // initial timer, ready to fire
-        rotationSpeed = 0.5f;
+        rotationSpeed = 5.0f;
         m_recoilOffset = 4.0f;
     }
 
@@ -229,6 +248,9 @@ class duo_turret : public Turret
         DrawTexturePro(duoTurretTexture, {0, 0, (float)duoTurretTexture.width, (float)duoTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
+
+  private:
+    float GetRotationSpeed() override { return rotationSpeed; }
 };
 
 class basic_turret_lvl2 : public Turret
@@ -251,19 +273,18 @@ class basic_turret_lvl3 : public Turret
 class scatter_turret : public Turret
 { // fires short beams of light
   public:
-    scatter_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, laser_bullet_speed, TurretType::LASER)
+    scatter_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, scatter_bullet_speed, TurretType::SCATTER)
     {
-        range = cyclone_turret_range;
-        cooldownTimer = 1 / cyclone_turret_fire_rate;
+        range = scatter_turret_range;
+        cooldownTimer = 1 / scatter_turret_fire_rate;
         fireTimer = 0.0f; // initial timer, ready to fire
-        rotationSpeed = 1.0f;
+        rotationSpeed = 2.5f;
         m_recoilOffset = 8.0f;
     }
     void Draw() override
     {
-        Vector2 baseOrigin = {(float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f};
 
-        DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, baseOrigin, 0.0f, WHITE);
+        DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {(float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f}, 0.0f, WHITE);
 
         // calculating change in gun_rec to account for recoil
 
@@ -276,14 +297,220 @@ class scatter_turret : public Turret
         DrawTexturePro(scatterTurretTexture, {0, 0, (float)scatterTurretTexture.width, (float)scatterTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
+
+  private:
+    float GetRotationSpeed() override { return rotationSpeed; }
 };
 
 class cyclone_turret : public Turret
 {
+  public:
+    float cooldown_timer;
+    float beam_timer;
+    bool is_active;
+    Vector2 target_pos;
+    cyclone_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::CYCLONE)
+    {
+        range = cyclone_turret_range;
+        rotationSpeed = 5.0f;
+        m_recoilOffset = 5.0f;
+    }
+    void Update(float deltaTime) override
+    {
+        if (is_active)
+        {
+            beam_timer -= deltaTime;
+            recoilOffset = m_recoilOffset;
+            if (beam_timer <= 0)
+            {
+                is_active = false;
+                cooldown_timer = cyclone_turret_cooldown_timer;
+                beam_timer = 0;
+            }
+        }
+        else
+        {
+            cooldown_timer -= deltaTime;
+            recoilOffset = Lerp(recoilOffset, 0.0f, 0.5f);
+        }
+    }
+    void Update(float deltaTime, const std::vector<Enemy *> &targets, std::vector<std::unique_ptr<Entity>> &newProjectiles) override
+    {
+        if (!is_active)
+        {
+            float min_dist = 99999.0f;
+            Enemy *target_ptr = nullptr;
+            for (auto &enemy : targets)
+            {
+                if (Vector2DistanceSqr(enemy->position, this->position) <= range * range)
+                {
+                    if (Vector2DistanceSqr(position, enemy->GetPosition()) <= min_dist)
+                    {
+                        target_ptr = enemy;
+                        min_dist = Vector2DistanceSqr(position, enemy->GetPosition());
+                    }
+                }
+            }
+            if (target_ptr)
+            {
+                Vector2 aimPoint = target_ptr->GetPosition();
+                float targetAngle = atan2f(aimPoint.y - position.y, aimPoint.x - position.x) * RAD2DEG;
+                gunRotation = MoveAngle(gunRotation, targetAngle, rotationSpeed);
+                float angleDifference = normaliseAngle(targetAngle - gunRotation);
+                if (angleDifference <= 5.0f && cooldown_timer <= 0)
+                {
+                    target_pos = position + Vector2Scale(Vector2Normalize(aimPoint - position), range);
+                    is_active = true;
+                    cooldown_timer = 0;
+                    beam_timer = cyclone_turret_beam_timer;
+                    for (auto &enemy : targets)
+                    {
+                        if (CheckCollisionCircleLine(enemy->GetPosition(), enemy->GetRadius(), position, target_pos))
+                        {
+                            enemy->TakeDamage(ProjectileType::CYCLONE_BEAM, 1.0f);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void Draw() override
+    {
+        DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {(float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f}, 0.0f, WHITE);
+
+        float angleRad = gunRotation * DEG2RAD;
+        Vector2 direction = {cosf(angleRad), sinf(angleRad)};
+        Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
+        Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)cycloneTurretTexture.width, (float)cycloneTurretTexture.height};
+
+        Vector2 gunOrigin = {(float)cycloneTurretTexture.width / 2.0f, (float)cycloneTurretTexture.height * 0.75f - 2.0f};
+        DrawTexturePro(cycloneTurretTexture, {0, 0, (float)cycloneTurretTexture.width, (float)cycloneTurretTexture.height}, // gun source rectangle
+                       gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
+
+        if (is_active)
+        {
+            BeginBlendMode(BLEND_ADD_COLORS);
+
+            float lifeRatio = beam_timer / cyclone_turret_beam_timer;
+
+            DrawLineEx(position, target_pos, 1.0f, Fade(WHITE, lifeRatio));
+
+            DrawLineEx(position, target_pos, 3.0f, Fade(YELLOW, lifeRatio * 0.6f));
+
+            EndBlendMode();
+        }
+    }
+
+  private:
+    float GetRotationSpeed() override { return rotationSpeed; }
 };
 
 class meltdown_turret : public Turret
 {
+  public:
+    float cooldown_timer;
+    float beam_timer;
+    bool is_active;
+    Vector2 target_pos;
+    meltdown_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::MELTDOWN)
+    {
+        range = meltdown_turret_range;
+        rotationSpeed = 8.0f;
+        m_recoilOffset = 5.0f;
+    }
+    void Update(float deltaTime) override
+    {
+        if (is_active)
+        {
+            beam_timer -= deltaTime;
+            recoilOffset = m_recoilOffset;
+            if (beam_timer <= 0)
+            {
+                is_active = false;
+                cooldown_timer = meltdown_turret_cooldown_timer;
+                beam_timer = 0;
+            }
+        }
+        else
+        {
+            cooldown_timer -= deltaTime;
+            if (cooldown_timer <= 0)
+            {
+                beam_timer = meltdown_turret_beam_timer;
+                is_active = true;
+                cooldown_timer = 0;
+            }
+            recoilOffset = Lerp(recoilOffset, 0.0f, 0.5f);
+        }
+    }
+    void Update(float deltaTime, const std::vector<Enemy *> &targets, std::vector<std::unique_ptr<Entity>> &newProjectiles) override
+    {
+
+        float min_dist = 99999.0f;
+        Enemy *target_ptr = nullptr;
+        for (auto &enemy : targets)
+        {
+            if (Vector2DistanceSqr(enemy->position, this->position) <= range * range)
+            {
+                if (Vector2DistanceSqr(position, enemy->GetPosition()) <= min_dist)
+                {
+                    target_ptr = enemy;
+                    min_dist = Vector2DistanceSqr(position, enemy->GetPosition());
+                }
+            }
+        }
+        if (target_ptr)
+        {
+            Vector2 aimPoint = target_ptr->GetPosition();
+            float targetAngle = atan2f(aimPoint.y - position.y, aimPoint.x - position.x) * RAD2DEG;
+            gunRotation = MoveAngle(gunRotation, targetAngle, rotationSpeed);
+            float angleDifference = normaliseAngle(targetAngle - gunRotation);
+            if (angleDifference <= 5.0f && cooldown_timer <= 0)
+            {
+                target_pos = position + Vector2Scale(Vector2Normalize(aimPoint - position), range);
+                is_active = true;
+                cooldown_timer = 0;
+                for (auto &enemy : targets)
+                {
+                    if (CheckCollisionCircleLine(enemy->GetPosition(), enemy->GetRadius(), position, target_pos))
+                    {
+                        enemy->TakeDamageByValue(ProjectileType::MELTDOWN_BEAM, meltdown_turret_dps * deltaTime);
+                    }
+                }
+            }
+        }
+    }
+
+    void Draw() override
+    {
+        DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {(float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f}, 0.0f, WHITE);
+
+        float angleRad = gunRotation * DEG2RAD;
+        Vector2 direction = {cosf(angleRad), sinf(angleRad)};
+        Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
+        Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)meltdownTurretTexture.width, (float)meltdownTurretTexture.height};
+
+        Vector2 gunOrigin = {(float)meltdownTurretTexture.width / 2.0f, (float)meltdownTurretTexture.height * 0.75f - 2.0f};
+        DrawTexturePro(meltdownTurretTexture, {0, 0, (float)meltdownTurretTexture.width, (float)meltdownTurretTexture.height}, // gun source rectangle
+                       gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
+
+        if (is_active)
+        {
+            BeginBlendMode(BLEND_ADD_COLORS);
+
+            float lifeRatio = beam_timer / cyclone_turret_beam_timer;
+
+            DrawLineEx(position, target_pos, 1.0f, Fade(WHITE, lifeRatio));
+
+            DrawLineEx(position, target_pos, 3.0f, Fade(YELLOW, lifeRatio * 0.6f));
+
+            EndBlendMode();
+        }
+    }
+
+  private:
+    float GetRotationSpeed() override { return rotationSpeed; }
 };
 // ----------------------------------------
 
@@ -296,7 +523,7 @@ class wave_turret : public Turret
   public:
     float active_timer, cooldown_timer;
     bool is_active = false;
-    wave_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::SLOWING)
+    wave_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::WAVE)
     {
         cooldown_timer = 0;
         this->active_timer = wave_turret_active_time;
@@ -352,4 +579,7 @@ class wave_turret : public Turret
             DrawCircleV(position, range, Fade(BLUE, 0.2f));
         }
     }
+
+  private:
+    float GetRotationSpeed() override { return rotationSpeed; }
 };

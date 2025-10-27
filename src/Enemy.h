@@ -34,19 +34,23 @@ class Enemy : public Entity
         position = startPos;
         enemy_count++;
     }
-    void TakeDamage(ProjectileType proj_type)
+    void TakeDamage(ProjectileType proj_type, float multiplier)
     {
         switch (proj_type)
         {
         case ProjectileType::DUO_BASIC:
         {
-            hp -= normal_bullet_damage;
+            hp -= normal_bullet_damage * multiplier;
             break;
         }
         case ProjectileType::LASER_BASIC:
         {
-            hp -= laser_bullet_damage;
+            hp -= scatter_bullet_damage * multiplier;
             break;
+        }
+        case ProjectileType::CYCLONE_BEAM:
+        {
+            hp -= cyclone_beam_damage * multiplier;
         }
         }
         if (hp <= 0)
@@ -58,7 +62,16 @@ class Enemy : public Entity
         }
         took_damage = true;
     }
-
+    void TakeDamageByValue(ProjectileType proj_type, float amount)
+    {
+        hp -= amount;
+        if (hp <= 0)
+        {
+            Destroy();
+            particles.SpawnExplosion(position, proj_type);
+        }
+        took_damage = true;
+    }
     float GetRadius() { return radius; }
     void Update(float deltaTime) override
     {
@@ -126,8 +139,12 @@ class Enemy : public Entity
 
     void Destroy() override
     {
-        is_active = false;
-        enemy_count--;
+        if (is_active)
+        {
+            is_active = false;
+            enemy_count--;
+        }
+        return;
     }
 
     static void LoadTextures()

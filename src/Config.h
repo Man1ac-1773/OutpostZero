@@ -59,8 +59,15 @@ extern const float scatter_turret_fire_rate;
 extern const float scatter_turret_range;
 
 // Cyclone turret
-extern const float cyclone_turret_fire_rate;
 extern const float cyclone_turret_range;
+extern const float cyclone_turret_beam_timer;
+extern const float cyclone_turret_cooldown_timer;
+
+// Meltdown turret
+extern const float meltdown_turret_range;
+extern const float meltdown_turret_beam_timer;
+extern const float meltdown_turret_cooldown_timer;
+extern const float meltdown_turret_dps;
 
 // SLOWING TURRET
 // slowing turret
@@ -73,5 +80,8 @@ extern const float normal_bullet_speed;
 extern const float normal_bullet_damage;
 
 // laser bullets;
-extern const float laser_bullet_speed;
-extern const float laser_bullet_damage;
+extern const float scatter_bullet_speed;
+extern const float scatter_bullet_damage;
+
+// cyclone
+extern const float cyclone_beam_damage;

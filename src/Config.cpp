@@ -66,8 +66,15 @@ const float scatter_turret_fire_rate = 1.0f;
 const float scatter_turret_range = 6.0f * TILE_SIZE;
 
 // cyclone turret
-const float cyclone_turret_fire_rate = 0.75f; // bullets/second
 const float cyclone_turret_range = 9.0f * TILE_SIZE;
+const float cyclone_turret_beam_timer = 0.080f;
+const float cyclone_turret_cooldown_timer = 0.6f;
+// meltdown turret
+const float meltdown_turret_range = 5.0f * TILE_SIZE;
+const float meltdown_turret_cooldown_timer = 2.0f;
+const float meltdown_turret_beam_timer = 5.0f;
+const float meltdown_turret_dps = 20.0f;
+
 // slowing turret
 const float wave_turret_range = 3.0f * TILE_SIZE;
 const float wave_turret_active_time = 15.0f;
@@ -78,5 +85,8 @@ const float wave_turret_cooldown_time = 5.0f;
 const float normal_bullet_speed = 400.0f;
 const float normal_bullet_damage = 5.0f;
 // laser
-const float laser_bullet_speed = 1000.0f;
-const float laser_bullet_damage = 10.0f;
+const float scatter_bullet_speed = 1000.0f;
+const float scatter_bullet_damage = 10.0f;
+
+// cyclone
+const float cyclone_beam_damage = 20.0f;

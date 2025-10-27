@@ -1,5 +1,8 @@
 CXX = g++
 CXXFLAGS = -Wall -I$(SRC_DIR) -MMD -MP
+
+# The next line is for debugging purposes, when using gdb
+# CXXFLAGS += -g -O0 
 LDLIBS = -lraylib
 
 BUILD_DIR = build

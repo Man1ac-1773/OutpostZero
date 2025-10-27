@@ -10,6 +10,8 @@ enum class ProjectileType
     DUO_HEAVY,
     DUO_RAILGUN,
     LASER_BASIC,
+    CYCLONE_BEAM,
+    MELTDOWN_BEAM,
 };
 
 struct Particle
@@ -83,6 +85,27 @@ class ParticleSystem
             life = 0.65f;
             break;
         }
+        case ProjectileType::CYCLONE_BEAM:
+        {
+            num_particles = 5;
+            speed = GetRandomValue(1000, 1400);
+            life = 0.4f;
+            break;
+        }
+        case ProjectileType::MELTDOWN_BEAM:
+        {
+            num_particles = 0;
+            speed = 0;
+            life = 0.0f;
+            break;
+        }
+        default:
+        {
+            num_particles = 10;
+            speed = GetRandomValue(10, 100);
+            life = 0.5f;
+            break;
+        }
         }
 
         for (int i = 0; i < num_particles; i++)
@@ -90,6 +113,7 @@ class ParticleSystem
             Vector2 dir = {cosf(GetRandomValue(0, 360) * DEG2RAD), sinf(GetRandomValue(0, 360) * DEG2RAD)};
 
             Spawn(center, Vector2Scale(dir, speed), {235, 140, 108, 255}, life, 3.0f, proj_type);
+            // magic color number, i know, i don't know what to call it, i picked it off a RGB selector on the internet
         }
     }
 

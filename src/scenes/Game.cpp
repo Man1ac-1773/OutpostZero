@@ -17,9 +17,9 @@ using namespace std;
 enum class buildState
 {
     NONE,
-    BASIC,
-    LASER,
-    SLOWING,
+    DUO,
+    SCATTER,
+    WAVE,
 };
 static Map gameMap;
 static Color green = Color{57, 255, 20, 255}; // for walls, if required
@@ -75,19 +75,19 @@ Scene Game()
             Vector2 turretPos = {tile->rect.x + tile->rect.width / 2, tile->rect.y + tile->rect.height / 2};
             switch (current_build)
             {
-            case buildState::BASIC:
+            case buildState::DUO:
             {
-                entities.push_back(make_unique<basic_turret_lvl1>(turretPos, *tile));
+                entities.push_back(make_unique<duo_turret>(turretPos, *tile));
                 break;
             }
-            case buildState::LASER:
+            case buildState::SCATTER:
             {
-                entities.push_back(make_unique<laser_turret_lvl1>(turretPos, *tile));
+                entities.push_back(make_unique<meltdown_turret>(turretPos, *tile));
                 break;
             }
-            case buildState::SLOWING:
+            case buildState::WAVE:
             {
-                entities.push_back(make_unique<slowing_turret_lvl1>(turretPos, *tile));
+                entities.push_back(make_unique<wave_turret>(turretPos, *tile));
                 break;
             }
             }
@@ -151,8 +151,7 @@ Scene Game()
             if (CheckCollisionCircles(projectile->GetPosition(), projectile->GetRadius(), enemy->GetPosition(), enemy->GetRadius()))
             {
                 projectile->Destroy();
-                enemy->TakeDamage(projectile->getProjType());
-                // enemy->DamageAnimation();
+                enemy->TakeDamage(projectile->getProjType(), 1.0f);
             }
         }
     }
@@ -186,17 +185,17 @@ Scene Game()
     {
         switch (current_build)
         {
-        case buildState::BASIC:
+        case buildState::DUO:
         {
             DrawCircleLinesV(GetMousePosition(), duo_turret_range, YELLOW);
             break;
         }
-        case buildState::LASER:
+        case buildState::SCATTER:
         {
-            DrawCircleLinesV(GetMousePosition(), cyclone_turret_range, YELLOW);
+            DrawCircleLinesV(GetMousePosition(), scatter_turret_range, YELLOW);
             break;
         }
-        case buildState::SLOWING:
+        case buildState::WAVE:
         {
             DrawCircleLinesV(GetMousePosition(), wave_turret_range, BLUE);
             break;
@@ -213,15 +212,15 @@ Scene Game()
 
     if (GuiButton(basic_turret_buttonRect, ""))
     {
-        current_build = buildState::BASIC;
+        current_build = buildState::DUO;
     }
     if (GuiButton(laser_turret_buttonRect, ""))
     {
-        current_build = buildState::LASER;
+        current_build = buildState::SCATTER;
     }
     if (GuiButton(slow_turret_buttonRect, ""))
     {
-        current_build = buildState::SLOWING;
+        current_build = buildState::WAVE;
     }
     DrawTexturePro(Turret::duoTurretTexture, {0, 0, (float)(Turret::duoTurretTexture.width), (float)(Turret::duoTurretTexture.height)}, {(float)Turret::duoTurretTexture.width / 2.0f, (screenHeight - (float)Turret::duoTurretTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::duoTurretTexture.width / 2.0f, Turret::duoTurretTexture.height / 2.0f}, 0.0f, WHITE);
 
