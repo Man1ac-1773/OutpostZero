@@ -68,6 +68,8 @@ class Turret : public Entity
 
         for (auto &e_ptr : targets)
         {
+            if (!e_ptr->isVisible)
+                continue;
             float dist = Vector2Distance(position, e_ptr->GetPosition());
             if (dist < range && dist < closestDist)
             {
@@ -342,6 +344,8 @@ class cyclone_turret : public Turret
             Enemy *target_ptr = nullptr;
             for (auto &enemy : targets)
             {
+                if (!enemy->isVisible)
+                    continue;
                 if (Vector2DistanceSqr(enemy->position, this->position) <= range * range)
                 {
                     if (Vector2DistanceSqr(position, enemy->GetPosition()) <= min_dist)
@@ -450,6 +454,8 @@ class meltdown_turret : public Turret
         Enemy *target_ptr = nullptr;
         for (auto &enemy : targets)
         {
+            if (!enemy->isVisible)
+                continue;
             if (Vector2DistanceSqr(enemy->position, this->position) <= range * range)
             {
                 if (Vector2DistanceSqr(position, enemy->GetPosition()) <= min_dist)

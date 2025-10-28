@@ -62,6 +62,10 @@ Scene Game()
     {
         entities.push_back(make_unique<mono_enemy>());
     }
+    if (IsKeyPressed(KEY_C))
+    {
+        entities.push_back(make_unique<crawler_enemy>());
+    }
 
     // Spawn turret at mouse (only on buildable tiles)
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
@@ -103,7 +107,6 @@ Scene Game()
     }
     particles.Update(GetFrameTime());
 
-    // ---- INTERACTION PASS -----
     // Separate entities into turrets, enemies, and projectiles
     vector<Turret *> turret_ptrs;
     vector<Enemy *> enemy_ptrs;
@@ -140,6 +143,7 @@ Scene Game()
         enemy->Update();
     }
 
+    // ---- INTERACTION PASS -----
     // Projectiles interact with enemies
     for (auto *projectile : projectile_ptrs)
     {

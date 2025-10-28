@@ -16,6 +16,12 @@ enum class StatusEffects
     STUNNED,
 
 };
+enum class EnemyType
+{
+    FLARE,
+    MONO,
+    CRAWLER,
+};
 class Enemy : public Entity
 {
   public:
@@ -25,6 +31,7 @@ class Enemy : public Entity
     int counter = 0;
     float hp;
     bool took_damage = false;
+    bool isVisible = true;
     StatusEffects status_effect = StatusEffects::NONE;
     float status_timer = 0.0f;
     Vector2 targetPos = targets[counter];
@@ -82,6 +89,15 @@ class Enemy : public Entity
             {
             case StatusEffects::SLOWED:
             {
+
+                if (GetEnemyType() == EnemyType::CRAWLER)
+                {
+                    this->speed = original_speed * 0.3f;
+                    status_timer = 2.0f;
+                    isVisible = true;
+                    break;
+                }
+
                 this->speed = original_speed * 0.5f;
                 status_timer = 5.0f;
                 break;
@@ -99,6 +115,10 @@ class Enemy : public Entity
                 case StatusEffects::SLOWED:
                 {
                     speed = original_speed;
+                    if (GetEnemyType() == EnemyType::CRAWLER)
+                    {
+                        isVisible = false;
+                    }
                     break;
                 }
                 }
@@ -119,6 +139,7 @@ class Enemy : public Entity
         position.y += velocity.y * deltaTime;
     }
     virtual void Draw() override = 0;
+    virtual EnemyType GetEnemyType() = 0;
     void Update()
     {
 
@@ -159,6 +180,11 @@ class Enemy : public Entity
         mono_enemyTX = LoadTextureFromImage(mono_enemyIMG);
         UnloadImage(mono_enemyIMG);
 
+        crawler_enemyIMG = LoadImage("assets/units/Crawler.png");
+        ImageResize(&crawler_enemyIMG, 24, 24);
+        crawler_enemyTX = LoadTextureFromImage(crawler_enemyIMG);
+        UnloadImage(crawler_enemyIMG);
+
         heartIMG = LoadImage("assets/others/heart.png");
         heartTX = LoadTextureFromImage(heartIMG);
         UnloadImage(heartIMG);
@@ -176,14 +202,16 @@ class Enemy : public Entity
 
   protected:
     // enemy : flare
-    // stats : starter, basic
     inline static Image flare_enemyIMG;
     inline static Texture2D flare_enemyTX;
 
     // enemy : mono
-    // stats : mono, basic
     inline static Image mono_enemyIMG;
     inline static Texture2D mono_enemyTX;
+
+    // enemy : crawler
+    inline static Image crawler_enemyIMG;
+    inline static Texture2D crawler_enemyTX;
 };
 
 class flare_enemy : public Enemy
@@ -213,6 +241,7 @@ class flare_enemy : public Enemy
         }
         DrawHealthBar(hp, flare_enemy_health, position);
     }
+    EnemyType GetEnemyType() override { return EnemyType::FLARE; }
 };
 
 class mono_enemy : public Enemy
@@ -242,4 +271,31 @@ class mono_enemy : public Enemy
         }
         DrawHealthBar(hp, mono_enemy_health, position);
     }
+    EnemyType GetEnemyType() override { return EnemyType::MONO; }
+};
+
+class crawler_enemy : public Enemy
+{
+  public:
+    crawler_enemy()
+    {
+        radius = crawler_enemy_radius;
+        speed = crawler_enemy_speed;
+        original_speed = speed;
+        isVisible = false;
+        velocity = velFromSpeed(position, targetPos, speed);
+    }
+    void Draw() override
+    {
+        float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
+        if (isVisible)
+        {
+            DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, WHITE);
+        }
+        else
+        {
+            DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, Fade(WHITE, 0.2f));
+        }
+    }
+    EnemyType GetEnemyType() override { return EnemyType::CRAWLER; }
 };

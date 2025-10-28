@@ -46,6 +46,11 @@ const float flare_enemy_health = 10.0f;
 const float mono_enemy_radius = 6.0f;
 const float mono_enemy_speed = 2.0f * flare_enemy_speed;
 const float mono_enemy_health = 5.0f;
+
+// for crawler enem
+const float crawler_enemy_radius = 6.0f;
+const float crawler_enemy_speed = 1.5f * flare_enemy_speed;
+const float crawler_enemy_health = mono_enemy_health;
 // ---- ----
 
 // particle system

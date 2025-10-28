@@ -45,6 +45,11 @@ extern const float mono_enemy_speed;
 extern const Color mono_enemy_color;
 extern const float mono_enemy_health;
 
+// for crawler enemy
+extern const float crawler_enemy_radius;
+extern const float crawler_enemy_speed;
+extern const float crawler_enemy_health;
+
 // particles
 extern ParticleSystem particles;
 // TURRETS
