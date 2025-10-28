@@ -229,6 +229,15 @@ class fast_enemy : public Enemy
     void Draw() override
     {
         float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
-        DrawTexturePro(fast_enemyTX, {0, 0, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {position.x, position.y, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {fast_enemyTX.width / 2.0f, fast_enemyTX.height / 2.0f}, rotation, WHITE);
+        if (!took_damage)
+        {
+            DrawTexturePro(fast_enemyTX, {0, 0, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {position.x, position.y, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {fast_enemyTX.width / 2.0f, fast_enemyTX.height / 2.0f}, rotation, WHITE);
+        }
+        else
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(fast_enemyTX, {0, 0, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {position.x, position.y, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {fast_enemyTX.width / 2.0f, fast_enemyTX.height / 2.0f}, rotation, WHITE);
+            EndBlendMode();
+        }
     }
 };

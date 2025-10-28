@@ -413,18 +413,23 @@ class meltdown_turret : public Turret
     float beam_timer;
     bool is_active;
     Vector2 target_pos;
+    float recoil_velocity = 100.0f;
+    float beamThickness = 10.0f;
     meltdown_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::MELTDOWN)
     {
         range = meltdown_turret_range;
         rotationSpeed = 8.0f;
-        m_recoilOffset = 5.0f;
+        m_recoilOffset = 10.0f;
     }
     void Update(float deltaTime) override
     {
         if (is_active)
         {
             beam_timer -= deltaTime;
-            recoilOffset = m_recoilOffset;
+            if (recoilOffset <= m_recoilOffset)
+            {
+                recoilOffset += recoil_velocity * deltaTime;
+            }
             if (beam_timer <= 0)
             {
                 is_active = false;
@@ -435,13 +440,7 @@ class meltdown_turret : public Turret
         else
         {
             cooldown_timer -= deltaTime;
-            if (cooldown_timer <= 0)
-            {
-                beam_timer = meltdown_turret_beam_timer;
-                is_active = true;
-                cooldown_timer = 0;
-            }
-            recoilOffset = Lerp(recoilOffset, 0.0f, 0.5f);
+            recoilOffset = Lerp(recoilOffset, 0.0f, 1.5f * deltaTime);
         }
     }
     void Update(float deltaTime, const std::vector<Enemy *> &targets, std::vector<std::unique_ptr<Entity>> &newProjectiles) override
@@ -470,10 +469,14 @@ class meltdown_turret : public Turret
             {
                 target_pos = position + Vector2Scale(Vector2Normalize(aimPoint - position), range);
                 is_active = true;
+                if (beam_timer <= 0)
+                {
+                    beam_timer = meltdown_turret_beam_timer;
+                }
                 cooldown_timer = 0;
                 for (auto &enemy : targets)
                 {
-                    if (CheckCollisionCircleLine(enemy->GetPosition(), enemy->GetRadius(), position, target_pos))
+                    if (CheckCollisionCircleLine(enemy->GetPosition(), enemy->GetRadius() + beamThickness / 2.0f, position, target_pos))
                     {
                         enemy->TakeDamageByValue(ProjectileType::MELTDOWN_BEAM, meltdown_turret_dps * deltaTime);
                     }
@@ -486,6 +489,19 @@ class meltdown_turret : public Turret
     {
         DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {(float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f}, 0.0f, WHITE);
 
+        if (is_active)
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+
+            float lifeRatio = beam_timer / cyclone_turret_beam_timer;
+            float alpha = lifeRatio * 0.8f;
+
+            DrawLineEx(position, target_pos, beamThickness, Fade(ORANGE, alpha * 0.2f));
+            DrawLineEx(position, target_pos, beamThickness * 0.8f, Fade(YELLOW, alpha * 0.5f));
+            DrawLineEx(position, target_pos, beamThickness * 0.2f, Fade(WHITE, alpha));
+
+            EndBlendMode();
+        }
         float angleRad = gunRotation * DEG2RAD;
         Vector2 direction = {cosf(angleRad), sinf(angleRad)};
         Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
@@ -494,19 +510,6 @@ class meltdown_turret : public Turret
         Vector2 gunOrigin = {(float)meltdownTurretTexture.width / 2.0f, (float)meltdownTurretTexture.height * 0.75f - 2.0f};
         DrawTexturePro(meltdownTurretTexture, {0, 0, (float)meltdownTurretTexture.width, (float)meltdownTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
-
-        if (is_active)
-        {
-            BeginBlendMode(BLEND_ADD_COLORS);
-
-            float lifeRatio = beam_timer / cyclone_turret_beam_timer;
-
-            DrawLineEx(position, target_pos, 1.0f, Fade(WHITE, lifeRatio));
-
-            DrawLineEx(position, target_pos, 3.0f, Fade(YELLOW, lifeRatio * 0.6f));
-
-            EndBlendMode();
-        }
     }
 
   private:
