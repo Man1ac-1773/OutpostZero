@@ -37,15 +37,15 @@ const int GRID_COLS = 21;
 const float TILE_SIZE = 40.0f;
 
 // ---- CONSTANTS FOR ENEMIES ----
-// for standard_enemy
-const float standard_enemy_radius = 12.0f;
-const float standard_enemy_speed = 100.0f;
-const float standard_enemy_health = 10.0f;
+// for flare_enemy
+const float flare_enemy_radius = 12.0f;
+const float flare_enemy_speed = 100.0f;
+const float flare_enemy_health = 10.0f;
 
-// for fast_enemy
-const float fast_enemy_radius = 6.0f;
-const float fast_enemy_speed = 2.0f * standard_enemy_speed;
-const float fast_enemy_health = 5.0f;
+// for mono_enemy
+const float mono_enemy_radius = 6.0f;
+const float mono_enemy_speed = 2.0f * flare_enemy_speed;
+const float mono_enemy_health = 5.0f;
 // ---- ----
 
 // particle system

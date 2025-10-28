@@ -149,15 +149,15 @@ class Enemy : public Entity
 
     static void LoadTextures()
     {
-        standard_enemyIMG = LoadImage("assets/units/Flare.png");
-        ImageResize(&standard_enemyIMG, 32, 32);
-        standard_enemyTX = LoadTextureFromImage(standard_enemyIMG);
-        UnloadImage(standard_enemyIMG);
+        flare_enemyIMG = LoadImage("assets/units/Flare.png");
+        ImageResize(&flare_enemyIMG, 32, 32);
+        flare_enemyTX = LoadTextureFromImage(flare_enemyIMG);
+        UnloadImage(flare_enemyIMG);
 
-        fast_enemyIMG = LoadImage("assets/units/Mono.png");
-        ImageResize(&fast_enemyIMG, 24, 24);
-        fast_enemyTX = LoadTextureFromImage(fast_enemyIMG);
-        UnloadImage(fast_enemyIMG);
+        mono_enemyIMG = LoadImage("assets/units/Mono.png");
+        ImageResize(&mono_enemyIMG, 24, 24);
+        mono_enemyTX = LoadTextureFromImage(mono_enemyIMG);
+        UnloadImage(mono_enemyIMG);
 
         heartIMG = LoadImage("assets/others/heart.png");
         heartTX = LoadTextureFromImage(heartIMG);
@@ -165,8 +165,8 @@ class Enemy : public Entity
     }
     static void DestroyTextures()
     {
-        UnloadTexture(standard_enemyTX);
-        UnloadTexture(fast_enemyTX);
+        UnloadTexture(flare_enemyTX);
+        UnloadTexture(mono_enemyTX);
         UnloadTexture(heartTX);
     }
 
@@ -177,24 +177,24 @@ class Enemy : public Entity
   protected:
     // enemy : flare
     // stats : starter, basic
-    inline static Image standard_enemyIMG;
-    inline static Texture2D standard_enemyTX;
+    inline static Image flare_enemyIMG;
+    inline static Texture2D flare_enemyTX;
 
     // enemy : mono
-    // stats : fast, basic
-    inline static Image fast_enemyIMG;
-    inline static Texture2D fast_enemyTX;
+    // stats : mono, basic
+    inline static Image mono_enemyIMG;
+    inline static Texture2D mono_enemyTX;
 };
 
-class standard_enemy : public Enemy
+class flare_enemy : public Enemy
 {
   public:
-    standard_enemy()
+    flare_enemy()
     {
-        radius = standard_enemy_radius;
-        speed = standard_enemy_speed;
+        radius = flare_enemy_radius;
+        speed = flare_enemy_speed;
         original_speed = speed;
-        hp = standard_enemy_health;
+        hp = flare_enemy_health;
         // velocity = velFromSpeed(position, targets[counter], speed);
     }
     void Draw() override
@@ -202,27 +202,28 @@ class standard_enemy : public Enemy
         float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
         if (!took_damage)
         {
-            DrawTexturePro(standard_enemyTX, {0, 0, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {position.x, position.y, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {standard_enemyTX.width / 2.0f, standard_enemyTX.height / 2.0f}, rotation, WHITE);
+            DrawTexturePro(flare_enemyTX, {0, 0, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {position.x, position.y, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {flare_enemyTX.width / 2.0f, flare_enemyTX.height / 2.0f}, rotation, WHITE);
         }
         else
         {
             BeginBlendMode(BLEND_ADDITIVE);
-            DrawTexturePro(standard_enemyTX, {0, 0, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {position.x, position.y, (float)standard_enemyTX.width, (float)standard_enemyTX.height}, {standard_enemyTX.width / 2.0f, standard_enemyTX.height / 2.0f}, rotation, WHITE);
+            DrawTexturePro(flare_enemyTX, {0, 0, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {position.x, position.y, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {flare_enemyTX.width / 2.0f, flare_enemyTX.height / 2.0f}, rotation, WHITE);
             took_damage = false;
             EndBlendMode();
         }
+        DrawHealthBar(hp, flare_enemy_health, position);
     }
 };
 
-class fast_enemy : public Enemy
+class mono_enemy : public Enemy
 {
   public:
-    fast_enemy()
+    mono_enemy()
     {
-        radius = fast_enemy_radius;
-        speed = fast_enemy_speed;
+        radius = mono_enemy_radius;
+        speed = mono_enemy_speed;
         original_speed = speed;
-        hp = fast_enemy_health;
+        hp = mono_enemy_health;
         velocity = velFromSpeed(position, targetPos, speed);
     }
 
@@ -231,13 +232,14 @@ class fast_enemy : public Enemy
         float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
         if (!took_damage)
         {
-            DrawTexturePro(fast_enemyTX, {0, 0, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {position.x, position.y, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {fast_enemyTX.width / 2.0f, fast_enemyTX.height / 2.0f}, rotation, WHITE);
+            DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, WHITE);
         }
         else
         {
             BeginBlendMode(BLEND_ADDITIVE);
-            DrawTexturePro(fast_enemyTX, {0, 0, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {position.x, position.y, (float)fast_enemyTX.width, (float)fast_enemyTX.height}, {fast_enemyTX.width / 2.0f, fast_enemyTX.height / 2.0f}, rotation, WHITE);
+            DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, WHITE);
             EndBlendMode();
         }
+        DrawHealthBar(hp, mono_enemy_health, position);
     }
 };

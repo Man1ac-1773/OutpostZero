@@ -33,17 +33,17 @@ extern const int GRID_COLS;
 extern const int GRID_ROWS;
 
 // constants for enemies
-// for standard_enemy
-extern const float standard_enemy_radius;
-extern const Color standard_enemy_color;
-extern const float standard_enemy_speed;
-extern const float standard_enemy_health;
+// for flare_enemy
+extern const float flare_enemy_radius;
+extern const Color flare_enemy_color;
+extern const float flare_enemy_speed;
+extern const float flare_enemy_health;
 
-// for fast_enemy
-extern const float fast_enemy_radius;
-extern const float fast_enemy_speed;
-extern const Color fast_enemy_color;
-extern const float fast_enemy_health;
+// for mono_enemy
+extern const float mono_enemy_radius;
+extern const float mono_enemy_speed;
+extern const Color mono_enemy_color;
+extern const float mono_enemy_health;
 
 // particles
 extern ParticleSystem particles;

@@ -56,11 +56,11 @@ Scene Game()
     // Spawn enemy at mouse
     if (IsKeyPressed(KEY_X))
     {
-        entities.push_back(make_unique<standard_enemy>());
+        entities.push_back(make_unique<flare_enemy>());
     }
     if (IsKeyPressed(KEY_Z))
     {
-        entities.push_back(make_unique<fast_enemy>());
+        entities.push_back(make_unique<mono_enemy>());
     }
 
     // Spawn turret at mouse (only on buildable tiles)
