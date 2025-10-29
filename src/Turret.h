@@ -36,12 +36,10 @@ class Turret : public Entity
     float fireTimer;
 
     // gun properties
-    Rectangle gunRec;
     float gunRotation; // degrees
     float rotationSpeed;
     float recoilOffset;
     float m_recoilOffset;
-    Color gunColor;
     Tile tileOfTurret;
     TurretType turret;
     Turret(Vector2 pos, Tile &tile, float speed, TurretType t)
@@ -116,6 +114,7 @@ class Turret : public Entity
         }
     }
     virtual void Draw() override = 0;
+    // name is self-explanatory
     void drawRangeOnHover(Vector2 pos)
     {
         if (CheckCollisionPointRec(pos, tileOfTurret.rect))
@@ -135,6 +134,7 @@ class Turret : public Entity
         // duo turret
         duoTurretTexture = LoadTexture("assets/turrets/duo.png");
 
+        // ripple turret
         rippleTurretIMG = LoadImage("assets/turrets/ripple.png");
         ImageResize(&rippleTurretIMG, TILE_SIZE, TILE_SIZE);
         rippleTurretTexture = LoadTextureFromImage(rippleTurretIMG);
@@ -205,7 +205,11 @@ class Turret : public Entity
   private:
     float projectileSpeed;
 
-    // Aim functionality, can be made worse to be poor turret
+    /* Aim functionality
+     * solves a simple quadratic equation
+     * to predict the intersection point of projectile and enemy
+     * using the values of their speed and position
+     */
     Vector2 CalculateInterceptPoint(Vector2 enemyPos, Vector2 enemyVel, float projectileSpeed)
     {
         Vector2 toEnemy = enemyPos - position;
@@ -235,12 +239,25 @@ class Turret : public Entity
             }
         }
     }
+    /* This fails for the scatter turret
+     * This function does not take into consideration
+     * the time required for the projectile to spawn at the location of turret
+     * hence it is inaccurate
+     * A necessary debuff, in my opinion
+     * Starter turrets should be weak;
+     */
+
     virtual float GetRotationSpeed() = 0;
 };
 // --------------------------------------------
 
 /* BASIC TURRET SYSTEMS
  * THREE TURRETS, IN ORDER OF PROGRESSION
+ */
+
+/* The basic projectile firing turret
+ * Fires projectile called normal_bullet in a straight line
+ * at predicted position of enemy
  */
 class duo_turret : public Turret
 {
@@ -277,6 +294,11 @@ class duo_turret : public Turret
     float GetRotationSpeed() override { return rotationSpeed; }
 };
 
+/* A flamethrower type turret
+ * While the core logic remains as the same of previous turret
+ * It fires special projectiles at a very high rate
+ * giving it the flamethrower like look
+ */
 class ripple_turret : public Turret
 {
   public:
@@ -286,7 +308,7 @@ class ripple_turret : public Turret
         cooldownTimer = 1 / ripple_turret_fire_rate;
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 15.0f;
-        m_recoilOffset = 2.0f;
+        m_recoilOffset = 10.0f;
     }
 
     void Draw() override
@@ -295,8 +317,6 @@ class ripple_turret : public Turret
 
         DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, baseOrigin, 0.0f, WHITE);
 
-        // calculating change in gun_rec to account for recoil
-        //
         float angleRad = gunRotation * DEG2RAD;
         Vector2 direction = {cosf(angleRad), sinf(angleRad)};
         Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
@@ -355,7 +375,9 @@ class scatter_turret : public Turret
     float GetRotationSpeed() override { return rotationSpeed; }
 };
 
-/* Second Turret : Fires an instantaneous bolt from source in the direction of closes enemy with bolt extending all the way till the maximum range, damaging everything along the way
+/* Second Turret : Fires an instantaneous bolt from source
+ * in the direction of closes enemy with bolt extending
+ * all the way till the maximum range, damaging everything along the way
  */
 class cyclone_turret : public Turret
 {

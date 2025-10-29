@@ -7,12 +7,6 @@
 #include "utils.h"
 #include <cmath>
 
-enum class ProjectileState
-{
-    SPAWNING,
-    FLYING,
-};
-
 class Projectile : public Entity
 {
   public:
@@ -147,7 +141,7 @@ class laser_bullet : public Projectile
     void Draw() override
     {
         float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG;
-        float toRender;
+        float toRender; // what fraction of projectile to draw
         if (state == ProjectileState::SPAWNING)
         {
             toRender = (m_spawnTimer - spawnTimer) / m_spawnTimer;
@@ -170,8 +164,17 @@ class laser_bullet : public Projectile
     float GetMaxProjRange() override { return 1 << 20; }
 
   private:
+    // parameters of feature only for this bullet type
+    // This bullet spawns at the mouth of the gun before travelling like a normal  bullet
+    // the spawnTimer is calibrated perfectly to reflect the travel speed and length of projectile,
+    // so it seems like there is not discontinuity in bullet travel time.
     inline static float m_spawnTimer = 0.04f;
     float spawnTimer;
+    enum class ProjectileState
+    {
+        SPAWNING,
+        FLYING,
+    };
     ProjectileState state;
 };
 
@@ -184,11 +187,15 @@ class flame_bullet : public Projectile
     float life;
     flame_bullet(Vector2 startPos, Vector2 targetPos) : Projectile(startPos, targetPos)
     {
+        // changing speed by +- 10% to sell the flame effect
         speed = flame_bullet_speed * (1 - (GetRandomValue(-10, 10) / 100.0f));
+        // causing slight jitter in direction of travel to
+        // make it seem like an actual flamethrower
         Vector2 dir = Vector2Normalize(targetPos - startPos);
         float spread = GetRandomValue(-spreadAngle, spreadAngle) * DEG2RAD;
         dir = Vector2Rotate(dir, spread);
         velocity = Vector2Scale(dir, speed);
+        // for drawing fade
         max_life = (ripple_turret_range / speed) * 3.0f;
         life = max_life;
         radius = 5.0f; // slightly bigger than projectile texture to give effect of flame
@@ -211,6 +218,8 @@ class flame_bullet : public Projectile
         float alpha = life / max_life;
         DrawTexturePro(flameTX, {0, 0, (float)flameTX.width, (float)flameTX.height}, {position.x, position.y, (float)flameTX.width, (float)flameTX.height}, {(float)flameTX.width / 2, (float)flameTX.height / 2}, rotation, Fade(WHITE, alpha));
     }
+    // getter functions for parent class logic that implement something
+    // based on the type/value from child classes
     ProjectileType getProjType() override { return ProjectileType::FLAME; }
     float GetMaxProjRange() override { return ripple_turret_range * ripple_turret_range; }
 };

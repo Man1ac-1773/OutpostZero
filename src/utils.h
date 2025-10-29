@@ -2,13 +2,11 @@
 #include "raylib.h"
 #include "raymath.h"
 
-inline Vector2 velFromSpeed(const Vector2 &startPos, const Vector2 &targetPos, float speed)
-{
-    Vector2 direction = Vector2Normalize({targetPos.x - startPos.x, targetPos.y - startPos.y});
+// return value of velocity as a Vector2
+inline Vector2 velFromSpeed(const Vector2 &startPos, const Vector2 &targetPos, float speed) { return Vector2Scale(Vector2Normalize(targetPos - startPos), speed); }
 
-    return {direction.x * speed, direction.y * speed};
-}
-
+// make the gun move a certain angle while continously attempting to
+// -360 < theta < 360
 inline float MoveAngle(float current, float target, float maxDelta)
 {
     float diff = target - current;
@@ -30,6 +28,7 @@ inline float MoveAngle(float current, float target, float maxDelta)
         return current - maxDelta;
     }
 }
+// -360 < theta < 360
 inline float normaliseAngle(float angle)
 {
     while (angle < 0)
@@ -39,6 +38,8 @@ inline float normaliseAngle(float angle)
     return angle;
 }
 
+// helper function to draw health bar on top of any entity,
+// seperated and kept here to make code scaleable and this functionality reusable
 inline void DrawHealthBar(float curr_health, float max_health, Vector2 entity_pos)
 {
     float bar_thickness = 5.0f;

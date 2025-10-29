@@ -41,6 +41,7 @@ class Enemy : public Entity
         position = startPos;
         enemy_count++;
     }
+    // idea to use multiplier as a fall-off for distance
     void TakeDamage(ProjectileType proj_type, float multiplier)
     {
         switch (proj_type)
@@ -228,7 +229,8 @@ class flare_enemy : public Enemy
         speed = flare_enemy_speed;
         original_speed = speed;
         hp = flare_enemy_health;
-        // velocity = velFromSpeed(position, targets[counter], speed);
+        // this one line caused a bug that took me 4 hours to find and fix. I hate u
+        velocity = velFromSpeed(position, targets[counter], speed);
     }
     void Draw() override
     {
@@ -286,6 +288,7 @@ class crawler_enemy : public Enemy
     {
         radius = crawler_enemy_radius;
         speed = crawler_enemy_speed;
+        hp = crawler_enemy_health;
         original_speed = speed;
         isVisible = false;
         velocity = velFromSpeed(position, targetPos, speed);
