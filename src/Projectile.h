@@ -27,16 +27,16 @@ class Projectile : public Entity
         start_pos = startPos;
         target_pos = targetPos;
         position = startPos; // starting position
-        radius = 1.5f;       // radius of the projectile
-        color = YELLOW;      // color of the projectile
+        color = RED;         // color of the projectile
         active = true;       // state of the projectile
     }
     virtual ProjectileType getProjType() = 0;
+    virtual float GetMaxProjRange() = 0;
     float GetRadius() const { return radius; }
     void Update(float deltaTime) override
     {
         // delete projectile if too far from firing pos;
-        if (Vector2DistanceSqr(position, start_pos) > 1 << 20)
+        if (Vector2DistanceSqr(position, start_pos) > GetMaxProjRange())
         {
             Destroy();
             return;
@@ -58,6 +58,10 @@ class Projectile : public Entity
         BulletTexture = LoadTextureFromImage(BulletImage);
         UnloadImage(BulletImage);
 
+        flameIMG = LoadImage("assets/projectiles/flame.png");
+        ImageResize(&flameIMG, 10, 10);
+        flameTX = LoadTextureFromImage(flameIMG);
+        UnloadImage(flameIMG);
         // laser
         LaserImage = LoadImage("assets/projectiles/laserBullet.png");
         ImageResize(&LaserImage, 40, 2);
@@ -76,6 +80,8 @@ class Projectile : public Entity
     inline static Image BulletImage;
     inline static Texture2D BulletTexture;
 
+    inline static Image flameIMG;
+    inline static Texture2D flameTX;
     // laser bullet
     inline static Image LaserImage;
     inline static Texture2D LaserTexture;
@@ -88,6 +94,7 @@ class normal_bullet : public Projectile
     {
 
         velocity = velFromSpeed(startPos, targetPos, normal_bullet_speed); // set velocity towards target
+        radius = 3.0f;
     }
 
     void Draw() override
@@ -96,6 +103,7 @@ class normal_bullet : public Projectile
         DrawTexturePro(BulletTexture, {0, 0, (float)BulletTexture.width, (float)BulletTexture.height}, {position.x, position.y, (float)BulletTexture.width, (float)BulletTexture.height}, {(float)BulletTexture.width / 2, (float)BulletTexture.height / 2}, rotation, WHITE);
     }
     ProjectileType getProjType() override { return ProjectileType::DUO_BASIC; }
+    float GetMaxProjRange() override { return 1 << 20; }
 };
 
 class laser_bullet : public Projectile
@@ -106,6 +114,7 @@ class laser_bullet : public Projectile
         velocity = velFromSpeed(startPos, targetPos, scatter_bullet_speed);
         spawnTimer = m_spawnTimer;
         state = ProjectileState::SPAWNING;
+        radius = 1.5f;
     }
     void Update(float deltaTime) override
     {
@@ -157,10 +166,51 @@ class laser_bullet : public Projectile
         EndBlendMode();
     }
 
-    ProjectileType getProjType() override { return ProjectileType::LASER_BASIC; }
+    ProjectileType getProjType() override { return ProjectileType::LASER; }
+    float GetMaxProjRange() override { return 1 << 20; }
 
   private:
     inline static float m_spawnTimer = 0.04f;
     float spawnTimer;
     ProjectileState state;
+};
+
+class flame_bullet : public Projectile
+{
+  public:
+    float speed;
+    float spreadAngle = 10.0f;
+    float max_life;
+    float life;
+    flame_bullet(Vector2 startPos, Vector2 targetPos) : Projectile(startPos, targetPos)
+    {
+        speed = flame_bullet_speed * (1 - (GetRandomValue(-10, 10) / 100.0f));
+        Vector2 dir = Vector2Normalize(targetPos - startPos);
+        float spread = GetRandomValue(-spreadAngle, spreadAngle) * DEG2RAD;
+        dir = Vector2Rotate(dir, spread);
+        velocity = Vector2Scale(dir, speed);
+        max_life = (ripple_turret_range / speed) * 3.0f;
+        life = max_life;
+        radius = 5.0f; // slightly bigger than projectile texture to give effect of flame
+    }
+    void Update(float deltaTime) override
+    {
+        // delete projectile if too far from firing pos;
+        if (Vector2DistanceSqr(position, start_pos) > GetMaxProjRange())
+        {
+            Destroy();
+            return;
+        }
+        life -= deltaTime;
+        position += Vector2Scale(velocity, deltaTime);
+    }
+
+    void Draw() override
+    {
+        float rotation = atan2f(velocity.x, velocity.y) * RAD2DEG;
+        float alpha = life / max_life;
+        DrawTexturePro(flameTX, {0, 0, (float)flameTX.width, (float)flameTX.height}, {position.x, position.y, (float)flameTX.width, (float)flameTX.height}, {(float)flameTX.width / 2, (float)flameTX.height / 2}, rotation, Fade(WHITE, alpha));
+    }
+    ProjectileType getProjType() override { return ProjectileType::FLAME; }
+    float GetMaxProjRange() override { return ripple_turret_range * ripple_turret_range; }
 };

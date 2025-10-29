@@ -81,7 +81,7 @@ Scene Game()
             {
             case buildState::DUO:
             {
-                entities.push_back(make_unique<duo_turret>(turretPos, *tile));
+                entities.push_back(make_unique<ripple_turret>(turretPos, *tile));
                 break;
             }
             case buildState::SCATTER:

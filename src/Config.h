@@ -57,6 +57,9 @@ extern ParticleSystem particles;
 // duo turret
 extern const float duo_turret_fire_rate;
 extern const float duo_turret_range;
+// ripple turret
+extern const float ripple_turret_fire_rate;
+extern const float ripple_turret_range;
 
 // LASER TURRETS
 // Scatter turret
@@ -83,7 +86,9 @@ extern const float wave_turret_range;
 // normal bullet
 extern const float normal_bullet_speed;
 extern const float normal_bullet_damage;
-
+// flame
+extern const float flame_bullet_damage;
+extern const float flame_bullet_speed;
 // laser bullets;
 extern const float scatter_bullet_speed;
 extern const float scatter_bullet_damage;

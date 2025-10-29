@@ -50,7 +50,12 @@ class Enemy : public Entity
             hp -= normal_bullet_damage * multiplier;
             break;
         }
-        case ProjectileType::LASER_BASIC:
+        case ProjectileType::FLAME:
+        {
+            hp -= flame_bullet_damage * multiplier;
+            break;
+        }
+        case ProjectileType::LASER:
         {
             hp -= scatter_bullet_damage * multiplier;
             break;

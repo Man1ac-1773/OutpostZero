@@ -7,9 +7,9 @@
 enum class ProjectileType
 {
     DUO_BASIC,
-    DUO_HEAVY,
-    DUO_RAILGUN,
-    LASER_BASIC,
+    FLAME,
+    DUO_3,
+    LASER,
     CYCLONE_BEAM,
     MELTDOWN_BEAM,
 };
@@ -78,7 +78,14 @@ class ParticleSystem
             life = 0.4f;
             break;
         }
-        case ProjectileType::LASER_BASIC:
+        case ProjectileType::FLAME:
+        {
+            num_particles = 10;
+            speed = GetRandomValue(100, 500);
+            life = 0.7f;
+            break;
+        }
+        case ProjectileType::LASER:
         {
             num_particles = 5;
             speed = GetRandomValue(500, 1000);

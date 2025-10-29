@@ -15,6 +15,7 @@
 enum class TurretType
 {
     DUO,
+    RIPPLE,
     SCATTER,
     CYCLONE,
     MELTDOWN,
@@ -102,6 +103,11 @@ class Turret : public Entity
                     newProjectiles.push_back(std::make_unique<laser_bullet>(position, aimPoint));
                     break;
                 }
+                case TurretType::RIPPLE:
+                {
+                    newProjectiles.push_back(std::make_unique<flame_bullet>(position, aimPoint));
+                    break;
+                }
                 }
 
                 fireTimer = cooldownTimer;
@@ -125,8 +131,16 @@ class Turret : public Entity
         turretBaseTexture = LoadTextureFromImage(turretBaseIMG);
         UnloadImage(turretBaseIMG);
 
+        // --- PROJECTILE TURRETS ---
+        // duo turret
         duoTurretTexture = LoadTexture("assets/turrets/duo.png");
 
+        rippleTurretIMG = LoadImage("assets/turrets/ripple.png");
+        ImageResize(&rippleTurretIMG, TILE_SIZE, TILE_SIZE);
+        rippleTurretTexture = LoadTextureFromImage(rippleTurretIMG);
+        UnloadImage(rippleTurretIMG);
+
+        // --- LASER TURRETS ---
         scatterTurretIMG = LoadImage("assets/turrets/scatter.png");
         ImageResize(&scatterTurretIMG, TILE_SIZE, TILE_SIZE);
         scatterTurretTexture = LoadTextureFromImage(scatterTurretIMG);
@@ -141,7 +155,9 @@ class Turret : public Entity
         ImageResize(&meltdownTurretIMG, TILE_SIZE + 5.0f, TILE_SIZE + 5.0f);
         meltdownTurretTexture = LoadTextureFromImage(meltdownTurretIMG);
         UnloadImage(meltdownTurretIMG);
+        // --- ---
 
+        // --- STATUS TURRETS ----
         waveTurretIMG = LoadImage("assets/turrets/wave.png");
         ImageResize(&waveTurretIMG, TILE_SIZE, TILE_SIZE);
         waveTurretTX = LoadTextureFromImage(waveTurretIMG);
@@ -162,11 +178,17 @@ class Turret : public Entity
     inline static Image turretBaseIMG;
     inline static Texture2D turretBaseTexture;
 
-    // basic_turret (duo) stuff
+    // ---- PROJECTILE TURRET STUFF ----
+    // Duo turret
     inline static Texture2D duoTurretTexture;
+    // Ripple turret
+    inline static Image rippleTurretIMG;
+    inline static Texture2D rippleTurretTexture;
+    // last turret
+    // -----
 
-    // laser_turret stuff
-    // scatter => lvl 1 laser turret
+    // ---- LASER TURRET STUFF ----
+    // scatter
     inline static Image scatterTurretIMG;
     inline static Texture2D scatterTurretTexture;
     // cyclone
@@ -176,7 +198,7 @@ class Turret : public Entity
     inline static Image meltdownTurretIMG;
     inline static Texture2D meltdownTurretTexture;
 
-    // slow turret (wave) stuff
+    // ---- STATUS EFFECT TURRET ----
     inline static Image waveTurretIMG;
     inline static Texture2D waveTurretTX;
 
@@ -255,8 +277,38 @@ class duo_turret : public Turret
     float GetRotationSpeed() override { return rotationSpeed; }
 };
 
-class basic_turret_lvl2 : public Turret
+class ripple_turret : public Turret
 {
+  public:
+    ripple_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, flame_bullet_speed, TurretType::RIPPLE)
+    {
+        range = ripple_turret_range;
+        cooldownTimer = 1 / ripple_turret_fire_rate;
+        fireTimer = 0.0f; // initial timer, ready to fire
+        rotationSpeed = 15.0f;
+        m_recoilOffset = 2.0f;
+    }
+
+    void Draw() override
+    {
+        Vector2 baseOrigin = {(float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f};
+
+        DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, baseOrigin, 0.0f, WHITE);
+
+        // calculating change in gun_rec to account for recoil
+        //
+        float angleRad = gunRotation * DEG2RAD;
+        Vector2 direction = {cosf(angleRad), sinf(angleRad)};
+        Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
+        Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)rippleTurretTexture.width, (float)rippleTurretTexture.height};
+
+        Vector2 gunOrigin = {(float)rippleTurretTexture.width / 2.0f, (float)rippleTurretTexture.height * 0.75f - 2.0f};
+        DrawTexturePro(rippleTurretTexture, {0, 0, (float)rippleTurretTexture.width, (float)rippleTurretTexture.height}, // gun source rectangle
+                       gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
+    }
+
+  private:
+    float GetRotationSpeed() override { return rotationSpeed; }
 };
 
 class basic_turret_lvl3 : public Turret
@@ -267,10 +319,9 @@ class basic_turret_lvl3 : public Turret
 
 /* LASER TURRET SYSTEMS
  * INVOLVES THREE TURRETS, IN ORDER OF UPGRADE
- * First turret : Fires a laser bolt, a fast moving projectile
- * Second Turret : Fires an instantaneous bolt from source to dest, damaging along the way
- * Third Turret : Fires a continuous sustained beam from source to dest for a few seconds, after which cools down. Damages everything in the path.
  */
+
+// First turret : Fires a laser bolt, a fast moving projectile
 
 class scatter_turret : public Turret
 { // fires short beams of light
@@ -304,6 +355,8 @@ class scatter_turret : public Turret
     float GetRotationSpeed() override { return rotationSpeed; }
 };
 
+/* Second Turret : Fires an instantaneous bolt from source in the direction of closes enemy with bolt extending all the way till the maximum range, damaging everything along the way
+ */
 class cyclone_turret : public Turret
 {
   public:
@@ -410,6 +463,8 @@ class cyclone_turret : public Turret
     float GetRotationSpeed() override { return rotationSpeed; }
 };
 
+/* Third Turret : Fires a continuous sustained beam from source to dest for a few seconds, after which cools down. Damages everything in the path.
+ */
 class meltdown_turret : public Turret
 {
   public:
