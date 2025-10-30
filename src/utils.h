@@ -50,5 +50,3 @@ inline void DrawHealthBar(float curr_health, float max_health, Vector2 entity_po
     DrawRectangleRec(healthBar, GRAY);
     DrawRectangleRec(currHealth, RED);
 }
-
-inline float Clamp01(float value) { return Clamp(value, 0.0f, 1.0f); } // clamp a value between 0 and 1, using raymath helper
