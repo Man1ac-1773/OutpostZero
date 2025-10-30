@@ -57,10 +57,12 @@ extern ParticleSystem particles;
 // duo turret
 extern const float duo_turret_fire_rate;
 extern const float duo_turret_range;
-// ripple turret
+// ripple turret => flamethrower
 extern const float ripple_turret_fire_rate;
 extern const float ripple_turret_range;
-
+// smite turret => shotgun
+extern const float smite_turret_fire_rate;
+extern const float smite_turret_range;
 // LASER TURRETS
 // lancer turret
 extern const float lancer_turret_fire_rate;
@@ -92,6 +94,9 @@ extern const float normal_bullet_damage;
 // flame
 extern const float flame_bullet_damage;
 extern const float flame_bullet_speed;
+// shotgun
+extern const float shotgun_bullet_damage;
+extern const float shotgun_bullet_speed;
 // laser bullets;
 extern const float lancer_bullet_speed;
 extern const float lancer_bullet_damage;

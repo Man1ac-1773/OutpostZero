@@ -15,7 +15,7 @@ int main()
     SetConfigFlags(FLAG_VSYNC_HINT);
     InitWindow(screenWidth, screenHeight, "Castle Defenders 2D");
     SetExitKey(KEY_NULL);
-    SetTargetFPS(60);
+    // SetTargetFPS(60);
 
     Scene currentScene = Scene::INTRO;
 

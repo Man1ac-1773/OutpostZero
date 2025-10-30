@@ -81,12 +81,12 @@ Scene Game()
             {
             case buildState::DUO:
             {
-                entities.push_back(make_unique<ripple_turret>(turretPos, *tile));
+                entities.push_back(make_unique<smite_turret>(turretPos, *tile));
                 break;
             }
             case buildState::LANCER:
             {
-                entities.push_back(make_unique<lancer_turret>(turretPos, *tile));
+                entities.push_back(make_unique<meltdown_turret>(turretPos, *tile));
                 break;
             }
             case buildState::WAVE:

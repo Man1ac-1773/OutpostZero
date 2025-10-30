@@ -276,3 +276,22 @@ class ice_bullet : public Projectile
     ProjectileType getProjType() override { return ProjectileType::ICE_STREAM; }
     float GetMaxProjRange() override { return salvo_turret_range * salvo_turret_range; }
 };
+
+class shotgun_bullet : public Projectile
+{
+  public:
+    shotgun_bullet(Vector2 startPos, Vector2 targetPos) : Projectile(startPos, targetPos)
+    {
+
+        velocity = velFromSpeed(startPos, targetPos, shotgun_bullet_speed); // set velocity towards target
+        radius = 3.0f;
+    }
+
+    void Draw() override
+    {
+        float rotation = atan2f(velocity.x, velocity.y) * RAD2DEG;
+        DrawTexturePro(BulletTexture, {0, 0, (float)BulletTexture.width, (float)BulletTexture.height}, {position.x, position.y, (float)BulletTexture.width, (float)BulletTexture.height}, {(float)BulletTexture.width / 2, (float)BulletTexture.height / 2}, rotation, WHITE);
+    }
+    ProjectileType getProjType() override { return ProjectileType::SMITE; }
+    float GetMaxProjRange() override { return 1 << 20; }
+};

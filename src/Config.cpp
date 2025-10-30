@@ -65,10 +65,14 @@ ParticleSystem particles;
 // duo turret
 const float duo_turret_fire_rate = 4.0f; // bullets/second
 const float duo_turret_range = 3.0f * TILE_SIZE;
+
 // ripple turret
 const float ripple_turret_fire_rate = 1000.0f;
 const float ripple_turret_range = 3.0f * TILE_SIZE;
 
+// smite turret
+const float smite_turret_fire_rate = 1.0f;
+const float smite_turret_range = 5.0f * TILE_SIZE;
 // lancer turret
 const float lancer_turret_fire_rate = 1.0f;
 const float lancer_turret_range = 6.0f * TILE_SIZE;
@@ -97,6 +101,9 @@ const float normal_bullet_damage = 5.0f;
 // flame
 const float flame_bullet_damage = 0.5f;
 const float flame_bullet_speed = 200.0f;
+// shotgun
+const float shotgun_bullet_damage = 5.0f;
+const float shotgun_bullet_speed = 400.0f;
 // laser
 const float lancer_bullet_speed = 1000.0f;
 const float lancer_bullet_damage = 10.0f;

@@ -8,7 +8,7 @@ enum class ProjectileType
 {
     DUO_BASIC,
     FLAME,
-    DUO_3,
+    SMITE,
     LASER,
     CYCLONE_BEAM,
     MELTDOWN_BEAM,
@@ -135,7 +135,7 @@ class ParticleSystem
 
     void SpawnTrail(Vector2 pos, Vector2 vel, ProjectileType proj_type)
     {
-        Color c = {235, 140, 108, 255}; // a dark-orange-reddish shade that shows the molten metal exploding outwards;
+        Color c = {235, 140, 108, 255};
         Vector2 jitter = {GetRandomValue(-10, 0) / 100.0f, GetRandomValue(-10, 0) / 100.0f};
         Spawn(pos, Vector2Add(vel, jitter), c, 0.2f, 2.0f, proj_type);
     }

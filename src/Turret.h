@@ -14,11 +14,15 @@
 
 enum class TurretType
 {
+    // projectile turrets
     DUO,
     RIPPLE,
-    lancer,
+    SMITE,
+    // laser turrets
+    LANCER,
     CYCLONE,
     MELTDOWN,
+    // effects turrets
     WAVE,
     SALVO,
     TSUNAMI,
@@ -98,7 +102,23 @@ class Turret : public Entity
                     newProjectiles.push_back(std::make_unique<normal_bullet>(position, aimPoint));
                     break;
                 }
-                case TurretType::lancer:
+                case TurretType::SMITE:
+                {
+                    int num_proj = 10;
+                    // fire n projectiles in a certain cone
+                    float spread = 30.0f * DEG2RAD; // degrees
+                    float central_angle = atan2f(aimPoint.y - position.y, aimPoint.x - position.x);
+                    for (int i = 0; i < num_proj; i++)
+                    {
+                        float offset = -spread / 2 + i * (spread / (num_proj - 1));
+                        float shot_angle = central_angle + offset;
+                        Vector2 dir = {cosf(shot_angle), sinf(shot_angle)};
+                        Vector2 aim_point = Vector2Add(position, Vector2Scale(dir, smite_turret_range));
+                        newProjectiles.push_back(std::make_unique<shotgun_bullet>(position, aim_point));
+                    }
+                    break;
+                }
+                case TurretType::LANCER:
                 {
                     newProjectiles.push_back(std::make_unique<laser_bullet>(position, aimPoint));
                     break;
@@ -132,11 +152,15 @@ class Turret : public Entity
 
     static void LoadTextures()
     {
-        // load the base, common to all
+        // loading base 1
         turretBaseIMG = LoadImage("assets/turrets/base-1.png");
         turretBaseTexture = LoadTextureFromImage(turretBaseIMG);
         UnloadImage(turretBaseIMG);
-
+        // base 2 for T-3 turrets
+        turretBaseIMG_2 = LoadImage("assets/turrets/base-2.png");
+        ImageResize(&turretBaseIMG_2, TILE_SIZE, TILE_SIZE);
+        turretBaseTexture_2 = LoadTextureFromImage(turretBaseIMG_2);
+        UnloadImage(turretBaseIMG_2);
         // --- PROJECTILE TURRETS ---
         // duo turret
         duoTurretTexture = LoadTexture("assets/turrets/duo.png");
@@ -146,6 +170,12 @@ class Turret : public Entity
         ImageResize(&rippleTurretIMG, TILE_SIZE, TILE_SIZE);
         rippleTurretTexture = LoadTextureFromImage(rippleTurretIMG);
         UnloadImage(rippleTurretIMG);
+
+        // smite turret
+        smiteTurretIMG = LoadImage("assets/turrets/smite.png");
+        ImageResize(&smiteTurretIMG, TILE_SIZE + 5.0f, TILE_SIZE + 5.0f);
+        smiteTurretTexture = LoadTextureFromImage(smiteTurretIMG);
+        UnloadImage(smiteTurretIMG);
 
         // --- LASER TURRETS ---
         lancerTurretIMG = LoadImage("assets/turrets/lancer.png");
@@ -186,18 +216,21 @@ class Turret : public Entity
     }
 
     //  protected:
-    // the base of each turret. Common
+    // the base of T-1, T-2, turrets. Common
     inline static Image turretBaseIMG;
     inline static Texture2D turretBaseTexture;
-
+    // the base of T-3 Turrets;
+    inline static Image turretBaseIMG_2;
+    inline static Texture2D turretBaseTexture_2;
     // ---- PROJECTILE TURRET STUFF ----
     // Duo turret
     inline static Texture2D duoTurretTexture;
     // Ripple turret
     inline static Image rippleTurretIMG;
     inline static Texture2D rippleTurretTexture;
-    // last turret
-    // -----
+    // smite turret
+    inline static Image smiteTurretIMG;
+    inline static Texture2D smiteTurretTexture;
 
     // ---- LASER TURRET STUFF ----
     // lancer
@@ -346,8 +379,33 @@ class ripple_turret : public Turret
     float GetRotationSpeed() override { return rotationSpeed; }
 };
 
-class basic_turret_lvl3 : public Turret
+class smite_turret : public Turret
 {
+  public:
+    smite_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, shotgun_bullet_speed, TurretType::SMITE)
+    {
+        range = smite_turret_range;
+        cooldownTimer = 1 / smite_turret_fire_rate;
+        fireTimer = 0.0f;
+        rotationSpeed = 15.0f;
+        m_recoilOffset = 20.0f;
+    }
+    void Draw() override
+    {
+        Vector2 baseOrigin = {(float)turretBaseTexture_2.width / 2.0f, (float)turretBaseTexture_2.height / 2.0f};
+
+        DrawTexturePro(turretBaseTexture_2, {0, 0, (float)turretBaseTexture_2.width, (float)turretBaseTexture_2.height}, {position.x, position.y, (float)turretBaseTexture_2.width, (float)turretBaseTexture_2.height}, baseOrigin, 0.0f, WHITE);
+
+        float angleRad = gunRotation * DEG2RAD;
+        Vector2 direction = {cosf(angleRad), sinf(angleRad)};
+        Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
+        Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)smiteTurretTexture.width, (float)smiteTurretTexture.height};
+
+        Vector2 gunOrigin = {(float)smiteTurretTexture.width / 2.0f, (float)smiteTurretTexture.height * 0.75f - 2.0f};
+        DrawTexturePro(smiteTurretTexture, {0, 0, (float)smiteTurretTexture.width, (float)smiteTurretTexture.height}, // gun source rectangle
+                       gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
+    }
+    float GetRotationSpeed() override { return rotationSpeed; }
 };
 
 // -----------------------------------
@@ -361,7 +419,7 @@ class basic_turret_lvl3 : public Turret
 class lancer_turret : public Turret
 { // fires short beams of light
   public:
-    lancer_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, lancer_bullet_speed, TurretType::lancer)
+    lancer_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, lancer_bullet_speed, TurretType::LANCER)
     {
         range = lancer_turret_range;
         cooldownTimer = 1 / lancer_turret_fire_rate;
@@ -585,7 +643,7 @@ class meltdown_turret : public Turret
 
     void Draw() override
     {
-        DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {(float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f}, 0.0f, WHITE);
+        DrawTexturePro(turretBaseTexture_2, {0, 0, (float)turretBaseTexture_2.width, (float)turretBaseTexture_2.height}, {position.x, position.y, (float)turretBaseTexture_2.width, (float)turretBaseTexture_2.height}, {(float)turretBaseTexture_2.width / 2.0f, (float)turretBaseTexture_2.height / 2.0f}, 0.0f, WHITE);
 
         if (is_active)
         {
