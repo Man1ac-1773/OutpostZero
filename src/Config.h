@@ -78,10 +78,13 @@ extern const float meltdown_turret_cooldown_timer;
 extern const float meltdown_turret_dps;
 
 // SLOWING TURRET
-// slowing turret
+// wave turret
 extern const float wave_turret_active_time;
 extern const float wave_turret_cooldown_time;
 extern const float wave_turret_range;
+// salvo
+extern const float salvo_turret_range;
+extern const float salvo_turret_fire_rate;
 // projectiles
 // normal bullet
 extern const float normal_bullet_speed;
@@ -95,3 +98,7 @@ extern const float scatter_bullet_damage;
 
 // cyclone
 extern const float cyclone_beam_damage;
+
+// salvo
+extern const float ice_stream_speed;
+extern const float ice_stream_damage;

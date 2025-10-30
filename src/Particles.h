@@ -12,6 +12,7 @@ enum class ProjectileType
     LASER,
     CYCLONE_BEAM,
     MELTDOWN_BEAM,
+    ICE_STREAM,
 };
 
 struct Particle
@@ -68,6 +69,8 @@ class ParticleSystem
 
         int num_particles; // control number of particles per explosion
         float speed;
+        Color color = {235, 140, 108, 255}; // magic color number, i know, i don't know what to call it, i picked it off a RGB selector on the internet
+
         float life = 0.0f;
         switch (proj_type)
         {
@@ -106,6 +109,13 @@ class ParticleSystem
             life = 0.0f;
             break;
         }
+        case ProjectileType::ICE_STREAM:
+        {
+            num_particles = 5;
+            speed = GetRandomValue(100, 500);
+            life = 0.4f;
+            color = SKYBLUE;
+        }
         default:
         {
             num_particles = 10;
@@ -119,8 +129,7 @@ class ParticleSystem
         {
             Vector2 dir = {cosf(GetRandomValue(0, 360) * DEG2RAD), sinf(GetRandomValue(0, 360) * DEG2RAD)};
 
-            Spawn(center, Vector2Scale(dir, speed), {235, 140, 108, 255}, life, 3.0f, proj_type);
-            // magic color number, i know, i don't know what to call it, i picked it off a RGB selector on the internet
+            Spawn(center, Vector2Scale(dir, speed), color, life, 3.0f, proj_type);
         }
     }
 

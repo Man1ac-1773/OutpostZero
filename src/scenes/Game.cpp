@@ -91,7 +91,7 @@ Scene Game()
             }
             case buildState::WAVE:
             {
-                entities.push_back(make_unique<wave_turret>(turretPos, *tile));
+                entities.push_back(make_unique<salvo_turret>(turretPos, *tile));
                 break;
             }
             }

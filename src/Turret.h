@@ -67,7 +67,9 @@ class Turret : public Entity
 
         for (auto &e_ptr : targets)
         {
-            if (!e_ptr->isVisible)
+            if (!e_ptr->isVisible && turret != TurretType::SALVO)
+                continue;
+            if (turret == TurretType::SALVO && e_ptr->status_effect == StatusEffects::SLOWED)
                 continue;
             float dist = Vector2Distance(position, e_ptr->GetPosition());
             if (dist < range && dist < closestDist)
@@ -104,6 +106,11 @@ class Turret : public Entity
                 case TurretType::RIPPLE:
                 {
                     newProjectiles.push_back(std::make_unique<flame_bullet>(position, aimPoint));
+                    break;
+                }
+                case TurretType::SALVO:
+                {
+                    newProjectiles.push_back(std::make_unique<ice_bullet>(position, aimPoint));
                     break;
                 }
                 }
@@ -162,6 +169,11 @@ class Turret : public Entity
         ImageResize(&waveTurretIMG, TILE_SIZE, TILE_SIZE);
         waveTurretTX = LoadTextureFromImage(waveTurretIMG);
         UnloadImage(waveTurretIMG);
+
+        salvoTurretIMG = LoadImage("assets/turrets/salvo.png");
+        ImageResize(&salvoTurretIMG, TILE_SIZE, TILE_SIZE);
+        salvoTurretTX = LoadTextureFromImage(salvoTurretIMG);
+        UnloadImage(salvoTurretIMG);
     }
     static void DestroyTextures()
     {
@@ -201,6 +213,9 @@ class Turret : public Entity
     // ---- STATUS EFFECT TURRET ----
     inline static Image waveTurretIMG;
     inline static Texture2D waveTurretTX;
+
+    inline static Image salvoTurretIMG;
+    inline static Texture2D salvoTurretTX;
 
   private:
     float projectileSpeed;
@@ -662,8 +677,40 @@ class wave_turret : public Turret
 
         if (is_active)
         {
-            DrawCircleV(position, range, Fade(BLUE, 0.2f));
+            DrawCircleV(position, range, Fade(SKYBLUE, 0.2f));
         }
+    }
+
+  private:
+    float GetRotationSpeed() override { return rotationSpeed; }
+};
+
+class salvo_turret : public Turret
+{
+  public:
+    salvo_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, ice_stream_speed, TurretType::SALVO)
+    {
+        range = salvo_turret_range;
+        cooldownTimer = 1 / salvo_turret_fire_rate;
+        fireTimer = 0.0f; // initial timer, ready to fire
+        rotationSpeed = 15.0f;
+        m_recoilOffset = 5.0f;
+    }
+
+    void Draw() override
+    {
+        Vector2 baseOrigin = {(float)turretBaseTexture.width / 2.0f, (float)turretBaseTexture.height / 2.0f};
+
+        DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, baseOrigin, 0.0f, WHITE);
+
+        float angleRad = gunRotation * DEG2RAD;
+        Vector2 direction = {cosf(angleRad), sinf(angleRad)};
+        Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
+        Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)salvoTurretTX.width, (float)salvoTurretTX.height};
+
+        Vector2 gunOrigin = {(float)salvoTurretTX.width / 2.0f, (float)salvoTurretTX.height * 0.75f - 2.0f};
+        DrawTexturePro(salvoTurretTX, {0, 0, (float)salvoTurretTX.width, (float)salvoTurretTX.height}, // gun source rectangle
+                       gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
 
   private:

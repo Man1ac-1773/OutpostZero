@@ -60,8 +60,12 @@ class Projectile : public Entity
         LaserImage = LoadImage("assets/projectiles/laserBullet.png");
         ImageResize(&LaserImage, 40, 2);
         LaserTexture = LoadTextureFromImage(LaserImage);
-
         UnloadImage(LaserImage);
+
+        iceIMG = LoadImage("assets/projectiles/ice_bullet.png");
+        ImageResize(&iceIMG, 30, 30);
+        iceTexture = LoadTextureFromImage(iceIMG);
+        UnloadImage(iceIMG);
     }
     static void DestroyTextures()
     {
@@ -79,6 +83,9 @@ class Projectile : public Entity
     // laser bullet
     inline static Image LaserImage;
     inline static Texture2D LaserTexture;
+
+    inline static Image iceIMG;
+    inline static Texture2D iceTexture;
 };
 
 class normal_bullet : public Projectile
@@ -141,7 +148,7 @@ class laser_bullet : public Projectile
     void Draw() override
     {
         float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG;
-        float toRender; // what fraction of projectile to draw
+        float toRender; // how much of the texture to draw;
         if (state == ProjectileState::SPAWNING)
         {
             toRender = (m_spawnTimer - spawnTimer) / m_spawnTimer;
@@ -222,4 +229,50 @@ class flame_bullet : public Projectile
     // based on the type/value from child classes
     ProjectileType getProjType() override { return ProjectileType::FLAME; }
     float GetMaxProjRange() override { return ripple_turret_range * ripple_turret_range; }
+};
+
+class ice_bullet : public Projectile
+{
+  public:
+    float speed;
+    float spreadAngle = 5.0f;
+    float max_life;
+    float life;
+    ice_bullet(Vector2 startPos, Vector2 targetPos) : Projectile(startPos, targetPos)
+    {
+        // changing speed by +- 10% to sell the flame effect
+        speed = ice_stream_speed * (1 - (GetRandomValue(-10, 10) / 100.0f));
+        // causing slight jitter in direction of travel to
+        // make it seem like an actual flamethrower
+        Vector2 dir = Vector2Normalize(targetPos - startPos);
+        float spread = GetRandomValue(-spreadAngle, spreadAngle) * DEG2RAD;
+        dir = Vector2Rotate(dir, spread);
+        velocity = Vector2Scale(dir, speed);
+        // for drawing fade
+        max_life = (salvo_turret_range / speed) * 2.0f;
+        life = max_life;
+        radius = 5.0f; // slightly bigger than projectile texture to give effect of flame
+    }
+    void Update(float deltaTime) override
+    {
+        // delete projectile if too far from firing pos;
+        if (Vector2DistanceSqr(position, start_pos) > GetMaxProjRange())
+        {
+            Destroy();
+            return;
+        }
+        life -= deltaTime;
+        position += Vector2Scale(velocity, deltaTime);
+    }
+
+    void Draw() override
+    {
+        float rotation = atan2f(velocity.x, velocity.y) * RAD2DEG;
+        float alpha = life / max_life;
+        DrawTexturePro(iceTexture, {0, 0, (float)iceTexture.width, (float)iceTexture.height}, {position.x, position.y, (float)iceTexture.width, (float)iceTexture.height}, {(float)iceTexture.width / 2, (float)iceTexture.height / 2}, rotation, Fade(WHITE, alpha));
+    }
+    // getter functions for parent class logic that implement something
+    // based on the type/value from child classes
+    ProjectileType getProjType() override { return ProjectileType::ICE_STREAM; }
+    float GetMaxProjRange() override { return salvo_turret_range * salvo_turret_range; }
 };

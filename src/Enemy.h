@@ -65,6 +65,14 @@ class Enemy : public Entity
         {
             hp -= cyclone_beam_damage * multiplier;
         }
+        case ProjectileType::ICE_STREAM:
+        {
+            hp -= ice_stream_damage * multiplier;
+            if (status_effect != StatusEffects::SLOWED)
+            {
+                status_effect = StatusEffects::SLOWED;
+            }
+        }
         }
         if (hp <= 0)
         {
