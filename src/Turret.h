@@ -12,6 +12,11 @@
 #include <memory> // for std::unique_ptr
 #include <vector>
 
+/* Turret.h declaration of all turrets in the game
+ * Using classes and inheritance to handle multiple objects
+ * using virtual functions which are overriden so that the main loop calls the correct function for each object
+ */
+
 enum class TurretType
 {
     // projectile turrets
@@ -150,6 +155,10 @@ class Turret : public Entity
         }
     }
 
+    // static functions
+    // independent of instance of class
+    // Can be called independently
+    // which i am doing in Game.cpp
     static void LoadTextures()
     {
         // loading base 1
@@ -215,7 +224,15 @@ class Turret : public Entity
         UnloadTexture(lancerTurretTexture);
     }
 
-    //  protected:
+    /* A lot of declarations
+     * static variables, independent of instance.
+     * but the problem is
+     * when we call static int x; the compiler knows it's a static member, but doesn't allocate memory for it (happens in classes)
+     * You would have to initialise this member OUTSIDE ANY OTHER CLASS, in a global scope, by saying int x = <something>; again.
+     * Solved : inline keyword.
+     * Allocates memory at declaration. Compiler now knows it's a static variable that's declared here; it doesn't look for a definition OUTSIDE any class, and it can be defined at any point inside the class like another normal variable.
+     * can be accessed from outside of class irrespective of instance of class also
+     */
     // the base of T-1, T-2, turrets. Common
     inline static Image turretBaseIMG;
     inline static Texture2D turretBaseTexture;
@@ -662,8 +679,8 @@ class meltdown_turret : public Turret
         Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)meltdownTurretTexture.width, (float)meltdownTurretTexture.height};
 
         Vector2 gunOrigin = {(float)meltdownTurretTexture.width / 2.0f, (float)meltdownTurretTexture.height * 0.75f - 2.0f};
-        DrawTexturePro(meltdownTurretTexture, {0, 0, (float)meltdownTurretTexture.width, (float)meltdownTurretTexture.height}, // gun source rectangle
-                       gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
+        DrawTexturePro(meltdownTurretTexture, {0, 0, (float)meltdownTurretTexture.width, (float)meltdownTurretTexture.height}, gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
+        // I don't know why i declared so many intermediate variables. But it's done now and i'm too lazy to revert. Good bye, optimised RAM usage. (please have lots of ram)
     }
 
   private:

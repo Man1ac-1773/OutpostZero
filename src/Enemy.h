@@ -215,6 +215,11 @@ class Enemy : public Entity
         UnloadTexture(heartTX);
     }
 
+    /* a lot of declarations here huh
+     * what is this static inline
+     * Need explained in Turret.h
+     * Or read documentation
+     */
     // heart for player
     inline static Image heartIMG;
     inline static Texture2D heartTX;

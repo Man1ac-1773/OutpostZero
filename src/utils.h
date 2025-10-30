@@ -2,8 +2,23 @@
 #include "raylib.h"
 #include "raymath.h"
 
+/* Utils.h file to help with math functions and other minor stuff
+ *
+ * "Why no .cpp" => I'm lazy. Why maintain so many files when you can just maintain one.
+ *
+ * "Why are they all inline". Because this is the header file. During compilation this file is copy pasted into every .cpp file that includes it.
+ *
+ * This means that when the .cpp files are compiled together, and merged with other files in a single compilation unit, the linker sees multiple definitions of this SAME function, and immediately slaps u with a "ODR violation" (I hate ODR).
+ *
+ * To prevent that, we use the keyword inline.
+ *
+ * IT basically tells the linker that "you will see multiple definitions of this. Use any one. I guarantee they are all the same".
+ */
+
 // return value of velocity as a Vector2
 inline Vector2 velFromSpeed(const Vector2 &startPos, const Vector2 &targetPos, float speed) { return Vector2Scale(Vector2Normalize(targetPos - startPos), speed); }
+// it is a simple one-liner, I don't even know why i created a seperate function for it
+// "Felt cute, might delete later" lol
 
 // make the gun move a certain angle while continously attempting to
 // -360 < theta < 360
