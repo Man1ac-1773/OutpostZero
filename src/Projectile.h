@@ -112,7 +112,7 @@ class laser_bullet : public Projectile
   public:
     laser_bullet(Vector2 startPos, Vector2 targetPos) : Projectile(startPos, targetPos)
     {
-        velocity = velFromSpeed(startPos, targetPos, scatter_bullet_speed);
+        velocity = velFromSpeed(startPos, targetPos, lancer_bullet_speed);
         spawnTimer = m_spawnTimer;
         state = ProjectileState::SPAWNING;
         radius = 1.5f;

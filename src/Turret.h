@@ -16,7 +16,7 @@ enum class TurretType
 {
     DUO,
     RIPPLE,
-    SCATTER,
+    lancer,
     CYCLONE,
     MELTDOWN,
     WAVE,
@@ -98,7 +98,7 @@ class Turret : public Entity
                     newProjectiles.push_back(std::make_unique<normal_bullet>(position, aimPoint));
                     break;
                 }
-                case TurretType::SCATTER:
+                case TurretType::lancer:
                 {
                     newProjectiles.push_back(std::make_unique<laser_bullet>(position, aimPoint));
                     break;
@@ -148,10 +148,10 @@ class Turret : public Entity
         UnloadImage(rippleTurretIMG);
 
         // --- LASER TURRETS ---
-        scatterTurretIMG = LoadImage("assets/turrets/scatter.png");
-        ImageResize(&scatterTurretIMG, TILE_SIZE, TILE_SIZE);
-        scatterTurretTexture = LoadTextureFromImage(scatterTurretIMG);
-        UnloadImage(scatterTurretIMG);
+        lancerTurretIMG = LoadImage("assets/turrets/lancer.png");
+        ImageResize(&lancerTurretIMG, TILE_SIZE, TILE_SIZE);
+        lancerTurretTexture = LoadTextureFromImage(lancerTurretIMG);
+        UnloadImage(lancerTurretIMG);
 
         cycloneTurretIMG = LoadImage("assets/turrets/cyclone.png");
         ImageResize(&cycloneTurretIMG, TILE_SIZE, TILE_SIZE);
@@ -182,7 +182,7 @@ class Turret : public Entity
         // unload basic_turret
         UnloadTexture(duoTurretTexture);
         // unload laser_turret
-        UnloadTexture(scatterTurretTexture);
+        UnloadTexture(lancerTurretTexture);
     }
 
     //  protected:
@@ -200,9 +200,9 @@ class Turret : public Entity
     // -----
 
     // ---- LASER TURRET STUFF ----
-    // scatter
-    inline static Image scatterTurretIMG;
-    inline static Texture2D scatterTurretTexture;
+    // lancer
+    inline static Image lancerTurretIMG;
+    inline static Texture2D lancerTurretTexture;
     // cyclone
     inline static Image cycloneTurretIMG;
     inline static Texture2D cycloneTurretTexture;
@@ -254,7 +254,7 @@ class Turret : public Entity
             }
         }
     }
-    /* This fails for the scatter turret
+    /* This fails for the lancer turret
      * This function does not take into consideration
      * the time required for the projectile to spawn at the location of turret
      * hence it is inaccurate
@@ -358,13 +358,13 @@ class basic_turret_lvl3 : public Turret
 
 // First turret : Fires a laser bolt, a fast moving projectile
 
-class scatter_turret : public Turret
+class lancer_turret : public Turret
 { // fires short beams of light
   public:
-    scatter_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, scatter_bullet_speed, TurretType::SCATTER)
+    lancer_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, lancer_bullet_speed, TurretType::lancer)
     {
-        range = scatter_turret_range;
-        cooldownTimer = 1 / scatter_turret_fire_rate;
+        range = lancer_turret_range;
+        cooldownTimer = 1 / lancer_turret_fire_rate;
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 2.5f;
         m_recoilOffset = 8.0f;
@@ -379,10 +379,10 @@ class scatter_turret : public Turret
         float angleRad = gunRotation * DEG2RAD;
         Vector2 direction = {cosf(angleRad), sinf(angleRad)};
         Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
-        Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)scatterTurretTexture.width, (float)scatterTurretTexture.height};
+        Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)lancerTurretTexture.width, (float)lancerTurretTexture.height};
 
-        Vector2 gunOrigin = {(float)scatterTurretTexture.width / 2.0f, (float)scatterTurretTexture.height * 0.75f - 2.0f};
-        DrawTexturePro(scatterTurretTexture, {0, 0, (float)scatterTurretTexture.width, (float)scatterTurretTexture.height}, // gun source rectangle
+        Vector2 gunOrigin = {(float)lancerTurretTexture.width / 2.0f, (float)lancerTurretTexture.height * 0.75f - 2.0f};
+        DrawTexturePro(lancerTurretTexture, {0, 0, (float)lancerTurretTexture.width, (float)lancerTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
 

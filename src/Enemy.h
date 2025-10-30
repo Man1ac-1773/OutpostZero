@@ -58,7 +58,7 @@ class Enemy : public Entity
         }
         case ProjectileType::LASER:
         {
-            hp -= scatter_bullet_damage * multiplier;
+            hp -= lancer_bullet_damage * multiplier;
             break;
         }
         case ProjectileType::CYCLONE_BEAM:

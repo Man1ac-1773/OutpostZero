@@ -62,9 +62,9 @@ extern const float ripple_turret_fire_rate;
 extern const float ripple_turret_range;
 
 // LASER TURRETS
-// Scatter turret
-extern const float scatter_turret_fire_rate;
-extern const float scatter_turret_range;
+// lancer turret
+extern const float lancer_turret_fire_rate;
+extern const float lancer_turret_range;
 
 // Cyclone turret
 extern const float cyclone_turret_range;
@@ -93,8 +93,8 @@ extern const float normal_bullet_damage;
 extern const float flame_bullet_damage;
 extern const float flame_bullet_speed;
 // laser bullets;
-extern const float scatter_bullet_speed;
-extern const float scatter_bullet_damage;
+extern const float lancer_bullet_speed;
+extern const float lancer_bullet_damage;
 
 // cyclone
 extern const float cyclone_beam_damage;

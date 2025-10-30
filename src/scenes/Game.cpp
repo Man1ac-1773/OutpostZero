@@ -18,7 +18,7 @@ enum class buildState
 {
     NONE,
     DUO,
-    SCATTER,
+    LANCER,
     WAVE,
 };
 static Map gameMap;
@@ -84,9 +84,9 @@ Scene Game()
                 entities.push_back(make_unique<ripple_turret>(turretPos, *tile));
                 break;
             }
-            case buildState::SCATTER:
+            case buildState::LANCER:
             {
-                entities.push_back(make_unique<meltdown_turret>(turretPos, *tile));
+                entities.push_back(make_unique<lancer_turret>(turretPos, *tile));
                 break;
             }
             case buildState::WAVE:
@@ -194,9 +194,9 @@ Scene Game()
             DrawCircleLinesV(GetMousePosition(), duo_turret_range, YELLOW);
             break;
         }
-        case buildState::SCATTER:
+        case buildState::LANCER:
         {
-            DrawCircleLinesV(GetMousePosition(), scatter_turret_range, YELLOW);
+            DrawCircleLinesV(GetMousePosition(), lancer_turret_range, YELLOW);
             break;
         }
         case buildState::WAVE:
@@ -220,7 +220,7 @@ Scene Game()
     }
     if (GuiButton(laser_turret_buttonRect, ""))
     {
-        current_build = buildState::SCATTER;
+        current_build = buildState::LANCER;
     }
     if (GuiButton(slow_turret_buttonRect, ""))
     {
@@ -228,7 +228,7 @@ Scene Game()
     }
     DrawTexturePro(Turret::duoTurretTexture, {0, 0, (float)(Turret::duoTurretTexture.width), (float)(Turret::duoTurretTexture.height)}, {(float)Turret::duoTurretTexture.width / 2.0f, (screenHeight - (float)Turret::duoTurretTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::duoTurretTexture.width / 2.0f, Turret::duoTurretTexture.height / 2.0f}, 0.0f, WHITE);
 
-    DrawTexturePro(Turret::scatterTurretTexture, {0, 0, (float)(Turret::scatterTurretTexture.width), (float)(Turret::scatterTurretTexture.height)}, {TILE_SIZE + (float)Turret::scatterTurretTexture.width / 2.0f, (screenHeight - (float)Turret::scatterTurretTexture.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::scatterTurretTexture.width / 2.0f, Turret::scatterTurretTexture.height / 2.0f}, 0.0f, WHITE);
+    DrawTexturePro(Turret::lancerTurretTexture, {0, 0, (float)(Turret::lancerTurretTexture.width), (float)(Turret::lancerTurretTexture.height)}, {TILE_SIZE + (float)Turret::lancerTurretTexture.width / 2.0f, (screenHeight - (float)Turret::lancerTurretTexture.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::lancerTurretTexture.width / 2.0f, Turret::lancerTurretTexture.height / 2.0f}, 0.0f, WHITE);
     DrawTexturePro(Turret::waveTurretTX, {0, 0, (float)(Turret::waveTurretTX.width), (float)(Turret::waveTurretTX.height)}, {2 * TILE_SIZE + (float)Turret::waveTurretTX.width / 2.0f, (screenHeight - (float)Turret::waveTurretTX.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::waveTurretTX.width / 2.0f, Turret::waveTurretTX.height / 2.0f}, 0.0f, WHITE);
 
     DrawFPS(screenWidth - 80, 10);

@@ -59,7 +59,7 @@ ParticleSystem particles;
 /* ---- CONSTANTS FOR TURRETS AND PROJECTILES ----
  * DISCLAIMER FOR CONSTANT RELATIONS
  * duo_turret -> normal_bullet
- * scatter_turret -> laser_bullet
+ * lancer_turret -> laser_bullet
  * more types will come later
  */
 // duo turret
@@ -69,9 +69,9 @@ const float duo_turret_range = 3.0f * TILE_SIZE;
 const float ripple_turret_fire_rate = 1000.0f;
 const float ripple_turret_range = 3.0f * TILE_SIZE;
 
-// scatter turret
-const float scatter_turret_fire_rate = 1.0f;
-const float scatter_turret_range = 6.0f * TILE_SIZE;
+// lancer turret
+const float lancer_turret_fire_rate = 1.0f;
+const float lancer_turret_range = 6.0f * TILE_SIZE;
 
 // cyclone turret
 const float cyclone_turret_range = 9.0f * TILE_SIZE;
@@ -98,8 +98,8 @@ const float normal_bullet_damage = 5.0f;
 const float flame_bullet_damage = 0.5f;
 const float flame_bullet_speed = 200.0f;
 // laser
-const float scatter_bullet_speed = 1000.0f;
-const float scatter_bullet_damage = 10.0f;
+const float lancer_bullet_speed = 1000.0f;
+const float lancer_bullet_damage = 10.0f;
 
 // cyclone
 const float cyclone_beam_damage = 20.0f;
