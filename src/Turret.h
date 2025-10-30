@@ -370,7 +370,7 @@ class ripple_turret : public Turret
         Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
         Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)rippleTurretTexture.width, (float)rippleTurretTexture.height};
 
-        Vector2 gunOrigin = {(float)rippleTurretTexture.width / 2.0f, (float)rippleTurretTexture.height * 0.75f - 2.0f};
+        Vector2 gunOrigin = {(float)rippleTurretTexture.width / 2.0f, (float)rippleTurretTexture.height / 2.0f};
         DrawTexturePro(rippleTurretTexture, {0, 0, (float)rippleTurretTexture.width, (float)rippleTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
@@ -401,7 +401,7 @@ class smite_turret : public Turret
         Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
         Rectangle gunDestRec = {gunDrawPosition.x, gunDrawPosition.y, (float)smiteTurretTexture.width, (float)smiteTurretTexture.height};
 
-        Vector2 gunOrigin = {(float)smiteTurretTexture.width / 2.0f, (float)smiteTurretTexture.height * 0.75f - 2.0f};
+        Vector2 gunOrigin = {(float)smiteTurretTexture.width / 2.0f, (float)smiteTurretTexture.height / 2.0f};
         DrawTexturePro(smiteTurretTexture, {0, 0, (float)smiteTurretTexture.width, (float)smiteTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
@@ -621,7 +621,7 @@ class meltdown_turret : public Turret
             float targetAngle = atan2f(aimPoint.y - position.y, aimPoint.x - position.x) * RAD2DEG;
             gunRotation = MoveAngle(gunRotation, targetAngle, rotationSpeed);
             float angleDifference = normaliseAngle(targetAngle - gunRotation);
-            if (angleDifference <= 5.0f && cooldown_timer <= 0)
+            if (angleDifference <= 10.0f && cooldown_timer <= 0)
             {
                 target_pos = position + Vector2Scale(Vector2Normalize(aimPoint - position), range);
                 is_active = true;
@@ -648,15 +648,13 @@ class meltdown_turret : public Turret
         if (is_active)
         {
             BeginBlendMode(BLEND_ADDITIVE);
-
             float lifeRatio = beam_timer / cyclone_turret_beam_timer;
             float alpha = lifeRatio * 0.8f;
-
             DrawLineEx(position, target_pos, beamThickness, Fade(ORANGE, alpha * 0.2f));
             DrawLineEx(position, target_pos, beamThickness * 0.8f, Fade(YELLOW, alpha * 0.5f));
             DrawLineEx(position, target_pos, beamThickness * 0.2f, Fade(WHITE, alpha));
-
             EndBlendMode();
+            // different timers for fading out of different sections of beams give it a smooth outward -> inward fade out effect.
         }
         float angleRad = gunRotation * DEG2RAD;
         Vector2 direction = {cosf(angleRad), sinf(angleRad)};

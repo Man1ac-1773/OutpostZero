@@ -248,16 +248,20 @@ class flare_enemy : public Enemy
     void Draw() override
     {
         float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
-        if (!took_damage)
-        {
-            DrawTexturePro(flare_enemyTX, {0, 0, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {position.x, position.y, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {flare_enemyTX.width / 2.0f, flare_enemyTX.height / 2.0f}, rotation, WHITE);
-        }
-        else
+        if (took_damage)
         {
             BeginBlendMode(BLEND_ADDITIVE);
             DrawTexturePro(flare_enemyTX, {0, 0, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {position.x, position.y, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {flare_enemyTX.width / 2.0f, flare_enemyTX.height / 2.0f}, rotation, WHITE);
             took_damage = false;
             EndBlendMode();
+        }
+        else if (status_effect == StatusEffects::SLOWED)
+        {
+            DrawTexturePro(flare_enemyTX, {0, 0, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {position.x, position.y, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {flare_enemyTX.width / 2.0f, flare_enemyTX.height / 2.0f}, rotation, SKYBLUE);
+        }
+        else
+        {
+            DrawTexturePro(flare_enemyTX, {0, 0, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {position.x, position.y, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {flare_enemyTX.width / 2.0f, flare_enemyTX.height / 2.0f}, rotation, WHITE);
         }
         DrawHealthBar(hp, flare_enemy_health, position);
     }
@@ -279,15 +283,19 @@ class mono_enemy : public Enemy
     void Draw() override
     {
         float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
-        if (!took_damage)
-        {
-            DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, WHITE);
-        }
-        else
+        if (took_damage)
         {
             BeginBlendMode(BLEND_ADDITIVE);
             DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, WHITE);
             EndBlendMode();
+        }
+        else if (status_effect == StatusEffects::SLOWED)
+        {
+            DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, SKYBLUE);
+        }
+        else
+        {
+            DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, WHITE);
         }
         DrawHealthBar(hp, mono_enemy_health, position);
     }
@@ -313,7 +321,17 @@ class crawler_enemy : public Enemy
         {
             DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, WHITE);
         }
-        else
+        else if (took_damage) // flash white for one frame
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, WHITE);
+            EndBlendMode();
+        }
+        else if (status_effect == StatusEffects::SLOWED) // skyblue faded color
+        {
+            DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, SKYBLUE);
+        }
+        else // faded view, appears psuedo-invisible
         {
             DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, Fade(WHITE, 0.2f));
         }
