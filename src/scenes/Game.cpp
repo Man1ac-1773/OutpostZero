@@ -81,12 +81,12 @@ Scene Game()
             {
             case buildState::DUO:
             {
-                entities.push_back(make_unique<ripple_turret>(turretPos, *tile));
+                entities.push_back(make_unique<smite_turret>(turretPos, *tile));
                 break;
             }
             case buildState::LANCER:
             {
-                entities.push_back(make_unique<meltdown_turret>(turretPos, *tile));
+                entities.push_back(make_unique<lancer_turret>(turretPos, *tile));
                 break;
             }
             case buildState::WAVE:
@@ -154,8 +154,8 @@ Scene Game()
                 continue;
             if (CheckCollisionCircles(projectile->GetPosition(), projectile->GetRadius(), enemy->GetPosition(), enemy->GetRadius()))
             {
-                projectile->Destroy();
-                enemy->TakeDamage(projectile->getProjType(), 1.0f);
+                projectile->ReducePierceCount();
+                enemy->TakeDamage(projectile->getProjType(), GetDamageFalloff(1.0f, 0.0f, projectile->enemies_hit));
             }
         }
     }
@@ -209,7 +209,7 @@ Scene Game()
     particles.Draw();
 
     EndMode2D();
-    // ----- DRAW GUI PART -----
+    // ----- DRAW GUI -----
     Rectangle basic_turret_buttonRect = {0, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
     Rectangle laser_turret_buttonRect = {TILE_SIZE, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
     Rectangle slow_turret_buttonRect = {2 * TILE_SIZE, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
@@ -243,7 +243,7 @@ Scene Game()
     DrawTexturePro(Enemy::heartTX, {0, 0, (float)Enemy::heartTX.width, (float)Enemy::heartTX.height}, {(float)screenWidth - 20.0f, (float)screenHeight - 20.0f, (float)Enemy::heartTX.width, (float)Enemy::heartTX.height}, {Enemy::heartTX.width / 2.0f, Enemy::heartTX.height / 2.0f}, 0.0f, WHITE);
     return Scene::GAME;
 }
-/* I understand recognise the use of magic numbers and the potential harms that come with it.
+/* I recognise the use of magic numbers and the potential harms that come with it.
  * I am, in this case, and under this time-constraint, left with no better choice.
  * I might come back to improve it later
  */

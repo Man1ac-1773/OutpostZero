@@ -51,6 +51,11 @@ const float mono_enemy_health = 5.0f;
 const float crawler_enemy_radius = 6.0f;
 const float crawler_enemy_speed = 1.5f * flare_enemy_speed;
 const float crawler_enemy_health = mono_enemy_health;
+
+// for poly enemy
+const float poly_enemy_radius = 8.0f;
+const float poly_enemy_speed = flare_enemy_speed;
+const float poly_enemy_health = mono_enemy_health;
 // ---- ----
 
 // particle system
@@ -109,7 +114,8 @@ const float lancer_bullet_speed = 1000.0f;
 const float lancer_bullet_damage = 10.0f;
 
 // cyclone
-const float cyclone_beam_damage = 20.0f;
+const float cyclone_beam_damage = 10.0f; // theoretical base damage
+                                         // multiplier will act on this depending on range
 
 // salvo
 const float ice_stream_damage = 0.1f;

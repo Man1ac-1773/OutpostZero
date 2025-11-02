@@ -69,6 +69,7 @@ class Enemy : public Entity
         case ProjectileType::CYCLONE_BEAM:
         {
             hp -= cyclone_beam_damage * multiplier;
+            break;
         }
         case ProjectileType::ICE_STREAM:
         {
@@ -77,6 +78,7 @@ class Enemy : public Entity
             {
                 status_effect = StatusEffects::SLOWED;
             }
+            break;
         }
         }
         if (hp <= 0)
@@ -99,6 +101,12 @@ class Enemy : public Entity
         took_damage = true;
     }
     float GetRadius() { return radius; }
+    // A simple place-holder function IN-CASE some enemies do actions
+    // Don't want to put it in the update function, that handles too many things
+    // Most enemies migth just have this function empty, and some have something
+    // to do in here
+    // Update : poly_enemy actually does something
+    virtual void DoEnemyAction() = 0;
     void Update(float deltaTime) override
     {
 
@@ -152,6 +160,9 @@ class Enemy : public Entity
         }
         if (position.x >= GRID_COLS * TILE_SIZE || position.y == NAN || position.x == NAN)
         {
+            // the NAN check exists only to catch whenever a variable remains uninitialised and crashes the whole thing
+            // Happened a few times and debugging was a nightmare
+            // Realised I can't guarantee existence especially when rolling out new features.
             Destroy();
         }
         position.x += velocity.x * deltaTime;
@@ -204,6 +215,11 @@ class Enemy : public Entity
         crawler_enemyTX = LoadTextureFromImage(crawler_enemyIMG);
         UnloadImage(crawler_enemyIMG);
 
+        poly_enemyIMG = LoadImage("assets/units/poly.png");
+        ImageResize(&poly_enemyIMG, 32, 32);
+        poly_enemyTX = LoadTextureFromImage(poly_enemyIMG);
+        UnloadImage(poly_enemyIMG);
+
         heartIMG = LoadImage("assets/others/heart.png");
         heartTX = LoadTextureFromImage(heartIMG);
         UnloadImage(heartIMG);
@@ -236,6 +252,10 @@ class Enemy : public Entity
     // enemy : crawler
     inline static Image crawler_enemyIMG;
     inline static Texture2D crawler_enemyTX;
+
+    // enemy : poly
+    inline static Image poly_enemyIMG;
+    inline static Texture2D poly_enemyTX;
 };
 
 class flare_enemy : public Enemy
@@ -293,6 +313,7 @@ class mono_enemy : public Enemy
             BeginBlendMode(BLEND_ADDITIVE);
             DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, WHITE);
             EndBlendMode();
+            took_damage = false;
         }
         else if (status_effect == StatusEffects::SLOWED)
         {
@@ -304,6 +325,8 @@ class mono_enemy : public Enemy
         }
         DrawHealthBar(hp, mono_enemy_health, position);
     }
+    void DoEnemyAction() override {}
+
     EnemyType GetEnemyType() override { return EnemyType::MONO; }
 };
 
@@ -331,6 +354,7 @@ class crawler_enemy : public Enemy
             BeginBlendMode(BLEND_ADDITIVE);
             DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, WHITE);
             EndBlendMode();
+            took_damage = false;
         }
         else if (status_effect == StatusEffects::SLOWED) // skyblue faded color
         {
@@ -341,5 +365,49 @@ class crawler_enemy : public Enemy
             DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, Fade(WHITE, 0.2f));
         }
     }
+    void DoEnemyAction() override {}
     EnemyType GetEnemyType() override { return EnemyType::CRAWLER; }
+};
+
+/* Implementation of an enemy with an actual role
+ * HEALER ENEMY
+ * Loops through all enemies within it's range and updates their health.
+ * Itself slow and weak
+ */
+class poly_enemy : public Enemy
+{
+  public:
+    float range;
+    poly_enemy()
+    {
+        radius = poly_enemy_radius;
+        speed = flare_enemy_speed;
+        hp = mono_enemy_health;
+        original_speed = speed;
+        velocity = velFromSpeed(position, targetPos, speed);
+    }
+
+    void Draw() override
+    {
+        float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
+        if (isVisible)
+        {
+            DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, WHITE);
+        }
+        else if (took_damage) // flash white for one frame
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, WHITE);
+            EndBlendMode();
+            took_damage = false;
+        }
+        else if (status_effect == StatusEffects::SLOWED) // skyblue faded color
+        {
+            DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, SKYBLUE);
+        }
+        else // faded view, appears psuedo-invisible
+        {
+            DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, Fade(WHITE, 0.2f));
+        }
+    }
 };

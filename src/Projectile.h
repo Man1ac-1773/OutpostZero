@@ -15,7 +15,8 @@ class Projectile : public Entity
     bool active;
     Vector2 start_pos;
     Vector2 target_pos;
-
+    int pierce_count;
+    int enemies_hit = 0;
     Projectile(Vector2 startPos, Vector2 targetPos)
     {
         start_pos = startPos;
@@ -27,6 +28,15 @@ class Projectile : public Entity
     virtual ProjectileType getProjType() = 0;
     virtual float GetMaxProjRange() = 0;
     float GetRadius() const { return radius; }
+    void ReducePierceCount()
+    {
+        pierce_count--;
+        enemies_hit++;
+        if (pierce_count <= 0)
+        {
+            Destroy();
+        }
+    }
     void Update(float deltaTime) override
     {
         // delete projectile if too far from firing pos;
@@ -96,6 +106,7 @@ class normal_bullet : public Projectile
 
         velocity = velFromSpeed(startPos, targetPos, normal_bullet_speed); // set velocity towards target
         radius = 3.0f;
+        pierce_count = 1;
     }
 
     void Draw() override
@@ -116,6 +127,7 @@ class laser_bullet : public Projectile
         spawnTimer = m_spawnTimer;
         state = ProjectileState::SPAWNING;
         radius = 1.5f;
+        pierce_count = 2;
     }
     void Update(float deltaTime) override
     {
@@ -205,6 +217,7 @@ class flame_bullet : public Projectile
         // for drawing fade
         max_life = (ripple_turret_range / speed) * 3.0f;
         life = max_life;
+        pierce_count = 1;
         radius = 5.0f; // slightly bigger than projectile texture to give effect of flame
     }
     void Update(float deltaTime) override
@@ -251,6 +264,7 @@ class ice_bullet : public Projectile
         // for drawing fade
         max_life = (salvo_turret_range / speed) * 2.0f;
         life = max_life;
+        pierce_count = 1;
         radius = 5.0f; // slightly bigger than projectile texture to give effect of flame
     }
     void Update(float deltaTime) override
@@ -285,6 +299,7 @@ class shotgun_bullet : public Projectile
 
         velocity = velFromSpeed(startPos, targetPos, shotgun_bullet_speed); // set velocity towards target
         radius = 3.0f;
+        pierce_count = 5;
     }
 
     void Draw() override

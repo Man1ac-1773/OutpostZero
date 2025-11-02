@@ -65,3 +65,32 @@ inline void DrawHealthBar(float curr_health, float max_health, Vector2 entity_po
     DrawRectangleRec(healthBar, GRAY);
     DrawRectangleRec(currHealth, RED);
 }
+
+/* Calculate damage falloff based off of how far enemy is
+ * distance => square distance of enemy to turret
+ * max_range => of turret
+ * Goal is to return 1 at max_range, and scale it larger as it goes closer
+ * but clamp it at some value
+ */
+inline float GetDamageFalloff(float distSqr, float range, int enemiesHit = 0)
+{
+
+    float distRatio;
+    // range 0 is passed when we don't want range based falloff
+    if (range <= 0.0f)
+    {
+        distRatio = 0.0f;
+    }
+    else
+        distRatio = distSqr / (range * range);
+
+    float distanceFalloff = 1.0f - distRatio;
+
+    float pen = 1.0f / (1.0f + 0.5f * enemiesHit);
+
+    float damage = distanceFalloff * pen;
+
+    Clamp(damage, 0, 1); // limit values, just in case
+
+    return damage;
+}

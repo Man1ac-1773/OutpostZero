@@ -532,11 +532,18 @@ class cyclone_turret : public Turret
                     is_active = true;
                     cooldown_timer = 0;
                     beam_timer = cyclone_turret_beam_timer;
+                    int enemy_hit = 0;
                     for (auto &enemy : targets)
                     {
+                        if (enemy_hit > 3)
+                        {
+                            break;
+                        }
                         if (CheckCollisionCircleLine(enemy->GetPosition(), enemy->GetRadius(), position, target_pos))
                         {
-                            enemy->TakeDamage(ProjectileType::CYCLONE_BEAM, 1.0f);
+                            cout << "enemies hit till now : " << enemy_hit << endl;
+                            enemy->TakeDamage(ProjectileType::CYCLONE_BEAM, GetDamageFalloff(Vector2DistanceSqr(enemy->GetPosition(), position), range, enemy_hit));
+                            enemy_hit++;
                         }
                     }
                 }
