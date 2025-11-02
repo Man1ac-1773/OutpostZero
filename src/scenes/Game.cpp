@@ -66,6 +66,10 @@ Scene Game()
     {
         entities.push_back(make_unique<crawler_enemy>());
     }
+    if (IsKeyPressed(KEY_A))
+    {
+        entities.push_back(make_unique<poly_enemy>());
+    }
 
     // Spawn turret at mouse (only on buildable tiles)
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
@@ -140,6 +144,7 @@ Scene Game()
     // Update enemy
     for (auto &enemy : enemy_ptrs)
     {
+        enemy->DoEnemyAction(enemy_ptrs, GetFrameTime());
         enemy->Update();
     }
 

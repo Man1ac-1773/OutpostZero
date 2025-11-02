@@ -5,6 +5,7 @@
 #include "raylib.h"
 #include "raymath.h"
 #include "utils.h"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 using namespace std;
@@ -21,6 +22,7 @@ enum class EnemyType
     FLARE,
     MONO,
     CRAWLER,
+    POLY,
 };
 class Enemy : public Entity
 {
@@ -30,8 +32,11 @@ class Enemy : public Entity
     float original_speed;
     int counter = 0;
     float hp;
+    float max_hp;
     bool took_damage = false;
     bool isVisible = true;
+    bool healed_this_frame = false;
+
     StatusEffects status_effect = StatusEffects::NONE;
     float status_timer = 0.0f;
     Vector2 targetPos = targets[counter];
@@ -63,7 +68,7 @@ class Enemy : public Entity
         }
         case ProjectileType::LASER:
         {
-            hp -= lancer_bullet_damage * multiplier;
+            hp -= 1.0f; // lancer_bullet_damage * multiplier;
             break;
         }
         case ProjectileType::CYCLONE_BEAM:
@@ -88,6 +93,7 @@ class Enemy : public Entity
             // Death animation
             return;
         }
+
         took_damage = true;
     }
     void TakeDamageByValue(ProjectileType proj_type, float amount)
@@ -106,7 +112,8 @@ class Enemy : public Entity
     // Most enemies migth just have this function empty, and some have something
     // to do in here
     // Update : poly_enemy actually does something
-    virtual void DoEnemyAction() = 0;
+    virtual void DoEnemyAction(vector<Enemy *> &targets, float deltaTime) {}
+
     void Update(float deltaTime) override
     {
 
@@ -165,6 +172,7 @@ class Enemy : public Entity
             // Realised I can't guarantee existence especially when rolling out new features.
             Destroy();
         }
+
         position.x += velocity.x * deltaTime;
         position.y += velocity.y * deltaTime;
     }
@@ -184,7 +192,6 @@ class Enemy : public Entity
             targetPos = targets[counter];
             return;
         }
-
         velocity = velFromSpeed(position, targetPos, speed);
     }
 
@@ -267,6 +274,7 @@ class flare_enemy : public Enemy
         speed = flare_enemy_speed;
         original_speed = speed;
         hp = flare_enemy_health;
+        max_hp = flare_enemy_health;
         // this one line caused a bug that took me 4 hours to find and fix. I hate u
         velocity = velFromSpeed(position, targets[counter], speed);
     }
@@ -279,6 +287,13 @@ class flare_enemy : public Enemy
             DrawTexturePro(flare_enemyTX, {0, 0, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {position.x, position.y, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {flare_enemyTX.width / 2.0f, flare_enemyTX.height / 2.0f}, rotation, WHITE);
             took_damage = false;
             EndBlendMode();
+        }
+        else if (healed_this_frame)
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(flare_enemyTX, {0, 0, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {position.x, position.y, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {flare_enemyTX.width / 2.0f, flare_enemyTX.height / 2.0f}, rotation, GREEN);
+            EndBlendMode();
+            healed_this_frame = false;
         }
         else if (status_effect == StatusEffects::SLOWED)
         {
@@ -302,6 +317,7 @@ class mono_enemy : public Enemy
         speed = mono_enemy_speed;
         original_speed = speed;
         hp = mono_enemy_health;
+        max_hp = mono_enemy_health;
         velocity = velFromSpeed(position, targetPos, speed);
     }
 
@@ -315,6 +331,13 @@ class mono_enemy : public Enemy
             EndBlendMode();
             took_damage = false;
         }
+        else if (healed_this_frame)
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, GREEN);
+            EndBlendMode();
+            healed_this_frame = false;
+        }
         else if (status_effect == StatusEffects::SLOWED)
         {
             DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, SKYBLUE);
@@ -325,7 +348,6 @@ class mono_enemy : public Enemy
         }
         DrawHealthBar(hp, mono_enemy_health, position);
     }
-    void DoEnemyAction() override {}
 
     EnemyType GetEnemyType() override { return EnemyType::MONO; }
 };
@@ -338,8 +360,10 @@ class crawler_enemy : public Enemy
         radius = crawler_enemy_radius;
         speed = crawler_enemy_speed;
         hp = crawler_enemy_health;
+        max_hp = crawler_enemy_health;
         original_speed = speed;
         isVisible = false;
+
         velocity = velFromSpeed(position, targetPos, speed);
     }
     void Draw() override
@@ -348,6 +372,7 @@ class crawler_enemy : public Enemy
         if (isVisible)
         {
             DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, WHITE);
+            DrawHealthBar(hp, crawler_enemy_health, position);
         }
         else if (took_damage) // flash white for one frame
         {
@@ -356,16 +381,18 @@ class crawler_enemy : public Enemy
             EndBlendMode();
             took_damage = false;
         }
-        else if (status_effect == StatusEffects::SLOWED) // skyblue faded color
+        else if (healed_this_frame)
         {
-            DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, SKYBLUE);
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, GREEN);
+            EndBlendMode();
+            healed_this_frame = false;
         }
         else // faded view, appears psuedo-invisible
         {
             DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, Fade(WHITE, 0.2f));
         }
     }
-    void DoEnemyAction() override {}
     EnemyType GetEnemyType() override { return EnemyType::CRAWLER; }
 };
 
@@ -378,36 +405,62 @@ class poly_enemy : public Enemy
 {
   public:
     float range;
+    float heal_cooldown;
     poly_enemy()
     {
         radius = poly_enemy_radius;
         speed = flare_enemy_speed;
         hp = mono_enemy_health;
+        max_hp = mono_enemy_health;
         original_speed = speed;
         velocity = velFromSpeed(position, targetPos, speed);
+        range = 3.0f * TILE_SIZE;
     }
 
     void Draw() override
     {
         float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
-        if (isVisible)
-        {
-            DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, WHITE);
-        }
-        else if (took_damage) // flash white for one frame
+
+        if (took_damage) // flash white for one frame
         {
             BeginBlendMode(BLEND_ADDITIVE);
             DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, WHITE);
             EndBlendMode();
             took_damage = false;
         }
+
         else if (status_effect == StatusEffects::SLOWED) // skyblue faded color
         {
             DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, SKYBLUE);
         }
-        else // faded view, appears psuedo-invisible
+        else
         {
-            DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, Fade(WHITE, 0.2f));
+            DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, WHITE);
         }
+        DrawHealthBar(hp, poly_enemy_health, position);
     }
+    void DoEnemyAction(vector<Enemy *> &targets, float deltaTime) override
+    {
+        if (heal_cooldown > 0)
+        {
+            heal_cooldown -= deltaTime;
+            return;
+        }
+        // this guy is trying to heal every frame
+        for (auto &enemy : targets)
+        {
+            if (enemy->GetEnemyType() != EnemyType::POLY && Vector2DistanceSqr(position, enemy->GetPosition()) <= range * range && enemy->hp < enemy->max_hp)
+            {
+                enemy->healed_this_frame = true;
+                enemy->hp += 1.0f;
+                // this flag is un-set only in the draw loop,
+                // which is why the detection and action happen here
+                // itself, and not seperately.
+            }
+        }
+        heal_cooldown = max_heal_cooldown;
+        // cooldown only after healing everyone possible
+        // always tries to heal everyone if cooldown is allowing it
+    }
+    EnemyType GetEnemyType() override { return EnemyType::POLY; }
 };

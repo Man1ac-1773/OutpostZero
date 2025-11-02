@@ -120,3 +120,6 @@ const float cyclone_beam_damage = 10.0f; // theoretical base damage
 // salvo
 const float ice_stream_damage = 0.1f;
 const float ice_stream_speed = flame_bullet_speed * 1.5f;
+
+// helpers
+const float max_heal_cooldown = 2.0f;

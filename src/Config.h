@@ -109,3 +109,6 @@ extern const float cyclone_beam_damage;
 // salvo
 extern const float ice_stream_speed;
 extern const float ice_stream_damage;
+
+// helper
+extern const float max_heal_cooldown;
