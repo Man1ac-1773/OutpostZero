@@ -23,6 +23,7 @@ enum class EnemyType
     MONO,
     CRAWLER,
     POLY,
+    LOCUS,
 };
 class Enemy : public Entity
 {
@@ -30,7 +31,8 @@ class Enemy : public Entity
     float radius;
     float speed;
     float original_speed;
-    int counter = 0;
+    int map_counter = 0;
+    unsigned long long id;
     float hp;
     float max_hp;
     bool took_damage = false;
@@ -39,10 +41,11 @@ class Enemy : public Entity
 
     StatusEffects status_effect = StatusEffects::NONE;
     float status_timer = 0.0f;
-    Vector2 targetPos = targets[counter];
+    Vector2 targetPos = targets[map_counter];
     inline static int enemy_count = 0;
     Enemy()
     {
+        id = next_id++;
         position = startPos;
         enemy_count++;
     }
@@ -68,7 +71,7 @@ class Enemy : public Entity
         }
         case ProjectileType::LASER:
         {
-            hp -= 1.0f; // lancer_bullet_damage * multiplier;
+            hp -= lancer_bullet_damage * multiplier;
             break;
         }
         case ProjectileType::CYCLONE_BEAM:
@@ -188,8 +191,8 @@ class Enemy : public Entity
         if (Vector2DistanceSqr(position, targetPos) < radius)
         {
             velocity = {0, 0};
-            counter++;
-            targetPos = targets[counter];
+            map_counter++;
+            targetPos = targets[map_counter];
             return;
         }
         velocity = velFromSpeed(position, targetPos, speed);
@@ -222,10 +225,15 @@ class Enemy : public Entity
         crawler_enemyTX = LoadTextureFromImage(crawler_enemyIMG);
         UnloadImage(crawler_enemyIMG);
 
-        poly_enemyIMG = LoadImage("assets/units/poly.png");
+        poly_enemyIMG = LoadImage("assets/units/Poly.png");
         ImageResize(&poly_enemyIMG, 32, 32);
         poly_enemyTX = LoadTextureFromImage(poly_enemyIMG);
         UnloadImage(poly_enemyIMG);
+
+        locus_enemyIMG = LoadImage("assets/units/Locus.png");
+        ImageResize(&locus_enemyIMG, 40, 40);
+        locus_enemyTX = LoadTextureFromImage(locus_enemyIMG);
+        UnloadImage(locus_enemyIMG);
 
         heartIMG = LoadImage("assets/others/heart.png");
         heartTX = LoadTextureFromImage(heartIMG);
@@ -263,6 +271,13 @@ class Enemy : public Entity
     // enemy : poly
     inline static Image poly_enemyIMG;
     inline static Texture2D poly_enemyTX;
+
+    // locus enemy
+    inline static Image locus_enemyIMG;
+    inline static Texture2D locus_enemyTX;
+
+  private:
+    static inline unsigned long long next_id = 0;
 };
 
 class flare_enemy : public Enemy
@@ -276,7 +291,7 @@ class flare_enemy : public Enemy
         hp = flare_enemy_health;
         max_hp = flare_enemy_health;
         // this one line caused a bug that took me 4 hours to find and fix. I hate u
-        velocity = velFromSpeed(position, targets[counter], speed);
+        velocity = velFromSpeed(position, targetPos, speed);
     }
     void Draw() override
     {
@@ -463,4 +478,46 @@ class poly_enemy : public Enemy
         // always tries to heal everyone if cooldown is allowing it
     }
     EnemyType GetEnemyType() override { return EnemyType::POLY; }
+};
+
+class locus_enemy : public Enemy
+{
+  public:
+    locus_enemy()
+    {
+        radius = locus_enemy_radius;
+        speed = locus_enemy_speed;
+        original_speed = speed;
+        hp = locus_enemy_health;
+        max_hp = hp;
+        velocity = velFromSpeed(position, targetPos, speed);
+    }
+    void Draw() override
+    {
+        float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
+        if (took_damage)
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(locus_enemyTX, {0, 0, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {position.x, position.y, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {locus_enemyTX.width / 2.0f, locus_enemyTX.height / 2.0f}, rotation, WHITE);
+            EndBlendMode();
+            took_damage = false;
+        }
+        else if (healed_this_frame)
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(locus_enemyTX, {0, 0, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {position.x, position.y, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {locus_enemyTX.width / 2.0f, locus_enemyTX.height / 2.0f}, rotation, GREEN);
+            EndBlendMode();
+            healed_this_frame = false;
+        }
+        else if (status_effect == StatusEffects::SLOWED)
+        {
+            DrawTexturePro(locus_enemyTX, {0, 0, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {position.x, position.y, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {locus_enemyTX.width / 2.0f, locus_enemyTX.height / 2.0f}, rotation, SKYBLUE);
+        }
+        else
+        {
+            DrawTexturePro(locus_enemyTX, {0, 0, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {position.x, position.y, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {locus_enemyTX.width / 2.0f, locus_enemyTX.height / 2.0f}, rotation, WHITE);
+        }
+        DrawHealthBar(hp, locus_enemy_health, position);
+    }
+    EnemyType GetEnemyType() override { return EnemyType::LOCUS; }
 };

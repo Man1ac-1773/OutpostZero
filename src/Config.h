@@ -52,6 +52,11 @@ extern const float crawler_enemy_health;
 extern const float poly_enemy_radius;
 extern const float poly_enemy_health;
 extern const float poly_enemy_speed;
+
+// for locus enemy
+extern const float locus_enemy_radius;
+extern const float locus_enemy_speed;
+extern const float locus_enemy_health;
 // particles
 extern ParticleSystem particles;
 // TURRETS

@@ -16,9 +16,12 @@ class Projectile : public Entity
     Vector2 start_pos;
     Vector2 target_pos;
     int pierce_count;
+    std::unordered_set<int> current_colliding;
+    unsigned long long id;
     int enemies_hit = 0;
     Projectile(Vector2 startPos, Vector2 targetPos)
     {
+        id = next_id++;
         start_pos = startPos;
         target_pos = targetPos;
         position = startPos; // starting position
@@ -96,6 +99,9 @@ class Projectile : public Entity
 
     inline static Image iceIMG;
     inline static Texture2D iceTexture;
+
+  private:
+    static inline unsigned long long next_id;
 };
 
 class normal_bullet : public Projectile

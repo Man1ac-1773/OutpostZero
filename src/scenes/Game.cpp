@@ -22,9 +22,6 @@ enum class buildState
     WAVE,
 };
 static Map gameMap;
-static Color green = Color{57, 255, 20, 255}; // for walls, if required
-
-static const float cameraSpeed = 500.0f; // if camera movement implemented
 static bool initialized = false;
 static Camera2D camera = {0};
 static buildState current_build;
@@ -69,6 +66,10 @@ Scene Game()
     if (IsKeyPressed(KEY_A))
     {
         entities.push_back(make_unique<poly_enemy>());
+    }
+    if (IsKeyPressed(KEY_S))
+    {
+        entities.push_back(make_unique<locus_enemy>());
     }
 
     // Spawn turret at mouse (only on buildable tiles)
@@ -157,10 +158,23 @@ Scene Game()
         {
             if (!enemy->IsActive() || !projectile->IsActive())
                 continue;
-            if (CheckCollisionCircles(projectile->GetPosition(), projectile->GetRadius(), enemy->GetPosition(), enemy->GetRadius()))
+            bool colliding = CheckCollisionCircles(projectile->GetPosition(), projectile->GetRadius(), enemy->GetPosition(), enemy->GetRadius());
+            if (colliding)
             {
-                projectile->ReducePierceCount();
-                enemy->TakeDamage(projectile->getProjType(), GetDamageFalloff(1.0f, 0.0f, projectile->enemies_hit));
+                // New collision this frame
+                if (projectile->current_colliding.find(enemy->id) == projectile->current_colliding.end())
+                {
+                    projectile->current_colliding.insert(enemy->id);
+                    projectile->ReducePierceCount();
+                    enemy->TakeDamage(projectile->getProjType(), GetDamageFalloff(1.0f, 0.0f, projectile->enemies_hit));
+
+                    std::cout << "Projectile #" << projectile->id << " hit Enemy #" << enemy->id << " (" << projectile->enemies_hit << " total)\n";
+                }
+            }
+            else
+            {
+                // has collided
+                projectile->current_colliding.erase(enemy->id);
             }
         }
     }

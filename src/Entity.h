@@ -1,8 +1,10 @@
 #pragma once
 #include "raylib.h"
+#include <unordered_set>
+// this above line is only here because everyone implicitly imports entity
 class Entity
 {
-public:
+  public:
     virtual ~Entity() {}
 
     virtual void Update(float deltaTime) = 0;
@@ -12,7 +14,7 @@ public:
     Vector2 GetPosition() const { return position; }
     Vector2 GetVelocity() const { return velocity; }
 
-// protected:
+    // protected:
     Vector2 position;
     Vector2 velocity;
     bool is_active = true;
