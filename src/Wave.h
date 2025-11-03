@@ -4,7 +4,7 @@
 #include "Entity.h"
 #include <memory>
 #include <vector>
-
+using namespace std;
 struct SpawnCommand
 {
     EnemyType type;
@@ -29,22 +29,36 @@ class WaveManager
         // 'allWaveScripts' is a vector of wave scripts
         // a wave script is a vector of SpawnCommands
 
-        // Wave 1: 10 flare enemies, 1 second apart
-        std::vector<SpawnCommand> wave1_script;
+        // wave 1: 10 flare enemies, 1 second apart
+        vector<SpawnCommand> wave1;
         for (int i = 0; i < 10; i++)
         {
-            wave1_script.push_back({EnemyType::FLARE, 1.0f});
+            wave1.push_back({EnemyType::FLARE, 0.5f});
         }
-        allWaveScripts.push_back(wave1_script);
+        allWaveScripts.push_back(wave1);
 
-        // Wave 2: 15 standard enemies, 0.5s apart
-        std::vector<SpawnCommand> wave2_script;
+        // wave 2: 15 standard enemies, 0.5s apart
+        vector<SpawnCommand> wave2;
         for (int i = 0; i < 15; i++)
         {
-            wave2_script.push_back({EnemyType::FLARE, 0.5f});
+            wave2.push_back({EnemyType::FLARE, 0.25f});
         }
-        allWaveScripts.push_back(wave2_script);
+        allWaveScripts.push_back(wave2);
 
+        // wave 3 : 15 standard, 0.1s apart
+        vector<SpawnCommand> wave3;
+        for (int i = 0; i < 15; i++)
+        {
+            wave3.push_back({EnemyType::FLARE, 0.1f});
+        }
+        allWaveScripts.push_back(wave3);
+
+        vector<SpawnCommand> wave4;
+        for (int i = 0; i < 5; i++)
+        {
+            wave4.push_back({EnemyType::MONO, 0.5f});
+        }
+        allWaveScripts.push_back(wave4);
         // TODO : add more waves
 
         state = State::WAITING_FOR_PLAYER; // Start waiting for the player
@@ -63,7 +77,7 @@ class WaveManager
         }
     }
 
-    void Update(float deltaTime, std::vector<std::unique_ptr<Entity>> &entities, int activeEnemies)
+    void Update(float deltaTime, vector<unique_ptr<Entity>> &entities, int activeEnemies)
     {
         if (state == State::FINISHED)
             return;
@@ -73,25 +87,25 @@ class WaveManager
             spawnTimer -= deltaTime;
             if (spawnTimer <= 0)
             {
-                std::vector<SpawnCommand> &script = allWaveScripts[currentWaveIndex];
+                vector<SpawnCommand> &script = allWaveScripts[currentWaveIndex];
                 SpawnCommand &command = script[currentCommandIndex];
 
                 int waveNum = currentWaveIndex + 1;
                 switch (command.type)
                 {
                 case EnemyType::FLARE:
-                    entities.push_back(std::make_unique<flare_enemy>());
+                    entities.push_back(make_unique<flare_enemy>());
                     break;
                 case EnemyType::MONO:
-                    entities.push_back(std::make_unique<mono_enemy>());
+                    entities.push_back(make_unique<mono_enemy>());
                     break;
                 case EnemyType::LOCUS:
-                    entities.push_back(std::make_unique<locus_enemy>());
+                    entities.push_back(make_unique<locus_enemy>());
                     break;
                 case EnemyType::CRAWLER:
-                    entities.push_back(std::make_unique<crawler_enemy>());
+                    entities.push_back(make_unique<crawler_enemy>());
                 case EnemyType::POLY:
-                    entities.push_back(std::make_unique<poly_enemy>());
+                    entities.push_back(make_unique<poly_enemy>());
                     break;
                 }
 
@@ -123,7 +137,7 @@ class WaveManager
     }
 
   private:
-    std::vector<std::vector<SpawnCommand>> allWaveScripts;
+    vector<vector<SpawnCommand>> allWaveScripts;
     int currentWaveIndex;
     int currentCommandIndex;
     float spawnTimer;
