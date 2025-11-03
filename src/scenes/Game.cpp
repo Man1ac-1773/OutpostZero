@@ -167,8 +167,6 @@ Scene Game()
                     projectile->current_colliding.insert(enemy->id);
                     projectile->ReducePierceCount();
                     enemy->TakeDamage(projectile->getProjType(), GetDamageFalloff(1.0f, 0.0f, projectile->enemies_hit));
-
-                    std::cout << "Projectile #" << projectile->id << " hit Enemy #" << enemy->id << " (" << projectile->enemies_hit << " total)\n";
                 }
             }
             else
