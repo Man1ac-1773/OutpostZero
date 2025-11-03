@@ -10,6 +10,7 @@
 #include "Map.h"
 #include "Projectile.h"
 #include "Turret.h"
+#include "Wave.h"
 #include "raygui.h"
 #include "raylib.h"
 #include "scenes.h"
@@ -26,7 +27,7 @@ static bool initialized = false;
 static Camera2D camera = {0};
 static buildState current_build;
 Vector2 screenCenter = {(float)screenWidth / 2, (float)screenHeight / 2};
-
+static WaveManager wave_manager;
 static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our entities
 
 Scene Game()
@@ -148,6 +149,7 @@ Scene Game()
         enemy->DoEnemyAction(enemy_ptrs, GetFrameTime());
         enemy->Update();
     }
+    wave_manager.Update(GetFrameTime(), entities, enemy_ptrs.size());
 
     // ---- INTERACTION PASS -----
     // Projectiles interact with enemies
@@ -230,7 +232,7 @@ Scene Game()
     Rectangle basic_turret_buttonRect = {0, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
     Rectangle laser_turret_buttonRect = {TILE_SIZE, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
     Rectangle slow_turret_buttonRect = {2 * TILE_SIZE, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
-
+    Rectangle nextWaveButton = {GRID_COLS * TILE_SIZE + 30, TILE_SIZE, 2 * TILE_SIZE, 2 * TILE_SIZE};
     if (GuiButton(basic_turret_buttonRect, ""))
     {
         current_build = buildState::DUO;
@@ -242,6 +244,13 @@ Scene Game()
     if (GuiButton(slow_turret_buttonRect, ""))
     {
         current_build = buildState::WAVE;
+    }
+    if (GuiButton(nextWaveButton, "Next wave"))
+    {
+        if (wave_manager.CanStartNextWave())
+        {
+            wave_manager.StartNextWave();
+        }
     }
     DrawTexturePro(Turret::duoTurretTexture, {0, 0, (float)(Turret::duoTurretTexture.width), (float)(Turret::duoTurretTexture.height)}, {(float)Turret::duoTurretTexture.width / 2.0f, (screenHeight - (float)Turret::duoTurretTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::duoTurretTexture.width / 2.0f, Turret::duoTurretTexture.height / 2.0f}, 0.0f, WHITE);
 
