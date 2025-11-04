@@ -1,32 +1,34 @@
 #pragma once
+#include "Config.h"
 #include "raylib.h"
 #include <vector>
-#include "Config.h"
-class Entity; 
+class Entity;
 
-enum class TileType{
-    PATH, 
+enum class TileType
+{
+    PATH,
     BUILDABLE,
     OTHER
 };
 
-struct Tile{
-    Rectangle rect; 
+struct Tile
+{
+    Rectangle rect;
     TileType type = TileType::BUILDABLE;
     bool hasTurret = false;
-    Color color; 
+    Color color;
 };
 
-class Map{
-public: 
+class Map
+{
+  public:
     std::vector<std::vector<Tile>> grid; // 2D grid of tiles
-    const Color pathColor = Color{ 100, 100, 100, 255 };
-    const Color buildableColor = Color{ 80, 80, 80, 255 }; 
-    const Color gridLineColor = Color{ 60, 60, 60, 100 }; // colour of border of each tile
-    
-    Map(); 
+    const Color pathColor = Color{100, 100, 100, 255};
+    const Color buildableColor = Color{80, 80, 80, 255};
+    const Color gridLineColor = Color{60, 60, 60, 100}; // colour of border of each tile
 
-    Tile* getTileFromMouse(Vector2 pos); 
-    void Draw(); 
+    Map();
 
+    Tile *getTileFromMouse(Vector2 pos);
+    void Draw();
 };

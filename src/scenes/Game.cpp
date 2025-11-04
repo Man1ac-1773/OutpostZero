@@ -32,6 +32,8 @@ static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our enti
 
 static WaveManager wave_manager;
 
+static Turret *currentTurret = nullptr;
+
 Scene Game()
 {
 
@@ -89,17 +91,22 @@ Scene Game()
             {
             case buildState::DUO:
             {
-                entities.push_back(make_unique<duo_turret>(turretPos, *tile));
+                if (playerMoney >= duo_turret::turret_cost)
+                {
+                    entities.push_back(make_unique<smite_turret>(turretPos, *tile));
+                }
                 break;
             }
             case buildState::LANCER:
             {
-                entities.push_back(make_unique<lancer_turret>(turretPos, *tile));
+                if (playerMoney >= lancer_turret::turret_cost)
+                    entities.push_back(make_unique<lancer_turret>(turretPos, *tile));
                 break;
             }
             case buildState::WAVE:
             {
-                entities.push_back(make_unique<wave_turret>(turretPos, *tile));
+                if (playerMoney >= wave_turret::turret_cost)
+                    entities.push_back(make_unique<wave_turret>(turretPos, *tile));
                 break;
             }
             }
@@ -263,6 +270,22 @@ Scene Game()
             wave_manager.StartNextWave();
         }
     }
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    {
+        Vector2 mousePos = GetMousePosition();
+        Tile *tile = gameMap.getTileFromMouse(mousePos);
+        if (tile != nullptr && tile->hasTurret && current_build == buildState::NONE)
+        {
+            for (auto &turret : turret_ptrs)
+            {
+                if (CheckCollisionPointCircle(mousePos, turret->GetPosition(), turret->radius))
+                {
+                    currentTurret = turret;
+                }
+            }
+        }
+    }
+
     // ---- three turret draw calls ----
     // These draw the textures on the buttons
     DrawTexturePro(Turret::duoTurretTexture, {0, 0, (float)(Turret::duoTurretTexture.width), (float)(Turret::duoTurretTexture.height)}, {(float)Turret::duoTurretTexture.width / 2.0f, (screenHeight - (float)Turret::duoTurretTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::duoTurretTexture.width / 2.0f, Turret::duoTurretTexture.height / 2.0f}, 0.0f, WHITE);
@@ -277,8 +300,11 @@ Scene Game()
     DrawTexture(Enemy::currencyTX, screenWidth - 100, 40, WHITE);
     // ---- ----
 
+    // turret info draw call
+    DrawCurrentTurretInfo(currentTurret);
+    // -----
     DrawFPS(screenWidth - 80, 10);
-    DrawText(TextFormat("Health : %d", player_health), screenWidth - MeasureText("Health : x    ", 20), screenHeight - 28, 20, RED);
+    DrawText(TextFormat("Health : %d", player_health), screenWidth - MeasureText("Health : x      ", 20), screenHeight - 28, 20, RED);
     DrawText(TextFormat(" : %d", playerMoney), screenWidth - 80, 40, 20, GREEN);
     if (player_health <= 0)
     {

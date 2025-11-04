@@ -52,13 +52,14 @@ class Turret : public Entity
     Tile tileOfTurret;
     TurretType turret;
 
-    int turret_cost;
+    inline static int turret_cost;
     Turret(Vector2 pos, Tile &tile, float speed, TurretType t)
     {
         position = pos;     // position of the turret
         gunRotation = 0.0f; // initial rotation of the gun
         tileOfTurret = tile;
         projectileSpeed = speed;
+        radius = 20.0f;
         turret = t;
     }
 
@@ -269,6 +270,8 @@ class Turret : public Entity
     inline static Image salvoTurretIMG;
     inline static Texture2D salvoTurretTX;
 
+  protected:
+    inline static float y_offset = 200; // help in drawing
   private:
     float projectileSpeed;
 
@@ -358,6 +361,18 @@ class duo_turret : public Turret
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
 
+    static void DrawTurretInfo()
+    {
+        DrawTexturePro(duoTurretTexture, {0, 0, (float)duoTurretTexture.width, (float)duoTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
+        DrawText("--- DUO ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
+        DrawText("Level : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 20, 20, BLACK);
+        DrawText("Projectiles : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 40, 20, BLACK);
+        DrawText(TextFormat("Dmg/Proj : %d", (int)normal_bullet_damage), GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
+        DrawText(TextFormat("Fire rate : %d", (int)duo_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
+        DrawText(TextFormat("Range : %d tiles", (int)(duo_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
+        DrawText("Spread : 0", GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
+    }
+
   private:
     float GetRotationSpeed() override { return rotationSpeed; }
 };
@@ -395,6 +410,17 @@ class ripple_turret : public Turret
         DrawTexturePro(rippleTurretTexture, {0, 0, (float)rippleTurretTexture.width, (float)rippleTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
+    static void DrawTurretInfo()
+    {
+        DrawTexturePro(rippleTurretTexture, {0, 0, (float)rippleTurretTexture.width, (float)rippleTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
+        DrawText("--- RIPPLE ---", GRID_COLS * TILE_SIZE + 40, y_offset - 20, 40, BLACK);
+        DrawText("Level : 2", GRID_COLS * TILE_SIZE + 140, y_offset + 20, 20, BLACK);
+        DrawText("Projectiles : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 40, 20, BLACK);
+        DrawText(TextFormat("Dmg/Proj : %.1f", flame_bullet_damage), GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
+        DrawText(TextFormat("Fire rate : %d", (int)ripple_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
+        DrawText(TextFormat("Range : %d tiles", (int)(ripple_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
+        DrawText("Spread : 10 degrees", GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
+    }
 
   private:
     float GetRotationSpeed() override { return rotationSpeed; }
@@ -426,6 +452,18 @@ class smite_turret : public Turret
         Vector2 gunOrigin = {(float)smiteTurretTexture.width / 2.0f, (float)smiteTurretTexture.height / 2.0f};
         DrawTexturePro(smiteTurretTexture, {0, 0, (float)smiteTurretTexture.width, (float)smiteTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
+    }
+    static void DrawTurretInfo()
+    {
+        DrawTexturePro(smiteTurretTexture, {0, 0, (float)smiteTurretTexture.width, (float)smiteTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
+        DrawText("--- SMITE ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
+        DrawText("Level : 3", GRID_COLS * TILE_SIZE + 140, y_offset + 20, 20, BLACK);
+        DrawText("Projectiles : 10", GRID_COLS * TILE_SIZE + 140, y_offset + 40, 20, BLACK);
+        DrawText(TextFormat("Dmg/Proj : %.1f", shotgun_bullet_damage), GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
+        DrawText("Pierce count : 3", GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
+        DrawText(TextFormat("Fire rate : %d", (int)smite_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
+        DrawText(TextFormat("Range : %d tiles", (int)(smite_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
+        DrawText("Spread : 30 degrees", GRID_COLS * TILE_SIZE + 140, y_offset + 140, 20, BLACK);
     }
     float GetRotationSpeed() override { return rotationSpeed; }
 };
@@ -806,3 +844,35 @@ class salvo_turret : public Turret
   private:
     float GetRotationSpeed() override { return rotationSpeed; }
 };
+
+// I feel so stupid doing this but this is the only solution i could think of
+inline void DrawCurrentTurretInfo(Turret *turret)
+{
+    if (auto *t = dynamic_cast<duo_turret *>(turret))
+    {
+        duo_turret::DrawTurretInfo();
+    }
+    else if (auto *t = dynamic_cast<ripple_turret *>(turret))
+    {
+        ripple_turret::DrawTurretInfo();
+    }
+    else if (auto *t = dynamic_cast<smite_turret *>(turret))
+    {
+        smite_turret::DrawTurretInfo();
+    }
+    else if (auto *t = dynamic_cast<lancer_turret *>(turret))
+    {
+    }
+    else if (auto *t = dynamic_cast<cyclone_turret *>(turret))
+    {
+    }
+    else if (auto *t = dynamic_cast<meltdown_turret *>(turret))
+    {
+    }
+    else if (auto *t = dynamic_cast<wave_turret *>(turret))
+    {
+    }
+    else if (auto *t = dynamic_cast<salvo_turret *>(turret))
+    {
+    }
+}

@@ -20,7 +20,8 @@ const Color gridLineColor = Color{60, 60, 60, 100}; // colour of border of each 
 const Color mouseHoverColor = Color{100, 255, 100, 50};
 
 // players
-int player_health = 5;
+int player_health = 10;
+int playerMoney = 500;
 
 // targets
 // has been declared here because of some (possible?) use in other files, otherwise is local to the enemy class and is used there only.
@@ -130,4 +131,3 @@ const float ice_stream_speed = flame_bullet_speed * 1.5f;
 const float max_heal_cooldown = 2.0f;
 
 // player
-int playerMoney = 10;
