@@ -51,6 +51,8 @@ class Turret : public Entity
     float m_recoilOffset;
     Tile tileOfTurret;
     TurretType turret;
+
+    int turret_cost;
     Turret(Vector2 pos, Tile &tile, float speed, TurretType t)
     {
         position = pos;     // position of the turret
@@ -335,6 +337,7 @@ class duo_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 5.0f;
         m_recoilOffset = 4.0f;
+        turret_cost = 100;
     }
 
     void Draw() override
@@ -374,6 +377,7 @@ class ripple_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 15.0f;
         m_recoilOffset = 10.0f;
+        turret_cost = 500;
     }
 
     void Draw() override
@@ -406,6 +410,7 @@ class smite_turret : public Turret
         fireTimer = 0.0f;
         rotationSpeed = 15.0f;
         m_recoilOffset = 20.0f;
+        turret_cost = 800;
     }
     void Draw() override
     {
@@ -443,6 +448,7 @@ class lancer_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 2.5f;
         m_recoilOffset = 8.0f;
+        turret_cost = 200;
     }
     void Draw() override
     {
@@ -481,6 +487,7 @@ class cyclone_turret : public Turret
         range = cyclone_turret_range;
         rotationSpeed = 5.0f;
         m_recoilOffset = 5.0f;
+        turret_cost = 500;
     }
     void Update(float deltaTime) override
     {
@@ -598,6 +605,7 @@ class meltdown_turret : public Turret
         range = meltdown_turret_range;
         rotationSpeed = 8.0f;
         m_recoilOffset = 10.0f;
+        turret_cost = 1000;
     }
     void Update(float deltaTime) override
     {
@@ -709,6 +717,7 @@ class wave_turret : public Turret
         cooldown_timer = 0;
         this->active_timer = wave_turret_active_time;
         range = wave_turret_range;
+        turret_cost = 300;
     }
     void Update(float deltaTime) override
     {
@@ -775,6 +784,7 @@ class salvo_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 15.0f;
         m_recoilOffset = 5.0f;
+        turret_cost = 600;
     }
 
     void Draw() override

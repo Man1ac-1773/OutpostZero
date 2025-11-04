@@ -2,8 +2,8 @@
 #include "Particles.h"
 #include <raylib.h>
 // initial screen dimensions
-int screenWidth = 1000;
-int screenHeight = 600;
+int screenWidth = 1200;
+int screenHeight = 650;
 
 // intro
 const int introBoxWidth = 250;
@@ -128,3 +128,6 @@ const float ice_stream_speed = flame_bullet_speed * 1.5f;
 
 // helpers
 const float max_heal_cooldown = 2.0f;
+
+// player
+int playerMoney = 10;

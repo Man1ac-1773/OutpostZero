@@ -38,16 +38,14 @@ class Enemy : public Entity
     bool took_damage = false;
     bool isVisible = true;
     bool healed_this_frame = false;
-
+    int kill_reward;
     StatusEffects status_effect = StatusEffects::NONE;
     float status_timer = 0.0f;
     Vector2 targetPos = targets[map_counter];
-    inline static int enemy_count = 0;
     Enemy()
     {
         id = next_id++;
         position = startPos;
-        enemy_count++;
     }
     // idea to use multiplier as a fall-off for distance
     void TakeDamage(ProjectileType proj_type, float multiplier)
@@ -91,6 +89,7 @@ class Enemy : public Entity
         }
         if (hp <= 0)
         {
+            playerMoney += kill_reward;
             Destroy();
             particles.SpawnExplosion(position, proj_type);
             // Death animation
@@ -105,6 +104,7 @@ class Enemy : public Entity
         if (hp <= 0)
         {
             Destroy();
+            playerMoney += kill_reward;
             particles.SpawnExplosion(position, proj_type);
         }
         took_damage = true;
@@ -203,7 +203,6 @@ class Enemy : public Entity
         if (is_active)
         {
             is_active = false;
-            enemy_count--;
         }
         return;
     }
@@ -238,6 +237,11 @@ class Enemy : public Entity
         heartIMG = LoadImage("assets/others/heart.png");
         heartTX = LoadTextureFromImage(heartIMG);
         UnloadImage(heartIMG);
+
+        currencyIMG = LoadImage("assets/others/currency.png");
+        ImageResize(&currencyIMG, 20, 20);
+        currencyTX = LoadTextureFromImage(currencyIMG);
+        UnloadImage(currencyIMG);
     }
     static void DestroyTextures()
     {
@@ -247,13 +251,16 @@ class Enemy : public Entity
     }
 
     /* a lot of declarations here huh
-     * what is this static inline
      * Need explained in Turret.h
      * Or read documentation
      */
     // heart for player
     inline static Image heartIMG;
     inline static Texture2D heartTX;
+
+    // currency
+    inline static Image currencyIMG;
+    inline static Texture2D currencyTX;
 
   protected:
     // enemy : flare
@@ -290,6 +297,7 @@ class flare_enemy : public Enemy
         original_speed = speed;
         hp = flare_enemy_health;
         max_hp = flare_enemy_health;
+        kill_reward = 10;
         // this one line caused a bug that took me 4 hours to find and fix. I hate u
         velocity = velFromSpeed(position, targetPos, speed);
     }
@@ -333,6 +341,7 @@ class mono_enemy : public Enemy
         original_speed = speed;
         hp = mono_enemy_health;
         max_hp = mono_enemy_health;
+        kill_reward = 15;
         velocity = velFromSpeed(position, targetPos, speed);
     }
 
@@ -377,6 +386,7 @@ class crawler_enemy : public Enemy
         hp = crawler_enemy_health;
         max_hp = crawler_enemy_health;
         original_speed = speed;
+        kill_reward = 25;
         isVisible = false;
 
         velocity = velFromSpeed(position, targetPos, speed);
@@ -428,6 +438,7 @@ class poly_enemy : public Enemy
         hp = mono_enemy_health;
         max_hp = mono_enemy_health;
         original_speed = speed;
+        kill_reward = 20;
         velocity = velFromSpeed(position, targetPos, speed);
         range = 3.0f * TILE_SIZE;
     }
@@ -480,6 +491,8 @@ class poly_enemy : public Enemy
     EnemyType GetEnemyType() override { return EnemyType::POLY; }
 };
 
+/* Tank like enemy
+ */
 class locus_enemy : public Enemy
 {
   public:
@@ -490,6 +503,7 @@ class locus_enemy : public Enemy
         original_speed = speed;
         hp = locus_enemy_health;
         max_hp = hp;
+        kill_reward = 40;
         velocity = velFromSpeed(position, targetPos, speed);
     }
     void Draw() override

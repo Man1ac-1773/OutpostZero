@@ -22,13 +22,15 @@ enum class buildState
     LANCER,
     WAVE,
 };
+static buildState current_build;
+
 static Map gameMap;
 static bool initialized = false;
 static Camera2D camera = {0};
-static buildState current_build;
 Vector2 screenCenter = {(float)screenWidth / 2, (float)screenHeight / 2};
-static WaveManager wave_manager;
 static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our entities
+
+static WaveManager wave_manager;
 
 Scene Game()
 {
@@ -87,7 +89,7 @@ Scene Game()
             {
             case buildState::DUO:
             {
-                entities.push_back(make_unique<smite_turret>(turretPos, *tile));
+                entities.push_back(make_unique<duo_turret>(turretPos, *tile));
                 break;
             }
             case buildState::LANCER:
@@ -97,7 +99,7 @@ Scene Game()
             }
             case buildState::WAVE:
             {
-                entities.push_back(make_unique<salvo_turret>(turretPos, *tile));
+                entities.push_back(make_unique<wave_turret>(turretPos, *tile));
                 break;
             }
             }
@@ -160,6 +162,15 @@ Scene Game()
         {
             if (!enemy->IsActive() || !projectile->IsActive())
                 continue;
+            /* for collision checking
+             * we are basically checking if this projectile
+             * has the enemy_id in it's "currently colliding" stack,
+             * So as to prevent cases where collisions are detected each frame,
+             * before the projectile has had a chance to leave the hitbox of
+             * enemy.
+             * If they are colliding => check if they have already collided
+             * else => remove from current_colliding stack;
+             */
             bool colliding = CheckCollisionCircles(projectile->GetPosition(), projectile->GetRadius(), enemy->GetPosition(), enemy->GetRadius());
             if (colliding)
             {
@@ -252,21 +263,28 @@ Scene Game()
             wave_manager.StartNextWave();
         }
     }
+    // ---- three turret draw calls ----
+    // These draw the textures on the buttons
     DrawTexturePro(Turret::duoTurretTexture, {0, 0, (float)(Turret::duoTurretTexture.width), (float)(Turret::duoTurretTexture.height)}, {(float)Turret::duoTurretTexture.width / 2.0f, (screenHeight - (float)Turret::duoTurretTexture.height) + 6.0f, TILE_SIZE, TILE_SIZE}, {Turret::duoTurretTexture.width / 2.0f, Turret::duoTurretTexture.height / 2.0f}, 0.0f, WHITE);
 
     DrawTexturePro(Turret::lancerTurretTexture, {0, 0, (float)(Turret::lancerTurretTexture.width), (float)(Turret::lancerTurretTexture.height)}, {TILE_SIZE + (float)Turret::lancerTurretTexture.width / 2.0f, (screenHeight - (float)Turret::lancerTurretTexture.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::lancerTurretTexture.width / 2.0f, Turret::lancerTurretTexture.height / 2.0f}, 0.0f, WHITE);
+
     DrawTexturePro(Turret::waveTurretTX, {0, 0, (float)(Turret::waveTurretTX.width), (float)(Turret::waveTurretTX.height)}, {2 * TILE_SIZE + (float)Turret::waveTurretTX.width / 2.0f, (screenHeight - (float)Turret::waveTurretTX.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::waveTurretTX.width / 2.0f, Turret::waveTurretTX.height / 2.0f}, 0.0f, WHITE);
+    // ---- ----
+
+    // --- Drawing heart and currency textures ---
+    DrawTexturePro(Enemy::heartTX, {0, 0, (float)Enemy::heartTX.width, (float)Enemy::heartTX.height}, {(float)screenWidth - 20.0f, (float)screenHeight - 20.0f, (float)Enemy::heartTX.width, (float)Enemy::heartTX.height}, {Enemy::heartTX.width / 2.0f, Enemy::heartTX.height / 2.0f}, 0.0f, WHITE);
+    DrawTexture(Enemy::currencyTX, screenWidth - 100, 40, WHITE);
+    // ---- ----
 
     DrawFPS(screenWidth - 80, 10);
-    DrawText("Z: Spawn Fast enemy | X: Spawn Standard Enemy", 10, 10, 20, BLACK);
-    DrawText(TextFormat("Enemies : %d", Enemy::enemy_count), screenWidth - MeasureText("Enemies : xxx", 20), 30, 20, BLACK);
     DrawText(TextFormat("Health : %d", player_health), screenWidth - MeasureText("Health : x    ", 20), screenHeight - 28, 20, RED);
+    DrawText(TextFormat(" : %d", playerMoney), screenWidth - 80, 40, 20, GREEN);
     if (player_health <= 0)
     {
         DrawText("GAME OVER !! ", screenWidth / 2.0f - 300, screenHeight / 2.0f - 30, 100, RED);
         for_each(enemy_ptrs.begin(), enemy_ptrs.end(), [](Enemy *e) { e->Destroy(); });
     }
-    DrawTexturePro(Enemy::heartTX, {0, 0, (float)Enemy::heartTX.width, (float)Enemy::heartTX.height}, {(float)screenWidth - 20.0f, (float)screenHeight - 20.0f, (float)Enemy::heartTX.width, (float)Enemy::heartTX.height}, {Enemy::heartTX.width / 2.0f, Enemy::heartTX.height / 2.0f}, 0.0f, WHITE);
     return Scene::GAME;
 }
 /* I recognise the use of magic numbers and the potential harms that come with it.
