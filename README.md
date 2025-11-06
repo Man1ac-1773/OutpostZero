@@ -3,13 +3,15 @@
 A 2D tower defense game where players deploy turrets along a fixed path to stop enemy waves. Defeating enemies earns resources to build and upgrade defenses. Periodic boss waves provide bonus rewards. Featuring multiple enemy and turret types that offer wide variety to actions performable in-game. 
 
 ## Instructions on how to run the game
+- These instructions are for POSIX compliant systems, and for Windows user with WSL
+- external libraries used in the game come included with the git repo
 ### Pre-requisites
-- Instructions only for POSIX compliant systems - windows support later maybe idk im not smart enough
-- raylib must be installed on the system. raygui is a library (also required) but is included in /src. 
 - cpp compiler. C++17+ 
 - This project uses a Makefile for builds. Ensure GNU Make is installed. 
+- Ensure `git` is installed
 --- 
-- Clone the entire repo. 
+- Clone the repo with `git clone --recursive https://github.com/Man1ac-1773/OutpostZero_1101.git`. 
+- If already cloned without `--recursive` flag, then run `git submodule update --init --recursive` inside the cloned folder. 
 - Either run `make` while in the main directory, or run the script `run.sh`
 - if ran `make`, run the final executable as `$ ./build/output`
 
@@ -21,7 +23,9 @@ A 2D tower defense game where players deploy turrets along a fixed path to stop 
     - Projectile based
     - Laser based
     - Status effect based
-- Each turret has 3 tiers which are in increasing order of power and efficacy. (total 9 turrets)
+- The first two turrets has 3 tiers which are in increasing order of power and efficacy.
+- The last one has only two tiers. 
+- total 8 turrets
 - The textures for turrets are taken from the open-source game "Mindustry"
 - While their functionality is NOT the same as in mindustry, it takes close inspiration. 
 - Place turrets at strategic location to kill all enemies before they reach your base. 
@@ -34,8 +38,8 @@ A 2D tower defense game where players deploy turrets along a fixed path to stop 
 - function Game() defined in Game.cpp is called per frame to show the game. 
 - Turrets, Projectiles, Enemies are handled in different files, declaring classes and using inheritance for individual entities. 
 - A seperate Particles class in `Particle.h` is defined to handle particle effect for visual pleasure.
-- Map functionality is handled indpendently with the help of Map.h, generation and storage, while other entities make use of it occasionally. 
+- Map functionality is handled independantly with the help of `Map.h`, generation and storage, while other entities make use of it occasionally. 
 - main game loop puts all entities in one array, and calls required function on it, which are overriden in their class definition and call the correct function
 - smart pointers are used to manage these entities 
-- GUI is drawn at end using `raygui.h` (included in the source files). 
+- GUI is drawn at end using `raygui.h`. 
 
