@@ -4,8 +4,8 @@
 #include "Map.h"
 #include "Particles.h"
 #include "Projectile.h"
-#include "raylib.h"
 #include "raygui.h"
+#include "raylib.h"
 #include "raymath.h"
 #include "utils.h"
 #include <Config.h>
@@ -50,11 +50,11 @@ class Turret : public Entity
     float rotationSpeed;
     float recoilOffset;
     float m_recoilOffset;
-    Tile tileOfTurret;
+    Tile *tileOfTurret;
     TurretType turret;
 
     inline static int turret_cost;
-    Turret(Vector2 pos, Tile &tile, float speed, TurretType t)
+    Turret(Vector2 pos, Tile *tile, float speed, TurretType t)
     {
         position = pos;     // position of the turret
         gunRotation = 0.0f; // initial rotation of the gun
@@ -154,7 +154,7 @@ class Turret : public Entity
     // name is self-explanatory
     void drawRangeOnHover(Vector2 pos)
     {
-        if (CheckCollisionPointRec(pos, tileOfTurret.rect))
+        if (CheckCollisionPointRec(pos, tileOfTurret->rect))
         {
             DrawCircleLines(position.x, position.y, range, YELLOW);
         }
@@ -324,20 +324,20 @@ class Turret : public Entity
 // --------------------------------------------
 
 /* BASIC TURRET SYSTEMS
-* In reverse order of power, strongest first
-* this pattern was chosen to accomodate for upgrade paths, that require the stronger turret to be defined first
-* so that the weaker can run a make_unique<StrongerTurret> in its upgrade function
-*/
+ * In reverse order of power, strongest first
+ * this pattern was chosen to accomodate for upgrade paths, that require the stronger turret to be defined first
+ * so that the weaker can run a make_unique<StrongerTurret> in its upgrade function
+ */
 
 /*  Strongest projectile turret
-* Fires multiple projectiles in a spread pattern
-* High damage output, but slow fire rate
-* Intended to be good at crowd control
-*/
+ * Fires multiple projectiles in a spread pattern
+ * High damage output, but slow fire rate
+ * Intended to be good at crowd control
+ */
 class smite_turret : public Turret
 {
   public:
-    smite_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, shotgun_bullet_speed, TurretType::SMITE)
+    smite_turret(Vector2 pos, Tile *tile) : Turret(pos, tile, shotgun_bullet_speed, TurretType::SMITE)
     {
         range = smite_turret_range;
         cooldownTimer = 1 / smite_turret_fire_rate;
@@ -361,7 +361,7 @@ class smite_turret : public Turret
         DrawTexturePro(smiteTurretTexture, {0, 0, (float)smiteTurretTexture.width, (float)smiteTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
-     bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override 
+    bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override
     {
         DrawTexturePro(smiteTurretTexture, {0, 0, (float)smiteTurretTexture.width, (float)smiteTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
         DrawText("--- SMITE ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
@@ -372,7 +372,15 @@ class smite_turret : public Turret
         DrawText(TextFormat("Fire rate : %d", (int)smite_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(smite_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         DrawText("Spread : 30 degrees", GRID_COLS * TILE_SIZE + 140, y_offset + 140, 20, BLACK);
-        return false; 
+        Rectangle sellButton = {GRID_COLS * TILE_SIZE + 150, y_offset + 180, 120, 40};
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", smite_turret::turret_cost - 200)))
+        {
+            this->tileOfTurret->hasTurret = false;
+            playerMoney += (smite_turret::turret_cost - 200);
+            this->Destroy();
+            return true;
+        }
+        return false;
     }
     float GetRotationSpeed() override { return rotationSpeed; }
 };
@@ -386,7 +394,7 @@ class smite_turret : public Turret
 class ripple_turret : public Turret
 {
   public:
-    ripple_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, flame_bullet_speed, TurretType::RIPPLE)
+    ripple_turret(Vector2 pos, Tile *tile) : Turret(pos, tile, flame_bullet_speed, TurretType::RIPPLE)
     {
         range = ripple_turret_range;
         cooldownTimer = 1 / ripple_turret_fire_rate;
@@ -411,7 +419,7 @@ class ripple_turret : public Turret
         DrawTexturePro(rippleTurretTexture, {0, 0, (float)rippleTurretTexture.width, (float)rippleTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
-     bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override 
+    bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override
     {
         DrawTexturePro(rippleTurretTexture, {0, 0, (float)rippleTurretTexture.width, (float)rippleTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
         DrawText("--- RIPPLE ---", GRID_COLS * TILE_SIZE + 40, y_offset - 20, 40, BLACK);
@@ -421,7 +429,24 @@ class ripple_turret : public Turret
         DrawText(TextFormat("Fire rate : %d", (int)ripple_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(ripple_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Spread : %.1f deg", flame_bullet_spread), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
-        return false; 
+        Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", smite_turret::turret_cost)) && playerMoney >= smite_turret::turret_cost)
+        {
+            entities.push_back(make_unique<smite_turret>(this->position, this->tileOfTurret));
+            playerMoney -= smite_turret::turret_cost;
+            this->Destroy();
+            return true;
+        }
+        Rectangle sellButton = {GRID_COLS * TILE_SIZE + 220, y_offset + 160, 120, 40};
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", ripple_turret::turret_cost - 100)))
+        {
+            this->tileOfTurret->hasTurret = false;
+            playerMoney += (ripple_turret::turret_cost - 100);
+            this->Destroy();
+            return true;
+        }
+
+        return false;
     }
 
   private:
@@ -437,7 +462,7 @@ class duo_turret : public Turret
 {
 
   public:
-    duo_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, normal_bullet_speed, TurretType::DUO)
+    duo_turret(Vector2 pos, Tile *tile) : Turret(pos, tile, normal_bullet_speed, TurretType::DUO)
     {
         range = duo_turret_range;
         cooldownTimer = 1 / duo_turret_fire_rate;
@@ -454,7 +479,6 @@ class duo_turret : public Turret
         DrawTexturePro(turretBaseTexture, {0, 0, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, {position.x, position.y, (float)turretBaseTexture.width, (float)turretBaseTexture.height}, baseOrigin, 0.0f, WHITE);
 
         // calculating change in gun_rec to account for recoil
-        //
         float angleRad = gunRotation * DEG2RAD;
         Vector2 direction = {cosf(angleRad), sinf(angleRad)};
         Vector2 gunDrawPosition = Vector2Subtract(position, Vector2Scale(direction, recoilOffset));
@@ -465,7 +489,7 @@ class duo_turret : public Turret
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
 
-    bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override 
+    bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override
     {
         DrawTexturePro(duoTurretTexture, {0, 0, (float)duoTurretTexture.width, (float)duoTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
         DrawText("--- DUO ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
@@ -476,13 +500,21 @@ class duo_turret : public Turret
         DrawText(TextFormat("Range : %d tiles", (int)(duo_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText("Spread : 0", GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
-        if (GuiButton(upgradeButton,TextFormat("Upgrade (%d)", ripple_turret::turret_cost)))
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", ripple_turret::turret_cost)) && playerMoney >= ripple_turret::turret_cost)
         {
             entities.push_back(make_unique<ripple_turret>(this->position, this->tileOfTurret));
             this->Destroy();
             return true;
-        } 
-       return false;
+        }
+        Rectangle sellButton = {GRID_COLS * TILE_SIZE + 220, y_offset + 160, 120, 40};
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", duo_turret::turret_cost - 20)))
+        {
+            this->tileOfTurret->hasTurret = false;
+            playerMoney += (duo_turret::turret_cost - 20);
+            this->Destroy();
+            return true;
+        }
+        return false;
     }
 
   private:
@@ -495,13 +527,13 @@ class duo_turret : public Turret
  * INVOLVES THREE TURRETS, IN REVERSE ORDER OF UPGRADE
  */
 
-/* Third Turret : 
-* Fires a continuous sustained beam from source to dest for a few seconds, after which cools down. 
-* Damages everything in the path.
-* High damage output at disadvantage of cooldown
-* very good at single target damage
-* but beam is thick enough to hit multiple targets
-* end-game turret
+/* Third Turret :
+ * Fires a continuous sustained beam from source to dest for a few seconds, after which cools down.
+ * Damages everything in the path.
+ * High damage output at disadvantage of cooldown
+ * very good at single target damage
+ * but beam is thick enough to hit multiple targets
+ * end-game turret
  */
 class meltdown_turret : public Turret
 {
@@ -512,7 +544,7 @@ class meltdown_turret : public Turret
     Vector2 target_pos;
     float recoil_velocity = 100.0f;
     float beamThickness = 10.0f;
-    meltdown_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::MELTDOWN)
+    meltdown_turret(Vector2 pos, Tile *tile) : Turret(pos, tile, 0.0f, TurretType::MELTDOWN)
     {
         range = meltdown_turret_range;
         rotationSpeed = 8.0f;
@@ -618,13 +650,20 @@ class meltdown_turret : public Turret
         DrawText(TextFormat("Beam timer : %.1f", meltdown_turret_beam_timer), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
         DrawText(TextFormat("Cooldown Timer : %.1f", meltdown_turret_cooldown_timer), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(meltdown_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
-        return false; 
+        Rectangle sellButton = {GRID_COLS * TILE_SIZE + 150, y_offset + 160, 120, 40};
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", meltdown_turret::turret_cost - 300)))
+        {
+            this->tileOfTurret->hasTurret = false;
+            playerMoney += (meltdown_turret::turret_cost - 300);
+            this->Destroy();
+            return true;
+        }
+        return false;
     }
 
   private:
     float GetRotationSpeed() override { return rotationSpeed; }
 };
-
 
 /* Second Turret : Fires an instantaneous bolt from source
  * in the direction of closes enemy with bolt extending
@@ -638,7 +677,7 @@ class cyclone_turret : public Turret
     bool is_active;
 
     Vector2 target_pos;
-    cyclone_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::CYCLONE)
+    cyclone_turret(Vector2 pos, Tile *tile) : Turret(pos, tile, 0.0f, TurretType::CYCLONE)
     {
         range = cyclone_turret_range;
         rotationSpeed = 5.0f;
@@ -739,7 +778,7 @@ class cyclone_turret : public Turret
             EndBlendMode();
         }
     }
-     bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override
+    bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override
     {
         DrawTexturePro(cycloneTurretTexture, {0, 0, (float)cycloneTurretTexture.width, (float)cycloneTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
         DrawText("--- CYCLONE ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
@@ -748,6 +787,23 @@ class cyclone_turret : public Turret
         DrawText(TextFormat("Base damage : %.1f", cyclone_beam_damage), GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
         DrawText(TextFormat("Fire rate : %.2f", 1 / (cyclone_turret_cooldown_timer + cyclone_turret_beam_timer)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(cyclone_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
+        Rectangle sellButton = {GRID_COLS * TILE_SIZE + 150, y_offset + 160, 120, 40};
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", cyclone_turret::turret_cost - 200)))
+        {
+            this->tileOfTurret->hasTurret = false;
+            playerMoney += (cyclone_turret::turret_cost - 200);
+            this->Destroy();
+            return true;
+        }
+        Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", meltdown_turret::turret_cost)) && playerMoney >= meltdown_turret::turret_cost)
+        {
+            entities.push_back(make_unique<meltdown_turret>(this->position, this->tileOfTurret));
+            playerMoney -= meltdown_turret::turret_cost;
+            this->Destroy();
+            return true;
+        }
+        return false;
     }
 
   private:
@@ -755,14 +811,14 @@ class cyclone_turret : public Turret
 };
 
 /* First turret : Fires a laser bolt, a fast moving projectile
-* that pierces through multiple enemies
-* Intended to be a high damage single target turret
-* high innacuracy in the firing mechanism (unintended but accepted)
-*/
+ * that pierces through multiple enemies
+ * Intended to be a high damage single target turret
+ * high innacuracy in the firing mechanism (unintended but accepted)
+ */
 class lancer_turret : public Turret
-{ 
+{
   public:
-    lancer_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, lancer_bullet_speed, TurretType::LANCER)
+    lancer_turret(Vector2 pos, Tile *tile) : Turret(pos, tile, lancer_bullet_speed, TurretType::LANCER)
     {
         range = lancer_turret_range;
         cooldownTimer = 1 / lancer_turret_fire_rate;
@@ -797,15 +853,29 @@ class lancer_turret : public Turret
         DrawText("Pierce count : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
         DrawText(TextFormat("Fire rate : %d", (int)lancer_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(lancer_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
-        return false; 
+        Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", cyclone_turret::turret_cost)) && playerMoney >= cyclone_turret::turret_cost)
+        {
+            entities.push_back(make_unique<cyclone_turret>(this->position, this->tileOfTurret));
+            playerMoney -= cyclone_turret::turret_cost;
+            this->Destroy();
+            return true;
+        }
+        Rectangle sellButton = {GRID_COLS * TILE_SIZE + 220, y_offset + 160, 120, 40};
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", lancer_turret::turret_cost - 50)))
+        {
+            this->tileOfTurret->hasTurret = false;
+            playerMoney += (lancer_turret::turret_cost - 50);
+            this->Destroy();
+            return true;
+        }
+
+        return false;
     }
 
   private:
     float GetRotationSpeed() override { return rotationSpeed; }
 };
-
-
-
 
 // ----------------------------------------
 
@@ -816,7 +886,7 @@ class lancer_turret : public Turret
 class salvo_turret : public Turret
 {
   public:
-    salvo_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, ice_stream_speed, TurretType::SALVO)
+    salvo_turret(Vector2 pos, Tile *tile) : Turret(pos, tile, ice_stream_speed, TurretType::SALVO)
     {
         range = salvo_turret_range;
         cooldownTimer = 1 / salvo_turret_fire_rate;
@@ -841,16 +911,25 @@ class salvo_turret : public Turret
         DrawTexturePro(salvoTurretTexture, {0, 0, (float)salvoTurretTexture.width, (float)salvoTurretTexture.height}, // gun source rectangle
                        gunDestRec, gunOrigin, gunRotation + 90.0f, WHITE);
     }
-    bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities)
+    bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override
     {
         DrawTexturePro(salvoTurretTexture, {0, 0, (float)salvoTurretTexture.width, (float)salvoTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
         DrawText("--- SALVO ---", GRID_COLS * TILE_SIZE + 20, y_offset - 20, 40, BLACK);
         DrawText("Level : 2", GRID_COLS * TILE_SIZE + 140, y_offset + 20, 20, BLACK);
         DrawText(TextFormat("Damage/proj : %.1f", ice_stream_damage), GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
         DrawText(TextFormat("Fire rate : %.1f", salvo_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
-        DrawText(TextFormat("Spread : %.1f deg", ice_stream_spread ), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
+        DrawText(TextFormat("Spread : %.1f deg", ice_stream_spread), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(meltdown_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
-        return false; 
+        Rectangle sellButton = {GRID_COLS * TILE_SIZE + 150, y_offset + 160, 120, 40};
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", salvo_turret::turret_cost - 200)))
+        {
+            this->tileOfTurret->hasTurret = false;
+            playerMoney += (salvo_turret::turret_cost - 200);
+            this->Destroy();
+            return true;
+        }
+
+        return false;
     }
 
   private:
@@ -867,7 +946,7 @@ class wave_turret : public Turret
   public:
     float active_timer, cooldown_timer;
     bool is_active = false;
-    wave_turret(Vector2 pos, Tile &tile) : Turret(pos, tile, 0.0f, TurretType::WAVE)
+    wave_turret(Vector2 pos, Tile *tile) : Turret(pos, tile, 0.0f, TurretType::WAVE)
     {
         cooldown_timer = 0;
         this->active_timer = wave_turret_active_time;
@@ -924,7 +1003,7 @@ class wave_turret : public Turret
             DrawCircleV(position, range, Fade(SKYBLUE, 0.2f));
         }
     }
-     bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override 
+    bool DrawTurretInfo(vector<unique_ptr<Entity>> &entities) override
     {
         DrawTexturePro(waveTurretTexture, {0, 0, (float)waveTurretTexture.width, (float)waveTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
         DrawText("--- WAVE ---", GRID_COLS * TILE_SIZE + 20, y_offset - 20, 40, BLACK);
@@ -933,13 +1012,26 @@ class wave_turret : public Turret
         DrawText(TextFormat("Active timer : %.1f", wave_turret_active_time), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
         DrawText(TextFormat("Cooldown Timer : %.1f", wave_turret_cooldown_time), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(wave_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
-        return false; 
+        Rectangle sellButton = {GRID_COLS * TILE_SIZE + 220, y_offset + 160, 120, 40};
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", wave_turret::turret_cost - 100)))
+        {
+            this->tileOfTurret->hasTurret = false;
+            playerMoney += (wave_turret::turret_cost - 100);
+            this->Destroy();
+            return true;
+        }
+        Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", salvo_turret::turret_cost)) && playerMoney >= salvo_turret::turret_cost)
+        {
+            entities.push_back(make_unique<salvo_turret>(this->position, this->tileOfTurret));
+            playerMoney -= salvo_turret::turret_cost;
+            this->Destroy();
+            return true;
+        }
+
+        return false;
     }
 
   private:
     float GetRotationSpeed() override { return rotationSpeed; }
 };
-
-
-
-

@@ -93,7 +93,7 @@ Scene Game()
                 {
                     if (playerMoney >= duo_turret::turret_cost)
                     {
-                        entities.push_back(make_unique<duo_turret>(turretPos, *tile));
+                        entities.push_back(make_unique<duo_turret>(turretPos, tile));
                         tile->hasTurret = true;
                     }
                     break;
@@ -102,7 +102,7 @@ Scene Game()
                 {
                     if (playerMoney >= lancer_turret::turret_cost)
                     {
-                        entities.push_back(make_unique<meltdown_turret>(turretPos, *tile));
+                        entities.push_back(make_unique<meltdown_turret>(turretPos, tile));
                         tile->hasTurret = true;
                     }
                     break;
@@ -111,7 +111,7 @@ Scene Game()
                 {
                     if (playerMoney >= wave_turret::turret_cost)
                     {   
-                        entities.push_back(make_unique<wave_turret>(turretPos, *tile));
+                        entities.push_back(make_unique<wave_turret>(turretPos, tile));
                         tile->hasTurret = true;
                     }
                     break;

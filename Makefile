@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -I$(SRC_DIR) -MMD -MP
+CXXFLAGS = -Wall -I$(SRC_DIR) -I$(LIB_DIR) -MMD -MP
 
 # The next line is for debugging purposes, when using gdb
 # DEBUG_FLAGS = -g -O0 
@@ -12,6 +12,7 @@ BUILD_DIR = build
 TARGET = $(BUILD_DIR)/output
 
 SRC_DIR := src
+LIB_DIR := lib
 SRCS := $(shell find $(SRC_DIR) -name '*.cpp')
 
 OBJ_DIR := $(BUILD_DIR)/obj
