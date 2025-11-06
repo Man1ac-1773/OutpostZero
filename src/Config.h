@@ -24,8 +24,11 @@ extern const Color mouseHoverColor;
 // path followed by enemy
 extern std::vector<Vector2> targets;
 extern Vector2 startPos;
+
 // player
 extern int player_health;
+extern int playerMoney;
+
 
 // map constants
 extern const float TILE_SIZE; // Each tile is NxN pixels
@@ -79,6 +82,7 @@ extern const float lancer_turret_range;
 extern const float cyclone_turret_range;
 extern const float cyclone_turret_beam_timer;
 extern const float cyclone_turret_cooldown_timer;
+extern const int cyclone_turret_max_pierce_count;
 
 // Meltdown turret
 extern const float meltdown_turret_range;
@@ -101,6 +105,7 @@ extern const float normal_bullet_damage;
 // flame
 extern const float flame_bullet_damage;
 extern const float flame_bullet_speed;
+extern const float flame_bullet_spread;
 // shotgun
 extern const float shotgun_bullet_damage;
 extern const float shotgun_bullet_speed;
@@ -114,9 +119,8 @@ extern const float cyclone_beam_damage;
 // salvo
 extern const float ice_stream_speed;
 extern const float ice_stream_damage;
+extern const float ice_stream_spread; 
 
 // helper
 extern const float max_heal_cooldown;
 
-// player
-extern int playerMoney;

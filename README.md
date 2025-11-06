@@ -39,4 +39,3 @@ A 2D tower defense game where players deploy turrets along a fixed path to stop 
 - smart pointers are used to manage these entities 
 - GUI is drawn at end using `raygui.h` (included in the source files). 
 
-

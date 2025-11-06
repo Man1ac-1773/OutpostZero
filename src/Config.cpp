@@ -90,8 +90,9 @@ const float lancer_turret_range = 6.0f * TILE_SIZE;
 
 // cyclone turret
 const float cyclone_turret_range = 9.0f * TILE_SIZE;
-const float cyclone_turret_beam_timer = 0.080f;
+const float cyclone_turret_beam_timer = 0.06f;
 const float cyclone_turret_cooldown_timer = 0.6f;
+const int cyclone_turret_max_pierce_count = 3;
 // meltdown turret
 const float meltdown_turret_range = 5.0f * TILE_SIZE;
 const float meltdown_turret_cooldown_timer = 2.0f;
@@ -112,6 +113,7 @@ const float normal_bullet_damage = 5.0f;
 // flame
 const float flame_bullet_damage = 0.5f;
 const float flame_bullet_speed = 200.0f;
+const float flame_bullet_spread = 15.0f; // degrees
 // shotgun
 const float shotgun_bullet_damage = 5.0f;
 const float shotgun_bullet_speed = 400.0f;
@@ -124,10 +126,9 @@ const float cyclone_beam_damage = 10.0f; // theoretical base damage
                                          // multiplier will act on this depending on range
 
 // salvo
-const float ice_stream_damage = 0.1f;
-const float ice_stream_speed = flame_bullet_speed * 1.5f;
+const float ice_stream_damage = 0.1f; // damage per projectile
+const float ice_stream_speed = flame_bullet_speed * 1.5f; // faster than flame bullets
+const float ice_stream_spread = 5.0f; // degrees
 
 // helpers
 const float max_heal_cooldown = 2.0f;
-
-// player

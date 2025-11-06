@@ -89,28 +89,35 @@ Scene Game()
             Vector2 turretPos = {tile->rect.x + tile->rect.width / 2, tile->rect.y + tile->rect.height / 2};
             switch (current_build)
             {
-            case buildState::DUO:
-            {
-                if (playerMoney >= duo_turret::turret_cost)
+                case buildState::DUO:
                 {
-                    entities.push_back(make_unique<smite_turret>(turretPos, *tile));
+                    if (playerMoney >= duo_turret::turret_cost)
+                    {
+                        entities.push_back(make_unique<duo_turret>(turretPos, *tile));
+                        tile->hasTurret = true;
+                    }
+                    break;
                 }
-                break;
+                case buildState::LANCER:
+                {
+                    if (playerMoney >= lancer_turret::turret_cost)
+                    {
+                        entities.push_back(make_unique<meltdown_turret>(turretPos, *tile));
+                        tile->hasTurret = true;
+                    }
+                    break;
+                }
+                case buildState::WAVE:
+                {
+                    if (playerMoney >= wave_turret::turret_cost)
+                    {   
+                        entities.push_back(make_unique<wave_turret>(turretPos, *tile));
+                        tile->hasTurret = true;
+                    }
+                    break;
+                }
             }
-            case buildState::LANCER:
-            {
-                if (playerMoney >= lancer_turret::turret_cost)
-                    entities.push_back(make_unique<lancer_turret>(turretPos, *tile));
-                break;
-            }
-            case buildState::WAVE:
-            {
-                if (playerMoney >= wave_turret::turret_cost)
-                    entities.push_back(make_unique<wave_turret>(turretPos, *tile));
-                break;
-            }
-            }
-            tile->hasTurret = true;
+            
         }
     }
 
@@ -158,6 +165,7 @@ Scene Game()
         enemy->DoEnemyAction(enemy_ptrs, GetFrameTime());
         enemy->Update();
     }
+    // update wave information
     wave_manager.Update(GetFrameTime(), entities, enemy_ptrs.size());
 
     // ---- INTERACTION PASS -----
@@ -270,6 +278,10 @@ Scene Game()
             wave_manager.StartNextWave();
         }
     }
+    /* This block is here and not merged with the input pass because
+    * I wanted to loop through turrets vectors after they have been populated
+    * in the update pass
+    */
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         Vector2 mousePos = GetMousePosition();
@@ -292,7 +304,7 @@ Scene Game()
 
     DrawTexturePro(Turret::lancerTurretTexture, {0, 0, (float)(Turret::lancerTurretTexture.width), (float)(Turret::lancerTurretTexture.height)}, {TILE_SIZE + (float)Turret::lancerTurretTexture.width / 2.0f, (screenHeight - (float)Turret::lancerTurretTexture.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::lancerTurretTexture.width / 2.0f, Turret::lancerTurretTexture.height / 2.0f}, 0.0f, WHITE);
 
-    DrawTexturePro(Turret::waveTurretTX, {0, 0, (float)(Turret::waveTurretTX.width), (float)(Turret::waveTurretTX.height)}, {2 * TILE_SIZE + (float)Turret::waveTurretTX.width / 2.0f, (screenHeight - (float)Turret::waveTurretTX.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::waveTurretTX.width / 2.0f, Turret::waveTurretTX.height / 2.0f}, 0.0f, WHITE);
+    DrawTexturePro(Turret::waveTurretTexture, {0, 0, (float)(Turret::waveTurretTexture.width), (float)(Turret::waveTurretTexture.height)}, {2 * TILE_SIZE + (float)Turret::waveTurretTexture.width / 2.0f, (screenHeight - (float)Turret::waveTurretTexture.height) + 20.0f, TILE_SIZE, TILE_SIZE}, {Turret::waveTurretTexture.width / 2.0f, Turret::waveTurretTexture.height / 2.0f}, 0.0f, WHITE);
     // ---- ----
 
     // --- Drawing heart and currency textures ---
@@ -301,7 +313,9 @@ Scene Game()
     // ---- ----
 
     // turret info draw call
-    DrawCurrentTurretInfo(currentTurret);
+    if (currentTurret)
+        if (currentTurret->DrawTurretInfo(entities))
+            currentTurret = nullptr;
     // -----
     DrawFPS(screenWidth - 80, 10);
     DrawText(TextFormat("Health : %d", player_health), screenWidth - MeasureText("Health : x      ", 20), screenHeight - 28, 20, RED);
