@@ -40,6 +40,12 @@ extern const int GRID_ROWS;
 extern const float flare_enemy_radius;
 extern const float flare_enemy_speed;
 extern const float flare_enemy_health;
+extern const int flare_enemy_reward;
+extern const int mono_enemy_reward;
+extern const int crawler_enemy_reward;
+extern const int poly_enemy_reward;
+extern const int locus_enemy_reward;
+
 
 // for mono_enemy
 extern const float mono_enemy_radius;
@@ -67,6 +73,15 @@ extern ParticleSystem particles;
 // duo turret
 extern const float duo_turret_fire_rate;
 extern const float duo_turret_range;
+extern const int duo_turret_cost;
+extern const int ripple_turret_cost;
+extern const int smite_turret_cost;
+extern const int lancer_turret_cost;
+extern const int cyclone_turret_cost;
+extern const int meltdown_turret_cost;
+extern const int wave_turret_cost;
+extern const int salvo_turret_cost;
+
 // ripple turret => flamethrower
 extern const float ripple_turret_fire_rate;
 extern const float ripple_turret_range;
@@ -123,4 +138,3 @@ extern const float ice_stream_spread;
 
 // helper
 extern const float max_heal_cooldown;
-

@@ -344,7 +344,7 @@ class smite_turret : public Turret
         fireTimer = 0.0f;
         rotationSpeed = 15.0f;
         m_recoilOffset = 20.0f;
-        turret_cost = 800; // upgrade cost, since not first turret
+        turret_cost = smite_turret_cost; // upgrade cost, since not first turret
     }
     void Draw() override
     {
@@ -401,7 +401,7 @@ class ripple_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 15.0f;
         m_recoilOffset = 10.0f;
-        turret_cost = 500; // upgrade cost, since not first turret
+        turret_cost = ripple_turret_cost; // upgrade cost, since not first turret
     }
 
     void Draw() override
@@ -469,7 +469,7 @@ class duo_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 5.0f;
         m_recoilOffset = 4.0f;
-        turret_cost = 100; // build cost, since first turret
+        turret_cost = duo_turret_cost; // build cost, since first turret
     }
 
     void Draw() override
@@ -549,7 +549,7 @@ class meltdown_turret : public Turret
         range = meltdown_turret_range;
         rotationSpeed = 8.0f;
         m_recoilOffset = 10.0f;
-        turret_cost = 1000; // upgrade cost, since not first turret
+        turret_cost = meltdown_turret_cost; // upgrade cost, since not first turret
     }
     void Update(float deltaTime) override
     {
@@ -682,7 +682,7 @@ class cyclone_turret : public Turret
         range = cyclone_turret_range;
         rotationSpeed = 5.0f;
         m_recoilOffset = 5.0f;
-        turret_cost = 500; // upgrade cost, since not first turret
+        turret_cost = cyclone_turret_cost; // upgrade cost, since not first turret
     }
     void Update(float deltaTime) override
     {
@@ -825,7 +825,7 @@ class lancer_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 2.5f;
         m_recoilOffset = 8.0f;
-        turret_cost = 200; // build cost, since first turret
+        turret_cost = lancer_turret_cost; // build cost, since first turret
     }
     void Draw() override
     {
@@ -893,7 +893,7 @@ class salvo_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 15.0f;
         m_recoilOffset = 5.0f;
-        turret_cost = 600;
+        turret_cost = salvo_turret_cost;
     }
 
     void Draw() override
@@ -951,7 +951,7 @@ class wave_turret : public Turret
         cooldown_timer = 0;
         this->active_timer = wave_turret_active_time;
         range = wave_turret_range;
-        turret_cost = 300;
+        turret_cost = wave_turret_cost;
     }
     void Update(float deltaTime) override
     {

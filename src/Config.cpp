@@ -20,8 +20,26 @@ const Color gridLineColor = Color{60, 60, 60, 100}; // colour of border of each 
 const Color mouseHoverColor = Color{100, 255, 100, 50};
 
 // players
-int player_health = 10;
-int playerMoney = 500;
+int player_health = 10; // max enemies that can cross u
+int playerMoney = 500; // money u start with it
+// turret costs
+const int duo_turret_cost = 100;
+const int ripple_turret_cost = 500;
+const int smite_turret_cost = 800;
+const int lancer_turret_cost = 200;
+const int cyclone_turret_cost = 500;
+const int meltdown_turret_cost = 1000;
+const int wave_turret_cost = 300;
+const int salvo_turret_cost = 600;
+// Not implemented yet
+// const int tsunami_turret_cost = 700;
+
+// enemy kill rewards
+const int flare_enemy_reward = 10;
+const int mono_enemy_reward = 15;
+const int crawler_enemy_reward = 25;
+const int poly_enemy_reward = 20;
+const int locus_enemy_reward = 40;
 
 // targets
 // has been declared here because of some (possible?) use in other files, otherwise is local to the enemy class and is used there only.

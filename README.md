@@ -27,8 +27,8 @@ A 2D tower defense game where players deploy turrets along a fixed path to stop 
 - The last one has only two tiers. 
 - total 8 turrets
 - The textures for turrets are taken from the open-source game "Mindustry"
-- While their functionality is NOT the same as in mindustry, it takes close inspiration. 
-- Place turrets at strategic location to kill all enemies before they reach your base. 
+- While their functionality is NOT the same as in mindustry, it takes close inspiration.
+- Some of the in-game textures used for UI are AI-generated (credits to Gemini)
 
 
 ## Code structure

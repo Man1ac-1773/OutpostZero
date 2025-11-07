@@ -297,7 +297,7 @@ class flare_enemy : public Enemy
         original_speed = speed;
         hp = flare_enemy_health;
         max_hp = flare_enemy_health;
-        kill_reward = 10;
+        kill_reward = flare_enemy_reward;
         // this one line caused a bug that took me 4 hours to find and fix. I hate u
         velocity = velFromSpeed(position, targetPos, speed);
     }
@@ -341,7 +341,7 @@ class mono_enemy : public Enemy
         original_speed = speed;
         hp = mono_enemy_health;
         max_hp = mono_enemy_health;
-        kill_reward = 15;
+        kill_reward = mono_enemy_reward;
         velocity = velFromSpeed(position, targetPos, speed);
     }
 
@@ -386,7 +386,7 @@ class crawler_enemy : public Enemy
         hp = crawler_enemy_health;
         max_hp = crawler_enemy_health;
         original_speed = speed;
-        kill_reward = 25;
+        kill_reward = crawler_enemy_reward;
         isVisible = false;
 
         velocity = velFromSpeed(position, targetPos, speed);
@@ -438,7 +438,7 @@ class poly_enemy : public Enemy
         hp = mono_enemy_health;
         max_hp = mono_enemy_health;
         original_speed = speed;
-        kill_reward = 20;
+        kill_reward = poly_enemy_reward;
         velocity = velFromSpeed(position, targetPos, speed);
         range = 3.0f * TILE_SIZE;
     }
@@ -503,7 +503,7 @@ class locus_enemy : public Enemy
         original_speed = speed;
         hp = locus_enemy_health;
         max_hp = hp;
-        kill_reward = 40;
+        kill_reward = locus_enemy_reward;
         velocity = velFromSpeed(position, targetPos, speed);
     }
     void Draw() override
