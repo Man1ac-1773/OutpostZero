@@ -53,11 +53,10 @@ class Turret : public Entity
     Tile *tileOfTurret;
     TurretType turret;
 
-    inline static int turret_cost;
     Turret(Vector2 pos, Tile *tile, float speed, TurretType t)
     {
         position = pos;     // position of the turret
-        gunRotation = 0.0f; // initial rotation of the gun
+        gunRotation = 0.0f; // initial rotation of the gun (for visual aiming)
         tileOfTurret = tile;
         projectileSpeed = speed;
         radius = 20.0f;
@@ -344,7 +343,6 @@ class smite_turret : public Turret
         fireTimer = 0.0f;
         rotationSpeed = 15.0f;
         m_recoilOffset = 20.0f;
-        turret_cost = smite_turret_cost; // upgrade cost, since not first turret
     }
     void Draw() override
     {
@@ -373,10 +371,10 @@ class smite_turret : public Turret
         DrawText(TextFormat("Range : %d tiles", (int)(smite_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         DrawText("Spread : 30 degrees", GRID_COLS * TILE_SIZE + 140, y_offset + 140, 20, BLACK);
         Rectangle sellButton = {GRID_COLS * TILE_SIZE + 150, y_offset + 180, 120, 40};
-        if (GuiButton(sellButton, TextFormat("Sell (%d)", smite_turret::turret_cost - 200)))
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", smite_turret_cost - 200)))
         {
             this->tileOfTurret->hasTurret = false;
-            playerMoney += (smite_turret::turret_cost - 200);
+            playerMoney += (smite_turret_cost - 200);
             this->Destroy();
             return true;
         }
@@ -401,7 +399,6 @@ class ripple_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 15.0f;
         m_recoilOffset = 10.0f;
-        turret_cost = ripple_turret_cost; // upgrade cost, since not first turret
     }
 
     void Draw() override
@@ -430,18 +427,18 @@ class ripple_turret : public Turret
         DrawText(TextFormat("Range : %d tiles", (int)(ripple_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Spread : %.1f deg", flame_bullet_spread), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
-        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", smite_turret::turret_cost)) && playerMoney >= smite_turret::turret_cost)
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", smite_turret_cost)) && playerMoney >= smite_turret_cost)
         {
             entities.push_back(make_unique<smite_turret>(this->position, this->tileOfTurret));
-            playerMoney -= smite_turret::turret_cost;
+            playerMoney -= smite_turret_cost;
             this->Destroy();
             return true;
         }
         Rectangle sellButton = {GRID_COLS * TILE_SIZE + 220, y_offset + 160, 120, 40};
-        if (GuiButton(sellButton, TextFormat("Sell (%d)", ripple_turret::turret_cost - 100)))
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", ripple_turret_cost - 100)))
         {
             this->tileOfTurret->hasTurret = false;
-            playerMoney += (ripple_turret::turret_cost - 100);
+            playerMoney += (ripple_turret_cost - 100);
             this->Destroy();
             return true;
         }
@@ -469,7 +466,6 @@ class duo_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 5.0f;
         m_recoilOffset = 4.0f;
-        turret_cost = duo_turret_cost; // build cost, since first turret
     }
 
     void Draw() override
@@ -500,17 +496,17 @@ class duo_turret : public Turret
         DrawText(TextFormat("Range : %d tiles", (int)(duo_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText("Spread : 0", GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
-        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", ripple_turret::turret_cost)) && playerMoney >= ripple_turret::turret_cost)
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", ripple_turret_cost)) && playerMoney >= ripple_turret_cost)
         {
             entities.push_back(make_unique<ripple_turret>(this->position, this->tileOfTurret));
             this->Destroy();
             return true;
         }
         Rectangle sellButton = {GRID_COLS * TILE_SIZE + 220, y_offset + 160, 120, 40};
-        if (GuiButton(sellButton, TextFormat("Sell (%d)", duo_turret::turret_cost - 20)))
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", duo_turret_cost - 20)))
         {
             this->tileOfTurret->hasTurret = false;
-            playerMoney += (duo_turret::turret_cost - 20);
+            playerMoney += (duo_turret_cost - 20);
             this->Destroy();
             return true;
         }
@@ -549,7 +545,6 @@ class meltdown_turret : public Turret
         range = meltdown_turret_range;
         rotationSpeed = 8.0f;
         m_recoilOffset = 10.0f;
-        turret_cost = meltdown_turret_cost; // upgrade cost, since not first turret
     }
     void Update(float deltaTime) override
     {
@@ -651,10 +646,10 @@ class meltdown_turret : public Turret
         DrawText(TextFormat("Cooldown Timer : %.1f", meltdown_turret_cooldown_timer), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(meltdown_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         Rectangle sellButton = {GRID_COLS * TILE_SIZE + 150, y_offset + 160, 120, 40};
-        if (GuiButton(sellButton, TextFormat("Sell (%d)", meltdown_turret::turret_cost - 300)))
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", meltdown_turret_cost - 300)))
         {
             this->tileOfTurret->hasTurret = false;
-            playerMoney += (meltdown_turret::turret_cost - 300);
+            playerMoney += (meltdown_turret_cost - 300);
             this->Destroy();
             return true;
         }
@@ -682,7 +677,6 @@ class cyclone_turret : public Turret
         range = cyclone_turret_range;
         rotationSpeed = 5.0f;
         m_recoilOffset = 5.0f;
-        turret_cost = cyclone_turret_cost; // upgrade cost, since not first turret
     }
     void Update(float deltaTime) override
     {
@@ -788,18 +782,18 @@ class cyclone_turret : public Turret
         DrawText(TextFormat("Fire rate : %.2f", 1 / (cyclone_turret_cooldown_timer + cyclone_turret_beam_timer)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(cyclone_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         Rectangle sellButton = {GRID_COLS * TILE_SIZE + 150, y_offset + 160, 120, 40};
-        if (GuiButton(sellButton, TextFormat("Sell (%d)", cyclone_turret::turret_cost - 200)))
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", cyclone_turret_cost - 200)))
         {
             this->tileOfTurret->hasTurret = false;
-            playerMoney += (cyclone_turret::turret_cost - 200);
+            playerMoney += (cyclone_turret_cost - 200);
             this->Destroy();
             return true;
         }
         Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
-        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", meltdown_turret::turret_cost)) && playerMoney >= meltdown_turret::turret_cost)
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", meltdown_turret_cost)) && playerMoney >= meltdown_turret_cost)
         {
             entities.push_back(make_unique<meltdown_turret>(this->position, this->tileOfTurret));
-            playerMoney -= meltdown_turret::turret_cost;
+            playerMoney -= meltdown_turret_cost;
             this->Destroy();
             return true;
         }
@@ -825,7 +819,6 @@ class lancer_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 2.5f;
         m_recoilOffset = 8.0f;
-        turret_cost = lancer_turret_cost; // build cost, since first turret
     }
     void Draw() override
     {
@@ -854,18 +847,18 @@ class lancer_turret : public Turret
         DrawText(TextFormat("Fire rate : %d", (int)lancer_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(lancer_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
-        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", cyclone_turret::turret_cost)) && playerMoney >= cyclone_turret::turret_cost)
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", cyclone_turret_cost)) && playerMoney >= cyclone_turret_cost)
         {
             entities.push_back(make_unique<cyclone_turret>(this->position, this->tileOfTurret));
-            playerMoney -= cyclone_turret::turret_cost;
+            playerMoney -= cyclone_turret_cost;
             this->Destroy();
             return true;
         }
         Rectangle sellButton = {GRID_COLS * TILE_SIZE + 220, y_offset + 160, 120, 40};
-        if (GuiButton(sellButton, TextFormat("Sell (%d)", lancer_turret::turret_cost - 50)))
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", lancer_turret_cost - 50)))
         {
             this->tileOfTurret->hasTurret = false;
-            playerMoney += (lancer_turret::turret_cost - 50);
+            playerMoney += (lancer_turret_cost - 50);
             this->Destroy();
             return true;
         }
@@ -893,7 +886,6 @@ class salvo_turret : public Turret
         fireTimer = 0.0f; // initial timer, ready to fire
         rotationSpeed = 15.0f;
         m_recoilOffset = 5.0f;
-        turret_cost = salvo_turret_cost;
     }
 
     void Draw() override
@@ -921,10 +913,10 @@ class salvo_turret : public Turret
         DrawText(TextFormat("Spread : %.1f deg", ice_stream_spread), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(meltdown_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         Rectangle sellButton = {GRID_COLS * TILE_SIZE + 150, y_offset + 160, 120, 40};
-        if (GuiButton(sellButton, TextFormat("Sell (%d)", salvo_turret::turret_cost - 200)))
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", salvo_turret_cost - 200)))
         {
             this->tileOfTurret->hasTurret = false;
-            playerMoney += (salvo_turret::turret_cost - 200);
+            playerMoney += (salvo_turret_cost - 200);
             this->Destroy();
             return true;
         }
@@ -951,7 +943,6 @@ class wave_turret : public Turret
         cooldown_timer = 0;
         this->active_timer = wave_turret_active_time;
         range = wave_turret_range;
-        turret_cost = wave_turret_cost;
     }
     void Update(float deltaTime) override
     {
@@ -1013,18 +1004,18 @@ class wave_turret : public Turret
         DrawText(TextFormat("Cooldown Timer : %.1f", wave_turret_cooldown_time), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
         DrawText(TextFormat("Range : %d tiles", (int)(wave_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
         Rectangle sellButton = {GRID_COLS * TILE_SIZE + 220, y_offset + 160, 120, 40};
-        if (GuiButton(sellButton, TextFormat("Sell (%d)", wave_turret::turret_cost - 100)))
+        if (GuiButton(sellButton, TextFormat("Sell (%d)", wave_turret_cost - 100)))
         {
             this->tileOfTurret->hasTurret = false;
-            playerMoney += (wave_turret::turret_cost - 100);
+            playerMoney += (wave_turret_cost - 100);
             this->Destroy();
             return true;
         }
         Rectangle upgradeButton = {GRID_COLS * TILE_SIZE + 80, y_offset + 160, 120, 40};
-        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", salvo_turret::turret_cost)) && playerMoney >= salvo_turret::turret_cost)
+        if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", salvo_turret_cost)) && playerMoney >= salvo_turret_cost)
         {
             entities.push_back(make_unique<salvo_turret>(this->position, this->tileOfTurret));
-            playerMoney -= salvo_turret::turret_cost;
+            playerMoney -= salvo_turret_cost;
             this->Destroy();
             return true;
         }

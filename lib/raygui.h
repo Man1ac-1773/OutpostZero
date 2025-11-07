@@ -1064,6 +1064,7 @@ typedef enum {
     #endif
 #else
     #include <stdlib.h>             // Required for: malloc(), calloc(), free() [GuiLoadStyle(), GuiLoadIcons()]
+    #include <cstring>              // Required for: strlen(), memset(), memcpy()
 
     #define RAYGUI_MALLOC(sz)       malloc(sz)
     #define RAYGUI_CALLOC(n,sz)     calloc(n,sz)

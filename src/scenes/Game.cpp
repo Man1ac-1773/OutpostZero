@@ -15,6 +15,7 @@
 #include "raylib.h"
 #include "scenes.h"
 using namespace std;
+
 enum class buildState
 {
     NONE,
@@ -22,23 +23,20 @@ enum class buildState
     LANCER,
     WAVE,
 };
-static buildState current_build;
 
+static buildState current_build;
 static Map gameMap;
 static bool initialized = false;
 static Camera2D camera = {0};
-Vector2 screenCenter = {(float)screenWidth / 2, (float)screenHeight / 2};
 static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our entities
-
 static WaveManager wave_manager;
-
 static Turret *currentTurret = nullptr;
 
 Scene Game()
 {
-
     if (!initialized)
     {
+        Vector2 screenCenter = {(float)screenWidth / 2, (float)screenHeight / 2};
         camera.target = screenCenter;
         camera.offset = screenCenter;
         camera.rotation = 0.0f;
@@ -90,32 +88,32 @@ Scene Game()
             switch (current_build)
             {
                 case buildState::DUO:
-                {
-                    if (playerMoney >= duo_turret::turret_cost)
+                {   // Use the global constant for build cost check
+                    if (playerMoney >= duo_turret_cost)
                     {
                         entities.push_back(make_unique<duo_turret>(turretPos, tile));
                         tile->hasTurret = true;
-                        playerMoney -= duo_turret::turret_cost;
+                        playerMoney -= duo_turret_cost; // This was correct, but I'm including it for completeness
                     }
                     break;
                 }
                 case buildState::LANCER:
                 {
-                    if (playerMoney >= lancer_turret::turret_cost)
+                    if (playerMoney >= lancer_turret_cost)
                     {
                         entities.push_back(make_unique<lancer_turret>(turretPos, tile));
                         tile->hasTurret = true;
-                        playerMoney -= lancer_turret::turret_cost;
+                        playerMoney -= lancer_turret_cost; // This was correct, but I'm including it for completeness
                     }
                     break;
                 }
                 case buildState::WAVE:
                 {
-                    if (playerMoney >= wave_turret::turret_cost)
+                    if (playerMoney >= wave_turret_cost)
                     {   
                         entities.push_back(make_unique<wave_turret>(turretPos, tile));
                         tile->hasTurret = true;
-                        playerMoney -= wave_turret::turret_cost;
+                        playerMoney -= wave_turret_cost; // This was correct, but I'm including it for completeness
                     }
                     break;
                 }
