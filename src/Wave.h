@@ -30,36 +30,53 @@ class WaveManager
         // a wave script is a vector of SpawnCommands
 
         // wave 1: 10 flare enemies, 1 second apart
-        vector<SpawnCommand> wave1;
-        for (int i = 0; i < 10; i++)
-        {
-            wave1.push_back({EnemyType::FLARE, 0.5f});
-        }
-        allWaveScripts.push_back(wave1);
+        allWaveScripts.push_back({
+            {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f},
+            {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}
+        });
 
-        // wave 2: 15 standard enemies, 0.5s apart
-        vector<SpawnCommand> wave2;
-        for (int i = 0; i < 15; i++)
-        {
-            wave2.push_back({EnemyType::FLARE, 0.25f});
-        }
-        allWaveScripts.push_back(wave2);
+        // wave 2: Introduce fast enemies
+        allWaveScripts.push_back({
+            {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f},
+            {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}
+        });
 
-        // wave 3 : 15 standard, 0.1s apart
-        vector<SpawnCommand> wave3;
-        for (int i = 0; i < 15; i++)
-        {
-            wave3.push_back({EnemyType::FLARE, 0.1f});
-        }
-        allWaveScripts.push_back(wave3);
+        // wave 3: Mix basic and fast enemies
+        allWaveScripts.push_back({
+            {EnemyType::FLARE, 1.0f}, {EnemyType::MONO, 0.5f}, {EnemyType::FLARE, 1.0f}, {EnemyType::MONO, 0.5f}, {EnemyType::FLARE, 1.0f},
+            {EnemyType::MONO, 0.5f}, {EnemyType::FLARE, 1.0f}, {EnemyType::MONO, 0.5f}, {EnemyType::FLARE, 1.0f}, {EnemyType::MONO, 0.5f}
+        });
 
-        vector<SpawnCommand> wave4;
-        for (int i = 0; i < 5; i++)
-        {
-            wave4.push_back({EnemyType::MONO, 0.5f});
-        }
-        allWaveScripts.push_back(wave4);
-        // TODO : add more waves
+        // wave 4: Introduce a tanky enemy
+        allWaveScripts.push_back({
+            {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f},
+            {EnemyType::LOCUS, 5.0f}, // A single tank to test damage output
+            {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}
+        });
+
+        // wave 5: A dense wave of fast enemies
+        allWaveScripts.push_back({
+            {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f},
+            {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f},
+            {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}
+        });
+
+        // wave 6: Introduce healers
+        allWaveScripts.push_back({
+            {EnemyType::LOCUS, 3.0f}, {EnemyType::POLY, 0.5f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 3.0f}
+        });
+
+        // wave 7: Introduce invisible enemies
+        allWaveScripts.push_back({
+            {EnemyType::CRAWLER, 1.5f}, {EnemyType::CRAWLER, 1.5f}, {EnemyType::CRAWLER, 1.5f}, {EnemyType::CRAWLER, 1.5f}, {EnemyType::CRAWLER, 1.5f},
+            {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}
+        });
+
+        // wave 8: A tough mix
+        allWaveScripts.push_back({
+            {EnemyType::LOCUS, 4.0f}, {EnemyType::POLY, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f},
+            {EnemyType::LOCUS, 4.0f}, {EnemyType::POLY, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::MONO, 0.2f}
+        });
 
         state = State::WAITING_FOR_PLAYER; // Start waiting for the player
         currentWaveIndex = 0;

@@ -21,25 +21,23 @@ const Color mouseHoverColor = Color{100, 255, 100, 50};
 
 // players
 int player_health = 10; // max enemies that can cross u
-int playerMoney = 500; // money u start with it
+int playerMoney = 400; // money u start with it
 // turret costs
 const int duo_turret_cost = 100;
-const int ripple_turret_cost = 500;
-const int smite_turret_cost = 800;
+const int ripple_turret_cost = 1000;
+const int smite_turret_cost = 2000;
 const int lancer_turret_cost = 200;
-const int cyclone_turret_cost = 500;
-const int meltdown_turret_cost = 1000;
-const int wave_turret_cost = 300;
-const int salvo_turret_cost = 600;
-// Not implemented yet
-// const int tsunami_turret_cost = 700;
+const int cyclone_turret_cost = 1000;
+const int meltdown_turret_cost = 2500;
+const int wave_turret_cost = 1000;
+const int salvo_turret_cost = 3000;
 
 // enemy kill rewards
-const int flare_enemy_reward = 10;
-const int mono_enemy_reward = 15;
-const int crawler_enemy_reward = 25;
-const int poly_enemy_reward = 20;
-const int locus_enemy_reward = 40;
+const int flare_enemy_reward = 20;
+const int mono_enemy_reward = 25;
+const int crawler_enemy_reward = 30; 
+const int poly_enemy_reward = 25;
+const int locus_enemy_reward = 60;
 
 // targets
 // has been declared here because of some (possible?) use in other files, otherwise is local to the enemy class and is used there only.
@@ -58,26 +56,26 @@ const float TILE_SIZE = 40.0f;
 // ---- CONSTANTS FOR ENEMIES ----
 // for flare_enemy
 const float flare_enemy_radius = 12.0f;
-const float flare_enemy_speed = 100.0f;
-const float flare_enemy_health = 10.0f;
+const float flare_enemy_speed = 110.0f; // Slightly faster
+const float flare_enemy_health = 15.0f; // Requires 2 lancer shots or 3 duo shots
 
 // for mono_enemy
 const float mono_enemy_radius = 6.0f;
-const float mono_enemy_speed = 2.0f * flare_enemy_speed;
-const float mono_enemy_health = 5.0f;
+const float mono_enemy_speed = 2.2f * flare_enemy_speed; // Even faster
+const float mono_enemy_health = 8.0f;  // A bit tougher
 
 // for crawler enem
 const float crawler_enemy_radius = 6.0f;
 const float crawler_enemy_speed = 1.5f * flare_enemy_speed;
-const float crawler_enemy_health = mono_enemy_health;
+const float crawler_enemy_health = 12.0f; // Tougher to compensate for being invisible
 
 // for poly enemy
 const float poly_enemy_radius = 8.0f;
 const float poly_enemy_speed = flare_enemy_speed;
-const float poly_enemy_health = mono_enemy_health;
+const float poly_enemy_health = 25.0f; // Make the healer a bit more durable
 
 // for locus_enemy
-const float locus_enemy_health = 20.0f;
+const float locus_enemy_health = 80.0f; // Significantly more health to act as a real tank
 const float locus_enemy_speed = 75.0f;
 const float locus_enemy_radius = 16.0f;
 // ---- ----
@@ -129,7 +127,7 @@ const float salvo_turret_range = wave_turret_range * 1.5f;
 const float normal_bullet_speed = 400.0f;
 const float normal_bullet_damage = 5.0f;
 // flame
-const float flame_bullet_damage = 0.5f;
+const float flame_bullet_damage = 1.0f;
 const float flame_bullet_speed = 200.0f;
 const float flame_bullet_spread = 15.0f; // degrees
 // shotgun

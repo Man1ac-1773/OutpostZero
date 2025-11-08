@@ -314,9 +314,28 @@ Scene Game()
     // ---- ----
 
     // turret info draw call
-    if (currentTurret)
+    if (currentTurret) {
         if (currentTurret->DrawTurretInfo(entities))
             currentTurret = nullptr;
+    } else {
+        // If no turret is selected, show build info for the turret being placed
+        switch (current_build)
+        {
+            case buildState::DUO:
+                duo_turret::DrawBuildInfo();
+                break;
+            case buildState::LANCER:
+                lancer_turret::DrawBuildInfo();
+                break;
+            case buildState::WAVE:
+                wave_turret::DrawBuildInfo();
+                break;
+            case buildState::NONE:
+                // Do nothing
+                break;
+        }
+    }
+
     // -----
     DrawFPS(screenWidth - 80, 10);
     DrawText(TextFormat("Health : %d", player_health), screenWidth - MeasureText("Health : x      ", 20), screenHeight - 28, 20, RED);
@@ -326,6 +345,9 @@ Scene Game()
         DrawText("GAME OVER !! ", screenWidth / 2.0f - 300, screenHeight / 2.0f - 30, 100, RED);
         for_each(enemy_ptrs.begin(), enemy_ptrs.end(), [](Enemy *e) { e->Destroy(); });
     }
+    // Draw Wave Counter
+    DrawText(TextFormat("Wave: %d / %d", wave_manager.GetWaveNumber(), wave_manager.GetTotalWaves()), GRID_COLS * TILE_SIZE + 30, 80, 20, BLACK);
+
     return Scene::GAME;
 }
 /* I recognise the use of magic numbers and the potential harms that come with it.
