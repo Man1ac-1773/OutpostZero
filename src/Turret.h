@@ -501,6 +501,7 @@ class duo_turret : public Turret
         if (GuiButton(upgradeButton, TextFormat("Upgrade (%d)", ripple_turret_cost)) && playerMoney >= ripple_turret_cost)
         {
             entities.push_back(make_unique<ripple_turret>(this->position, this->tileOfTurret));
+            playerMoney -= ripple_turret_cost;
             this->Destroy();
             return true;
         }

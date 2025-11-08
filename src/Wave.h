@@ -20,6 +20,7 @@ class WaveManager
     // getters, in case need to call from outside
     int GetWaveNumber() { return currentWaveIndex + 1; }
     bool IsWaveActive() { return state == State::SPAWNING || state == State::WAVE_IN_PROGRESS; }
+    int GetTotalWaves() { return (int)(allWaveScripts.size()); }
     bool IsFinished() { return state == State::FINISHED; }
 
     bool CanStartNextWave() { return state == State::WAITING_FOR_PLAYER; }

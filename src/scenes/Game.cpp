@@ -340,13 +340,14 @@ Scene Game()
     DrawFPS(screenWidth - 80, 10);
     DrawText(TextFormat("Health : %d", player_health), screenWidth - MeasureText("Health : x      ", 20), screenHeight - 28, 20, RED);
     DrawText(TextFormat(" : %d", playerMoney), screenWidth - 80, 40, 20, GREEN);
+    // game over condition
     if (player_health <= 0)
     {
         DrawText("GAME OVER !! ", screenWidth / 2.0f - 300, screenHeight / 2.0f - 30, 100, RED);
         for_each(enemy_ptrs.begin(), enemy_ptrs.end(), [](Enemy *e) { e->Destroy(); });
     }
-    // Draw Wave Counter
-    DrawText(TextFormat("Wave: %d / %d", wave_manager.GetWaveNumber(), wave_manager.GetTotalWaves()), GRID_COLS * TILE_SIZE + 30, 80, 20, BLACK);
+    // wave counter
+    DrawText(TextFormat("Wave: %d / %d", wave_manager.GetWaveNumber(), wave_manager.GetTotalWaves()), GRID_COLS * TILE_SIZE + 30, 120, 20, BLACK);
 
     return Scene::GAME;
 }
