@@ -446,18 +446,7 @@ class ripple_turret : public Turret
         return false;
     }
 
-    static void DrawBuildInfo()
-    {
-        DrawTexturePro(duoTurretTexture, {0, 0, (float)duoTurretTexture.width, (float)duoTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
-        DrawText("--- DUO ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
-        DrawText("Level : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 20, 20, BLACK);
-        DrawText("Projectiles : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 40, 20, BLACK);
-        DrawText(TextFormat("Dmg/Proj : %d", (int)normal_bullet_damage), GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
-        DrawText(TextFormat("Fire rate : %d", (int)duo_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
-        DrawText(TextFormat("Range : %d tiles", (int)(duo_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
-        DrawText("Spread : 0", GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
-        DrawText(TextFormat("Cost: %d", duo_turret_cost), GRID_COLS * TILE_SIZE + 140, y_offset + 160, 20, DARKGREEN);
-    }
+    
 
   private:
     float GetRotationSpeed() override { return rotationSpeed; }
@@ -526,17 +515,18 @@ class duo_turret : public Turret
         return false;
     }
 
+
     static void DrawBuildInfo()
     {
-        DrawTexturePro(lancerTurretTexture, {0, 0, (float)lancerTurretTexture.width, (float)lancerTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
-        DrawText("--- LANCER ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
+        DrawTexturePro(duoTurretTexture, {0, 0, (float)duoTurretTexture.width, (float)duoTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
+        DrawText("--- DUO ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
         DrawText("Level : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 20, 20, BLACK);
         DrawText("Projectiles : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 40, 20, BLACK);
-        DrawText(TextFormat("Dmg/Proj : %.1f", lancer_bullet_damage), GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
-        DrawText("Pierce count : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
-        DrawText(TextFormat("Fire rate : %d", (int)lancer_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
-        DrawText(TextFormat("Range : %d tiles", (int)(lancer_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
-        DrawText(TextFormat("Cost: %d", lancer_turret_cost), GRID_COLS * TILE_SIZE + 140, y_offset + 160, 20, DARKGREEN);
+        DrawText(TextFormat("Dmg/Proj : %d", (int)normal_bullet_damage), GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
+        DrawText(TextFormat("Fire rate : %d", (int)duo_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
+        DrawText(TextFormat("Range : %d tiles", (int)(duo_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
+        DrawText("Spread : 0", GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
+        DrawText(TextFormat("Cost: %d", duo_turret_cost), GRID_COLS * TILE_SIZE + 140, y_offset + 160, 20, DARKGREEN);
     }
 
   private:
@@ -682,17 +672,7 @@ class meltdown_turret : public Turret
         return false;
     }
 
-    static void DrawBuildInfo()
-    {
-        DrawTexturePro(waveTurretTexture, {0, 0, (float)waveTurretTexture.width, (float)waveTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
-        DrawText("--- WAVE ---", GRID_COLS * TILE_SIZE + 20, y_offset - 20, 40, BLACK);
-        DrawText("Level : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 20, 20, BLACK);
-        DrawText("Base damage : 0", GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
-        DrawText(TextFormat("Active timer : %.1f", wave_turret_active_time), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
-        DrawText(TextFormat("Cooldown Timer : %.1f", wave_turret_cooldown_time), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
-        DrawText(TextFormat("Range : %d tiles", (int)(wave_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
-        DrawText(TextFormat("Cost: %d", wave_turret_cost), GRID_COLS * TILE_SIZE + 140, y_offset + 160, 20, DARKGREEN);
-    }
+    
 
   private:
     float GetRotationSpeed() override { return rotationSpeed; }
@@ -903,6 +883,18 @@ class lancer_turret : public Turret
 
         return false;
     }
+    static void DrawBuildInfo()
+    {
+        DrawTexturePro(lancerTurretTexture, {0, 0, (float)lancerTurretTexture.width, (float)lancerTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
+        DrawText("--- LANCER ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
+        DrawText("Level : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 20, 20, BLACK);
+        DrawText("Projectiles : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 40, 20, BLACK);
+        DrawText(TextFormat("Dmg/Proj : %.1f", lancer_bullet_damage), GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
+        DrawText("Pierce count : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
+        DrawText(TextFormat("Fire rate : %d", (int)lancer_turret_fire_rate), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
+        DrawText(TextFormat("Range : %d tiles", (int)(lancer_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
+        DrawText(TextFormat("Cost: %d", lancer_turret_cost), GRID_COLS * TILE_SIZE + 140, y_offset + 160, 20, DARKGREEN);
+    }
 
   private:
     float GetRotationSpeed() override { return rotationSpeed; }
@@ -1059,6 +1051,17 @@ class wave_turret : public Turret
         }
 
         return false;
+    }
+    static void DrawBuildInfo()
+    {
+        DrawTexturePro(waveTurretTexture, {0, 0, (float)waveTurretTexture.width, (float)waveTurretTexture.height}, {GRID_COLS * TILE_SIZE + 160, y_offset - 70, 2 * (float)duoTurretTexture.width, 2 * (float)duoTurretTexture.height}, {(float)duoTurretTexture.width / 2, (float)duoTurretTexture.height / 2}, 0.0f, WHITE);
+        DrawText("--- WAVE ---", GRID_COLS * TILE_SIZE + 60, y_offset - 20, 40, BLACK);
+        DrawText("Level : 1", GRID_COLS * TILE_SIZE + 140, y_offset + 20, 20, BLACK);
+        DrawText("Base damage : 0", GRID_COLS * TILE_SIZE + 140, y_offset + 60, 20, BLACK);
+        DrawText(TextFormat("Active timer : %.1f", wave_turret_active_time), GRID_COLS * TILE_SIZE + 140, y_offset + 80, 20, BLACK);
+        DrawText(TextFormat("Cooldown Timer : %.1f", wave_turret_cooldown_time), GRID_COLS * TILE_SIZE + 140, y_offset + 100, 20, BLACK);
+        DrawText(TextFormat("Range : %d tiles", (int)(wave_turret_range / TILE_SIZE)), GRID_COLS * TILE_SIZE + 140, y_offset + 120, 20, BLACK);
+        DrawText(TextFormat("Cost: %d", wave_turret_cost), GRID_COLS * TILE_SIZE + 140, y_offset + 160, 20, DARKGREEN);
     }
 
   private:
