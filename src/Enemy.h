@@ -24,6 +24,7 @@ enum class EnemyType
     CRAWLER,
     POLY,
     LOCUS,
+    ANTUMBRA,
 };
 class Enemy : public Entity
 {
@@ -234,6 +235,11 @@ class Enemy : public Entity
         locus_enemyTX = LoadTextureFromImage(locus_enemyIMG);
         UnloadImage(locus_enemyIMG);
 
+        antumbra_enemyIMG = LoadImage("assets/units/Antumbra.png");
+        ImageResize(&antumbra_enemyIMG, 64, 64);
+        antumbra_enemyTX = LoadTextureFromImage(antumbra_enemyIMG);
+        UnloadImage(antumbra_enemyIMG);
+
         heartIMG = LoadImage("assets/others/heart.png");
         heartTX = LoadTextureFromImage(heartIMG);
         UnloadImage(heartIMG);
@@ -283,6 +289,10 @@ class Enemy : public Entity
     inline static Image locus_enemyIMG;
     inline static Texture2D locus_enemyTX;
 
+    // antumbra boss
+    inline static Image antumbra_enemyIMG;
+    inline static Texture2D antumbra_enemyTX;
+
   private:
     static inline unsigned long long next_id = 0;
 };
@@ -295,8 +305,8 @@ class flare_enemy : public Enemy
         radius = flare_enemy_radius;
         speed = flare_enemy_speed;
         original_speed = speed;
-        hp = flare_enemy_health;
-        max_hp = flare_enemy_health;
+        hp = flare_enemy_health * enemy_health_multiplier;
+        max_hp = flare_enemy_health * enemy_health_multiplier;
         kill_reward = flare_enemy_reward;
         // this one line caused a bug that took me 4 hours to find and fix. I hate u
         velocity = velFromSpeed(position, targetPos, speed);
@@ -339,8 +349,8 @@ class mono_enemy : public Enemy
         radius = mono_enemy_radius;
         speed = mono_enemy_speed;
         original_speed = speed;
-        hp = mono_enemy_health;
-        max_hp = mono_enemy_health;
+        hp = mono_enemy_health * enemy_health_multiplier;
+        max_hp = mono_enemy_health * enemy_health_multiplier;
         kill_reward = mono_enemy_reward;
         velocity = velFromSpeed(position, targetPos, speed);
     }
@@ -383,8 +393,8 @@ class crawler_enemy : public Enemy
     {
         radius = crawler_enemy_radius;
         speed = crawler_enemy_speed;
-        hp = crawler_enemy_health;
-        max_hp = crawler_enemy_health;
+        hp = crawler_enemy_health * enemy_health_multiplier;
+        max_hp = crawler_enemy_health * enemy_health_multiplier;
         original_speed = speed;
         kill_reward = crawler_enemy_reward;
         isVisible = false;
@@ -434,9 +444,9 @@ class poly_enemy : public Enemy
     poly_enemy()
     {
         radius = poly_enemy_radius;
-        speed = flare_enemy_speed;
-        hp = mono_enemy_health;
-        max_hp = mono_enemy_health;
+        speed = poly_enemy_speed;
+        hp = poly_enemy_health * enemy_health_multiplier;
+        max_hp = poly_enemy_health * enemy_health_multiplier;
         original_speed = speed;
         kill_reward = poly_enemy_reward;
         velocity = velFromSpeed(position, targetPos, speed);
@@ -478,7 +488,7 @@ class poly_enemy : public Enemy
             if (enemy->GetEnemyType() != EnemyType::POLY && Vector2DistanceSqr(position, enemy->GetPosition()) <= range * range && enemy->hp < enemy->max_hp)
             {
                 enemy->healed_this_frame = true;
-                enemy->hp += 1.0f;
+                enemy->hp += poly_enemy_heal_amount;
                 // this flag is un-set only in the draw loop,
                 // which is why the detection and action happen here
                 // itself, and not seperately.
@@ -501,8 +511,8 @@ class locus_enemy : public Enemy
         radius = locus_enemy_radius;
         speed = locus_enemy_speed;
         original_speed = speed;
-        hp = locus_enemy_health;
-        max_hp = hp;
+        hp = locus_enemy_health * enemy_health_multiplier;
+        max_hp = locus_enemy_health * enemy_health_multiplier;
         kill_reward = locus_enemy_reward;
         velocity = velFromSpeed(position, targetPos, speed);
     }
@@ -534,4 +544,47 @@ class locus_enemy : public Enemy
         DrawHealthBar(hp, locus_enemy_health, position);
     }
     EnemyType GetEnemyType() override { return EnemyType::LOCUS; }
+};
+
+class antumbra_enemy : public Enemy
+{
+  public:
+    antumbra_enemy()
+    {
+        radius = antumbra_enemy_radius;
+        speed = antumbra_enemy_speed;
+        original_speed = speed;
+        hp = antumbra_enemy_health * enemy_health_multiplier;
+        max_hp = antumbra_enemy_health * enemy_health_multiplier;
+        kill_reward = antumbra_enemy_reward;
+        velocity = velFromSpeed(position, targetPos, speed);
+    }
+    void Draw() override
+    {
+        float rotation = atan2f(velocity.y, velocity.x) * RAD2DEG + 90.0f;
+        if (took_damage)
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(antumbra_enemyTX, {0, 0, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {position.x, position.y, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {antumbra_enemyTX.width / 2.0f, antumbra_enemyTX.height / 2.0f}, rotation, WHITE);
+            EndBlendMode();
+            took_damage = false;
+        }
+        else if (healed_this_frame)
+        {
+            BeginBlendMode(BLEND_ADDITIVE);
+            DrawTexturePro(antumbra_enemyTX, {0, 0, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {position.x, position.y, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {antumbra_enemyTX.width / 2.0f, antumbra_enemyTX.height / 2.0f}, rotation, GREEN);
+            EndBlendMode();
+            healed_this_frame = false;
+        }
+        else if (status_effect == StatusEffects::SLOWED)
+        {
+            DrawTexturePro(antumbra_enemyTX, {0, 0, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {position.x, position.y, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {antumbra_enemyTX.width / 2.0f, antumbra_enemyTX.height / 2.0f}, rotation, SKYBLUE);
+        }
+        else
+        {
+            DrawTexturePro(antumbra_enemyTX, {0, 0, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {position.x, position.y, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {antumbra_enemyTX.width / 2.0f, antumbra_enemyTX.height / 2.0f}, rotation, WHITE);
+        }
+        DrawHealthBar(hp, antumbra_enemy_health, position);
+    }
+    EnemyType GetEnemyType() override { return EnemyType::ANTUMBRA; }
 };

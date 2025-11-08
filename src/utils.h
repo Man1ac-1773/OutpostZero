@@ -74,17 +74,17 @@ inline void DrawHealthBar(float curr_health, float max_health, Vector2 entity_po
  */
 inline float GetDamageFalloff(float distSqr, float range, int enemiesHit = 0)
 {
-
     float distRatio;
     // range 0 is passed when we don't want range based falloff
     if (range <= 0.0f)
     {
-        distRatio = 0.0f;
+        distRatio = 0.0f; // No distance falloff
     }
     else
         distRatio = distSqr / (range * range);
 
-    float distanceFalloff = 1.0f - distRatio;
+    // Damage now falls off to 50% at max range, instead of 0%.
+    float distanceFalloff = 1.0f - (0.5f * distRatio);
 
     float pen = 1.0f / (1.0f + 0.5f * enemiesHit);
 

@@ -60,7 +60,7 @@ Scene Game()
     }
     if (IsKeyPressed(KEY_Z))
     {
-        entities.push_back(make_unique<mono_enemy>());
+        entities.push_back(make_unique<antumbra_enemy>());
     }
     if (IsKeyPressed(KEY_C))
     {
@@ -347,7 +347,8 @@ Scene Game()
         for_each(enemy_ptrs.begin(), enemy_ptrs.end(), [](Enemy *e) { e->Destroy(); });
     }
     // wave counter
-    DrawText(TextFormat("Wave: %d / %d", wave_manager.GetWaveNumber(), wave_manager.GetTotalWaves()), GRID_COLS * TILE_SIZE + 30, 120, 20, BLACK);
+    DrawText(TextFormat("Wave: %d / %d", wave_manager.GetWaveNumber(), wave_manager.GetTotalWaves()), GRID_COLS * TILE_SIZE + 30, 110, 20, BLACK);
+    DrawText(TextFormat("Stage: %d", wave_manager.GetStageNumber()), GRID_COLS * TILE_SIZE + 30, 140, 20, DARKGRAY);
 
     return Scene::GAME;
 }

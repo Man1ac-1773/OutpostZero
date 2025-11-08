@@ -22,6 +22,8 @@ const Color mouseHoverColor = Color{100, 255, 100, 50};
 // players
 int player_health = 10; // max enemies that can cross u
 int playerMoney = 250; // money u start with it. Allows for more diverse openings.
+float enemy_health_multiplier = 1.0f; // Global multiplier for enemy health
+
 // turret costs
 const int duo_turret_cost = 100;
 const int ripple_turret_cost = 400;    // T2 Upgrade - Made slightly more affordable
@@ -38,6 +40,7 @@ const int mono_enemy_reward = 15;      // Fast but weak, slightly higher reward.
 const int crawler_enemy_reward = 30;   // Increased reward for a tricky enemy.
 const int poly_enemy_reward = 20;      // Healer, moderate reward.
 const int locus_enemy_reward = 40;     // Tank, good reward.
+const int antumbra_enemy_reward = 1000; // Large reward for a boss.
 
 // targets
 // has been declared here because of some (possible?) use in other files, otherwise is local to the enemy class and is used there only.
@@ -56,28 +59,33 @@ const float TILE_SIZE = 40.0f;
 // ---- CONSTANTS FOR ENEMIES ----
 // for flare_enemy
 const float flare_enemy_radius = 12.0f;
-const float flare_enemy_speed = 100.0f;
-const float flare_enemy_health = 10.0f;
+const float flare_enemy_speed = 90.0f;  // Slightly slower, but more durable.
+const float flare_enemy_health = 12.0f; // Requires 3 duo shots, or 2 lancer shots. Incentivizes Lancer.
 
 // for mono_enemy
 const float mono_enemy_radius = 6.0f;
 const float mono_enemy_speed = 2.0f * flare_enemy_speed;
-const float mono_enemy_health = 5.0f;
-
-// for crawler enem
+const float mono_enemy_health = 9.0f;   // Requires 2 duo shots, but only 1 lancer shot. This makes Lancer a strong counter.
+// for crawler enemy
 const float crawler_enemy_radius = 6.0f;
 const float crawler_enemy_speed = 1.5f * flare_enemy_speed;
-const float crawler_enemy_health = mono_enemy_health;
+const float crawler_enemy_health = 15.0f; // Tougher to kill to make them more of a threat.
 
 // for poly enemy
 const float poly_enemy_radius = 8.0f;
-const float poly_enemy_speed = flare_enemy_speed;
-const float poly_enemy_health = flare_enemy_health;
+const float poly_enemy_speed = locus_enemy_speed; // Match speed with Locus to act as a proper support unit.
+const float poly_enemy_health = 20.0f;  // Healers should be a bit more durable.
+const float poly_enemy_heal_amount = 2.5f; // Amount healed per tick.
 
 // for locus_enemy
-const float locus_enemy_health = 40.0f;
+const float locus_enemy_health = 150.0f; // A true tank. Duo spam will struggle significantly. This demands an upgrade.
 const float locus_enemy_speed = 75.0f;
 const float locus_enemy_radius = 16.0f;
+
+// for antumbra enemy (boss)
+const float antumbra_enemy_health = 2500.0f; // Boss health
+const float antumbra_enemy_speed = 50.0f;    // Slower than Locus
+const float antumbra_enemy_radius = 32.0f;   // Larger radius
 // ---- ----
 
 // particle system
@@ -101,14 +109,14 @@ const float ripple_turret_range = 3.0f * TILE_SIZE;
 const float smite_turret_fire_rate = 1.0f;
 const float smite_turret_range = 5.0f * TILE_SIZE;
 // lancer turret
-const float lancer_turret_fire_rate = 1.0f;
+const float lancer_turret_fire_rate = 1.5f; // Slight buff to make it a more attractive choice.
 const float lancer_turret_range = 6.0f * TILE_SIZE;
 
 // cyclone turret
 const float cyclone_turret_range = 9.0f * TILE_SIZE;
 const float cyclone_turret_beam_timer = 0.06f;
-const float cyclone_turret_cooldown_timer = 0.6f;
-const int cyclone_turret_max_pierce_count = 3;
+const float cyclone_turret_cooldown_timer = 0.8f; // Slower fire rate
+const int cyclone_turret_max_pierce_count = 5;    // Increased pierce
 // meltdown turret
 const float meltdown_turret_range = 5.0f * TILE_SIZE;
 const float meltdown_turret_cooldown_timer = 2.0f;
@@ -138,7 +146,7 @@ const float lancer_bullet_speed = 1000.0f;
 const float lancer_bullet_damage = 10.0f;
 
 // cyclone
-const float cyclone_beam_damage = 10.0f; // theoretical base damage
+const float cyclone_beam_damage = 40.0f; // Significant damage buff
                                          // multiplier will act on this depending on range
 
 // salvo
@@ -147,4 +155,4 @@ const float ice_stream_speed = flame_bullet_speed * 1.5f; // faster than flame b
 const float ice_stream_spread = 5.0f; // degrees
 
 // helpers
-const float max_heal_cooldown = 2.0f;
+const float max_heal_cooldown = 1.0f; // Reduced from 2.0 to double the healing frequency.

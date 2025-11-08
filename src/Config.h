@@ -28,6 +28,7 @@ extern Vector2 startPos;
 // player
 extern int player_health;
 extern int playerMoney;
+extern float enemy_health_multiplier;
 
 
 // map constants
@@ -45,6 +46,7 @@ extern const int mono_enemy_reward;
 extern const int crawler_enemy_reward;
 extern const int poly_enemy_reward;
 extern const int locus_enemy_reward;
+extern const int antumbra_enemy_reward;
 
 
 // for mono_enemy
@@ -61,11 +63,17 @@ extern const float crawler_enemy_health;
 extern const float poly_enemy_radius;
 extern const float poly_enemy_health;
 extern const float poly_enemy_speed;
+extern const float poly_enemy_heal_amount;
 
 // for locus enemy
 extern const float locus_enemy_radius;
 extern const float locus_enemy_speed;
 extern const float locus_enemy_health;
+
+// for antumbra enemy (boss)
+extern const float antumbra_enemy_radius;
+extern const float antumbra_enemy_speed;
+extern const float antumbra_enemy_health;
 // particles
 extern ParticleSystem particles;
 // TURRETS
