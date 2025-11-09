@@ -75,13 +75,17 @@ class WaveManager
             {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}
         });
 
-        // wave 10: BOSS WAVE
+        // wave 10: BOSS WAVE - The Antumbra appears with supporting minions.
         allWaveScripts.push_back({
-            {EnemyType::ANTUMBRA, 0.1f} // A single, super-powered Antumbra Boss. Wave 10 is now the boss wave.
+            {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 5.0f}, // First minion wave
+            {EnemyType::ANTUMBRA, 0.1f}, // The Boss appears!
+            {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 5.0f}, // Second minion wave to distract
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, // A tank-healer pair to complicate things
+            {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f} // Final minion wave
         });
 
         state = State::WAITING_FOR_PLAYER; // Start waiting for the player
-        currentWaveIndex = 0;
+        currentWaveIndex = 9;
         currentCommandIndex = 0;
         spawnTimer = 0;
     }

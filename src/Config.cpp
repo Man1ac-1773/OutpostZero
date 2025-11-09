@@ -83,7 +83,7 @@ const float locus_enemy_speed = 75.0f;
 const float locus_enemy_radius = 16.0f;
 
 // for antumbra enemy (boss)
-const float antumbra_enemy_health = 2500.0f; // Boss health
+const float antumbra_enemy_health = 2000.0f; // Boss health (slightly reduced to account for minions)
 const float antumbra_enemy_speed = 50.0f;    // Slower than Locus
 const float antumbra_enemy_radius = 32.0f;   // Larger radius
 // ---- ----
@@ -95,7 +95,11 @@ ParticleSystem particles;
  * DISCLAIMER FOR CONSTANT RELATIONS
  * duo_turret -> normal_bullet
  * lancer_turret -> laser_bullet
- * more types will come later
+ * ripple_turret -> flame_bullet
+ * smite_turret -> shotgun_bullet
+ * cyclone_turret -> cyclone_beam
+ * salvo_turret -> ice_stream
+ * 
  */
 // duo turret
 const float duo_turret_fire_rate = 4.0f; // bullets/second
