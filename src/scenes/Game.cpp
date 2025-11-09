@@ -49,7 +49,7 @@ Scene Game()
     }
 
     // ---- INPUT PASS ----
-    if (IsKeyPressed(KEY_ESCAPE))
+    /* if (IsKeyPressed(KEY_ESCAPE))
     {
         current_build = buildState::NONE;
     }
@@ -73,7 +73,7 @@ Scene Game()
     if (IsKeyPressed(KEY_S))
     {
         entities.push_back(make_unique<locus_enemy>());
-    }
+    } */
 
     // Spawn turret at mouse (only on buildable tiles)
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
@@ -263,14 +263,17 @@ Scene Game()
     if (GuiButton(basic_turret_buttonRect, ""))
     {
         current_build = buildState::DUO;
+        currentTurret = nullptr; // Deselect any currently selected turret
     }
     if (GuiButton(laser_turret_buttonRect, ""))
     {
         current_build = buildState::LANCER;
+        currentTurret = nullptr; // Deselect any currently selected turret
     }
     if (GuiButton(slow_turret_buttonRect, ""))
     {
         current_build = buildState::WAVE;
+        currentTurret = nullptr; // Deselect any currently selected turret
     }
     if (GuiButton(nextWaveButton, "Next wave"))
     {
