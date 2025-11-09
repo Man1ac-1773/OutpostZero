@@ -25,12 +25,9 @@ class WaveManager
     int GetTotalWaves() { return (int)(allWaveScripts.size()); }
     bool IsFinished() { return state == State::FINISHED; }
 
-    const int BOSS_WAVE_INTERVAL = 10; // A boss appears every 10 waves
-    const int BOSS_REWARD = 500; // Extra money for defeating a boss
-
     bool CanStartNextWave() { return state == State::WAITING_FOR_PLAYER; }
 
-    WaveManager()
+    WaveManager() 
     {
         // 'allWaveScripts' is a vector of wave scripts
         // a wave script is a vector of SpawnCommands
@@ -82,6 +79,45 @@ class WaveManager
             {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 5.0f}, // Second minion wave to distract
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, // A tank-healer pair to complicate things
             {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f} // Final minion wave
+        });
+
+        // --- STAGE 2 WAVES ---
+        // wave 11: A dense swarm of tougher basic enemies.
+        allWaveScripts.push_back({
+            {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f},
+            {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}
+        });
+
+        // wave 12: A serious tank check with multiple Locus/Poly pairs.
+        allWaveScripts.push_back({
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}
+        });
+
+        // wave 13: A massive, continuous stream of fast enemies.
+        allWaveScripts.push_back(vector<SpawnCommand>(40, {EnemyType::MONO, 0.1f}));
+
+        // wave 14: A true invisibility test.
+        allWaveScripts.push_back({
+            {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f},
+            {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}
+        });
+
+        // wave 15: A chaotic mix of everything learned so far.
+        allWaveScripts.push_back({
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}
+        });
+
+        // wave 16, 17, 18, 19: Placeholder for future complex waves. For now, we repeat wave 15 to ramp up.
+        allWaveScripts.push_back(allWaveScripts.back());
+        allWaveScripts.push_back(allWaveScripts.back());
+        allWaveScripts.push_back(allWaveScripts.back());
+        allWaveScripts.push_back(allWaveScripts.back());
+
+        // wave 20: DOUBLE BOSS WAVE
+        allWaveScripts.push_back({
+            {EnemyType::ANTUMBRA, 0.1f}, // First Boss
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 10.0f}, // Minion wave
+            {EnemyType::ANTUMBRA, 0.1f} // Second Boss
         });
 
         state = State::WAITING_FOR_PLAYER; // Start waiting for the player
@@ -150,13 +186,12 @@ class WaveManager
             if (activeEnemies == 0)
             {
                 currentWaveIndex++;
-
+                const int BOSS_WAVE_INTERVAL = 10;
                 // Check if the completed wave was a boss wave
                 if (currentWaveIndex > 0 && (currentWaveIndex % BOSS_WAVE_INTERVAL == 0))
                 {
                     currentStage++;
                     enemy_health_multiplier += 0.5f; // Permanently increase health of all future enemies
-                    playerMoney += BOSS_REWARD; // Give a big cash reward
                 }
 
                 if (currentWaveIndex >= allWaveScripts.size())

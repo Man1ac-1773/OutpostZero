@@ -348,7 +348,12 @@ Scene Game()
     }
     // wave counter
     DrawText(TextFormat("Wave: %d / %d", wave_manager.GetWaveNumber(), wave_manager.GetTotalWaves()), GRID_COLS * TILE_SIZE + 30, 110, 20, BLACK);
-    DrawText(TextFormat("Stage: %d", wave_manager.GetStageNumber()), GRID_COLS * TILE_SIZE + 30, 140, 20, DARKGRAY);
+    DrawText(TextFormat("Stage: %d", wave_manager.GetStageNumber()), GRID_COLS * TILE_SIZE + 30, 140, 20, BLACK);
+
+    if (!wave_manager.IsFinished())
+    {
+        DrawText(TextFormat("Boss in: %d", wave_manager.GetWavesUntilBoss()), GRID_COLS * TILE_SIZE + 30, 170, 20, MAROON);
+    }
 
     return Scene::GAME;
 }

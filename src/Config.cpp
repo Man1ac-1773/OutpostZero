@@ -40,7 +40,7 @@ const int mono_enemy_reward = 15;      // Fast but weak, slightly higher reward.
 const int crawler_enemy_reward = 30;   // Increased reward for a tricky enemy.
 const int poly_enemy_reward = 20;      // Healer, moderate reward.
 const int locus_enemy_reward = 40;     // Tank, good reward.
-const int antumbra_enemy_reward = 1000; // Large reward for a boss.
+const int antumbra_enemy_reward = 1000; // The reward for killing the boss.
 
 // targets
 // has been declared here because of some (possible?) use in other files, otherwise is local to the enemy class and is used there only.
@@ -83,7 +83,7 @@ const float locus_enemy_speed = 75.0f;
 const float locus_enemy_radius = 16.0f;
 
 // for antumbra enemy (boss)
-const float antumbra_enemy_health = 2000.0f; // Boss health (slightly reduced to account for minions)
+const float antumbra_enemy_health = 2000.0f; // Boss health, buffed for late-game scaling
 const float antumbra_enemy_speed = 50.0f;    // Slower than Locus
 const float antumbra_enemy_radius = 32.0f;   // Larger radius
 // ---- ----
