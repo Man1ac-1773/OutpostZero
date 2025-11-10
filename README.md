@@ -14,7 +14,7 @@ Outpost Zero is a 2D tower defense game built with C++ and raylib. Players must 
 *   **Diverse Turret Arsenal:** 8 unique turrets across 3 categories (Projectile, Laser, and Status Effect), each with multiple upgrade tiers.
 *   **Varied Enemy Roster:** Multiple enemy types with unique stats and abilities, from fast-moving swarms to durable, self-healing tanks.
 *   **Dynamic Difficulty:** The game is divided into stages, with enemy health permanently increasing after each boss wave to keep the late game challenging.
-*   **Epic Boss Fights:** Face off against powerful boss enemies in climactic wave encounters.
+*   **Boss Enemies:** Face off against powerful boss enemies in the occassional wave.
 *   **Custom Game Engine:** Built from the ground up in C++17.
 *   **Immediate-Mode GUI:** All in-game UI is handled by the lightweight and efficient `raygui` library.
 
@@ -71,11 +71,10 @@ The core objective is to prevent enemies from reaching the end of a pre-defined 
 *   **Economy:** Defeating enemies earns you currency, which you can use to build new turrets or upgrade existing ones. Managing your economy is key to victory.
 
 ## Code Architecture
-
 The project is structured to be modular and scalable, with a clear separation of concerns.
 
 *   **Scene Management (`main.cpp`):** The main entry point handles the primary game loop and switches between different game scenes (e.g., Intro, Game, Settings). The core gameplay logic is driven by the `Game()` function in `src/scenes/Game.cpp`.
-*   **Entity Component System (ECS-like):**
+*   **Entity System:**
     *   All game objects (Turrets, Enemies, Projectiles) inherit from a base `Entity` class.
     *   These entities are managed in a central `std::vector<std::unique_ptr<Entity>>` in the `Game` scene, simplifying the update and render loops. Smart pointers are used for automatic memory management.
     *   Virtual functions like `Update()` and `Draw()` are overridden by each subclass, allowing for polymorphic behavior in the main loop.
