@@ -84,51 +84,92 @@ class WaveManager
             {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f} // Final minion wave
         });
 
-        // --- STAGE 2 WAVES ---
-        // wave 11: A dense swarm of tougher basic enemies.
+        // --- STAGE 2 WAVES (ENEMY HP x1.5) ---
+        // wave 11: A long, dense, mixed stream to test sustained DPS.
         allWaveScripts.push_back({
-            {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f},
-            {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}
+            {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}
         });
 
-        // wave 12: A serious tank check with multiple Locus/Poly pairs.
+        // wave 12: Tank check
         allWaveScripts.push_back({
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f}, 
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}
         });
 
-        // wave 13: A massive, continuous stream of alernating enemies.
-        vector<SpawnCommand> wave13;
-        for (int i = 0; i < 80; i++)
+        // wave 13: pure number overwhelm
+        allWaveScripts.push_back(vector<SpawnCommand>(50, {EnemyType::MONO, 0.08f}));
+
+        // wave 14: Invis Check with distractions
+        allWaveScripts.push_back({
+            {EnemyType::LOCUS, 3.0f},
+            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 3.0f},
+            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 3.0f},
+            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 3.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f},
+            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 3.0f},
+            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.1f},
+        });
+
+        // wave 15: Random bs very fast
+        allWaveScripts.push_back({
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, 
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}
+        });
+
+        // wave 16: "Wall"
+        vector<SpawnCommand> wave16; 
+        for (int i = 0; i < 100; ++i)
         {
-            if (i%2 == 0)
-                wave13.push_back({EnemyType::MONO, 0.1f});
+            if (i % 2 == 0)
+                wave16.push_back({EnemyType::LOCUS, 0.1f});
             else
-                wave13.push_back({EnemyType::FLARE, 0.1f});
+                wave16.push_back({EnemyType::FLARE, 0.1f});
         }
-        allWaveScripts.push_back(wave13);
+        allWaveScripts.push_back(wave16);
 
-        // wave 14: A true invisibility test.
+        // wave 17: Continuous monos
+        allWaveScripts.push_back(vector<SpawnCommand>(80, {EnemyType::MONO, 0.05f}));
+
+        // wave 18: "Cloak and Dagger" - A massive wave of crawlers supported by healers.
         allWaveScripts.push_back({
-            {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f},
-            {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}
+            {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::POLY, 0.1f},
+            {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::POLY, 0.1f},
+            {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::POLY, 0.1f}
         });
 
-        // wave 15: A chaotic mix of everything learned so far.
+        // wave 19: The final test
         allWaveScripts.push_back({
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f}, 
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f}
         });
-
-        // wave 16, 17, 18, 19: Placeholder for future complex waves. For now, we repeat wave 15 to ramp up.
-        allWaveScripts.push_back(allWaveScripts.back());
-        allWaveScripts.push_back(allWaveScripts.back());
-        allWaveScripts.push_back(allWaveScripts.back());
-        allWaveScripts.push_back(allWaveScripts.back());
 
         // wave 20: DOUBLE BOSS WAVE
         allWaveScripts.push_back({
-            {EnemyType::ANTUMBRA, 0.1f}, // First Boss
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 10.0f}, // Minion wave
+            {EnemyType::ANTUMBRA, 0.2f}, // First Boss
+            {EnemyType::POLY, 0.1f}, {EnemyType::POLY, 0.1f}, {EnemyType::POLY, 0.1f}, {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 15.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 15.0f},
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 15.0f}, // A much tougher minion wave with a long delay
             {EnemyType::ANTUMBRA, 0.1f} // Second Boss
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 15.0f} // distraction
         });
 
         state = State::WAITING_FOR_PLAYER; // Start waiting for the player
