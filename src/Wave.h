@@ -21,9 +21,9 @@ class WaveManager
     // getters, in case need to call from outside
     int GetWaveNumber() { return currentWaveIndex + 1; } // Returns the current wave number (1-indexed)
     int GetStageNumber() { return currentStage; } // Returns the current difficulty stage
-    bool IsWaveActive() { return state == State::SPAWNING || state == State::WAVE_IN_PROGRESS; }
-    int GetTotalWaves() { return (int)(allWaveScripts.size()); }
+    bool IsWaveActive() { return state == State::SPAWNING || state == State::WAVE_IN_PROGRESS; }       
     int GetWavesUntilBoss() { return BOSS_WAVE_INTERVAL - (currentWaveIndex % BOSS_WAVE_INTERVAL); }
+    int GetTotalWaves() { return (int)(allWaveScripts.size()); }
     bool IsFinished() { return state == State::FINISHED; }
 
     const int BOSS_WAVE_INTERVAL = 10; // A boss appears every 10 waves
@@ -85,8 +85,47 @@ class WaveManager
             {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f} // Final minion wave
         });
 
+        // --- STAGE 2 WAVES ---
+        // wave 11: A dense swarm of tougher basic enemies.
+        allWaveScripts.push_back({
+            {EnemyType::FLARE, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f},
+            {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}, {EnemyType::FLARE, 0.2f}, {EnemyType::MONO, 0.2f}
+        });
+
+        // wave 12: A serious tank check with multiple Locus/Poly pairs.
+        allWaveScripts.push_back({
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}
+        });
+
+        // wave 13: A massive, continuous stream of fast enemies.
+        allWaveScripts.push_back(vector<SpawnCommand>(40, {EnemyType::MONO, 0.1f}));
+
+        // wave 14: A true invisibility test.
+        allWaveScripts.push_back({
+            {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f},
+            {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::CRAWLER, 0.5f}
+        });
+
+        // wave 15: A chaotic mix of everything learned so far.
+        allWaveScripts.push_back({
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}
+        });
+
+        // wave 16, 17, 18, 19: Placeholder for future complex waves. For now, we repeat wave 15 to ramp up.
+        allWaveScripts.push_back(allWaveScripts.back());
+        allWaveScripts.push_back(allWaveScripts.back());
+        allWaveScripts.push_back(allWaveScripts.back());
+        allWaveScripts.push_back(allWaveScripts.back());
+
+        // wave 20: DOUBLE BOSS WAVE
+        allWaveScripts.push_back({
+            {EnemyType::ANTUMBRA, 0.1f}, // First Boss
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 10.0f}, // Minion wave
+            {EnemyType::ANTUMBRA, 0.1f} // Second Boss
+        });
+
         state = State::WAITING_FOR_PLAYER; // Start waiting for the player
-        currentWaveIndex = 9;
+        currentWaveIndex = 0;
         currentCommandIndex = 0;
         spawnTimer = 0;
     }
