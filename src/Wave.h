@@ -96,8 +96,16 @@ class WaveManager
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f}
         });
 
-        // wave 13: A massive, continuous stream of fast enemies.
-        allWaveScripts.push_back(vector<SpawnCommand>(40, {EnemyType::MONO, 0.1f}));
+        // wave 13: A massive, continuous stream of alernating enemies.
+        vector<SpawnCommand> wave13;
+        for (int i = 0; i < 80; i++)
+        {
+            if (i%2 == 0)
+                wave13.push_back({EnemyType::MONO, 0.1f});
+            else
+                wave13.push_back({EnemyType::FLARE, 0.1f});
+        }
+        allWaveScripts.push_back(wave13);
 
         // wave 14: A true invisibility test.
         allWaveScripts.push_back({

@@ -49,10 +49,11 @@ Scene Game()
     }
 
     // ---- INPUT PASS ----
-    /* if (IsKeyPressed(KEY_ESCAPE))
+    if (IsKeyPressed(KEY_ESCAPE))
     {
         current_build = buildState::NONE;
     }
+    /*
     // Spawn enemy at mouse
     if (IsKeyPressed(KEY_X))
     {
@@ -350,12 +351,12 @@ Scene Game()
         for_each(enemy_ptrs.begin(), enemy_ptrs.end(), [](Enemy *e) { e->Destroy(); });
     }
     // wave counter
-    DrawText(TextFormat("Wave: %d / %d", wave_manager.GetWaveNumber(), wave_manager.GetTotalWaves()), GRID_COLS * TILE_SIZE + 30, 110, 20, BLACK);
-    DrawText(TextFormat("Stage: %d", wave_manager.GetStageNumber()), GRID_COLS * TILE_SIZE + 30, 140, 20, BLACK);
+    DrawText(TextFormat("Wave: %d / %d", wave_manager.GetWaveNumber(), wave_manager.GetTotalWaves()), GRID_COLS * TILE_SIZE + 30, screenHeight - 80, 20, BLACK);
+    DrawText(TextFormat("Stage: %d", wave_manager.GetStageNumber()), GRID_COLS * TILE_SIZE + 30, screenHeight - 50, 20, BLACK);
 
     if (!wave_manager.IsFinished())
     {
-        DrawText(TextFormat("Boss in: %d", wave_manager.GetWavesUntilBoss()), GRID_COLS * TILE_SIZE + 30, 170, 20, MAROON);
+        DrawText(TextFormat("Boss in: %d", wave_manager.GetWavesUntilBoss()), GRID_COLS * TILE_SIZE + 30, screenHeight - 30, 20, MAROON);
     }
 
     return Scene::GAME;
