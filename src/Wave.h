@@ -27,7 +27,6 @@ class WaveManager
     bool IsFinished() { return state == State::FINISHED; }
 
     const int BOSS_WAVE_INTERVAL = 10; // A boss appears every 10 waves
-    const int BOSS_REWARD = 500; // Extra money for defeating a boss
 
     bool CanStartNextWave() { return state == State::WAITING_FOR_PLAYER; }
 
@@ -196,7 +195,6 @@ class WaveManager
                 {
                     currentStage++;
                     enemy_health_multiplier += 0.5f; // Permanently increase health of all future enemies
-                    playerMoney += BOSS_REWARD; // Give a big cash reward
                 }
 
                 if (currentWaveIndex >= allWaveScripts.size())
