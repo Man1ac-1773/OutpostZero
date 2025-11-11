@@ -336,7 +336,7 @@ class flare_enemy : public Enemy
         {
             DrawTexturePro(flare_enemyTX, {0, 0, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {position.x, position.y, (float)flare_enemyTX.width, (float)flare_enemyTX.height}, {flare_enemyTX.width / 2.0f, flare_enemyTX.height / 2.0f}, rotation, WHITE);
         }
-        DrawHealthBar(hp, flare_enemy_health, position);
+        DrawHealthBar(hp, max_hp, position);
     }
     EnemyType GetEnemyType() override { return EnemyType::FLARE; }
 };
@@ -380,7 +380,7 @@ class mono_enemy : public Enemy
         {
             DrawTexturePro(mono_enemyTX, {0, 0, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {position.x, position.y, (float)mono_enemyTX.width, (float)mono_enemyTX.height}, {mono_enemyTX.width / 2.0f, mono_enemyTX.height / 2.0f}, rotation, WHITE);
         }
-        DrawHealthBar(hp, mono_enemy_health, position);
+        DrawHealthBar(hp, max_hp, position);
     }
 
     EnemyType GetEnemyType() override { return EnemyType::MONO; }
@@ -407,7 +407,7 @@ class crawler_enemy : public Enemy
         if (isVisible)
         {
             DrawTexturePro(crawler_enemyTX, {0, 0, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {position.x, position.y, (float)crawler_enemyTX.width, (float)crawler_enemyTX.height}, {crawler_enemyTX.width / 2.0f, crawler_enemyTX.height / 2.0f}, rotation, WHITE);
-            DrawHealthBar(hp, crawler_enemy_health, position);
+            DrawHealthBar(hp, max_hp, position);
         }
         else if (took_damage) // flash white for one frame
         {
@@ -473,7 +473,7 @@ class poly_enemy : public Enemy
         {
             DrawTexturePro(poly_enemyTX, {0, 0, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {position.x, position.y, (float)poly_enemyTX.width, (float)poly_enemyTX.height}, {poly_enemyTX.width / 2.0f, poly_enemyTX.height / 2.0f}, rotation, WHITE);
         }
-        DrawHealthBar(hp, poly_enemy_health, position);
+        DrawHealthBar(hp, max_hp, position);
     }
     void DoEnemyAction(vector<Enemy *> &targets, float deltaTime) override
     {
@@ -482,13 +482,15 @@ class poly_enemy : public Enemy
             heal_cooldown -= deltaTime;
             return;
         }
-        // this guy is trying to heal every frame
         for (auto &enemy : targets)
         {
             if (enemy->GetEnemyType() != EnemyType::POLY && Vector2DistanceSqr(position, enemy->GetPosition()) <= range * range && enemy->hp < enemy->max_hp)
             {
+                // note that we don't care what type of target it is, just heal anything but itself
+                // we also don't care if the target has been healed this frame or not, because
+                // multiple healers can heal the same target in one frame
                 enemy->healed_this_frame = true;
-                enemy->hp += poly_enemy_heal_amount;
+                enemy->hp += poly_enemy_heal_amount; 
                 // this flag is un-set only in the draw loop,
                 // which is why the detection and action happen here
                 // itself, and not seperately.
@@ -541,7 +543,7 @@ class locus_enemy : public Enemy
         {
             DrawTexturePro(locus_enemyTX, {0, 0, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {position.x, position.y, (float)locus_enemyTX.width, (float)locus_enemyTX.height}, {locus_enemyTX.width / 2.0f, locus_enemyTX.height / 2.0f}, rotation, WHITE);
         }
-        DrawHealthBar(hp, locus_enemy_health, position);
+        DrawHealthBar(hp, max_hp, position);
     }
     EnemyType GetEnemyType() override { return EnemyType::LOCUS; }
 };
@@ -584,7 +586,7 @@ class antumbra_enemy : public Enemy
         {
             DrawTexturePro(antumbra_enemyTX, {0, 0, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {position.x, position.y, (float)antumbra_enemyTX.width, (float)antumbra_enemyTX.height}, {antumbra_enemyTX.width / 2.0f, antumbra_enemyTX.height / 2.0f}, rotation, WHITE);
         }
-        DrawHealthBar(hp, antumbra_enemy_health, position);
+        DrawHealthBar(hp, max_hp, position);
     }
     EnemyType GetEnemyType() override { return EnemyType::ANTUMBRA; }
 };
