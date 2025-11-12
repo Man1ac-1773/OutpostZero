@@ -680,7 +680,7 @@ class meltdown_turret : public Turret
 };
 
 /* Second Turret : Fires an instantaneous bolt from source
- * in the direction of closes enemy with bolt extending
+ * in the direction of closest enemy with bolt extending
  * all the way till the maximum range, damaging everything along the way
  */
 class cyclone_turret : public Turret

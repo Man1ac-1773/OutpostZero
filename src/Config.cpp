@@ -21,26 +21,28 @@ const Color mouseHoverColor = Color{100, 255, 100, 50};
 
 // players
 int player_health = 10; // max enemies that can cross u
-int playerMoney = 250; // money u start with it. Allows for more diverse openings.
-float enemy_health_multiplier = 1.0f; // Global multiplier for enemy health
+int playerMoney = 250; // money u start with
+float enemy_health_multiplier = 1.0f; // makes enemies beefier each stage
 
 // turret costs
 const int duo_turret_cost = 100;
-const int ripple_turret_cost = 400;    // T2 Upgrade - Made slightly more affordable
-const int smite_turret_cost = 800;     // T3 Upgrade
+const int ripple_turret_cost = 400;    // t2 duo
+const int smite_turret_cost = 800;     // t3 duo
+
 const int lancer_turret_cost = 200;
-const int cyclone_turret_cost = 450;   // T2 Upgrade - Made slightly more affordable
-const int meltdown_turret_cost = 1000; // T3 Upgrade
-const int wave_turret_cost = 250;      // Lowered cost to encourage building it for utility before wave 7.
-const int salvo_turret_cost = 500;     // T2 Upgrade
+const int cyclone_turret_cost = 450;   // t2 lancer
+const int meltdown_turret_cost = 1000; // t3 lancer
+
+const int wave_turret_cost = 250;      // for the slowy bois
+const int salvo_turret_cost = 500;     // t2 wave
 
 // enemy kill rewards
-const int flare_enemy_reward = 10;     // Basic enemy, lower reward.
-const int mono_enemy_reward = 15;      // Fast but weak, slightly higher reward.
-const int crawler_enemy_reward = 30;   // Increased reward for a tricky enemy.
-const int poly_enemy_reward = 20;      // Healer, moderate reward.
-const int locus_enemy_reward = 40;     // Tank, good reward.
-const int antumbra_enemy_reward = 1000; // The reward for killing the boss.
+const int flare_enemy_reward = 10;
+const int mono_enemy_reward = 15;
+const int crawler_enemy_reward = 30;
+const int poly_enemy_reward = 20;
+const int locus_enemy_reward = 40;
+const int antumbra_enemy_reward = 1000; // big money for big boss
 
 // targets
 // has been declared here because of some (possible?) use in other files, otherwise is local to the enemy class and is used there only.
@@ -59,31 +61,33 @@ const float TILE_SIZE = 40.0f;
 // ---- CONSTANTS FOR ENEMIES ----
 // for flare_enemy
 const float flare_enemy_radius = 12.0f;
-const float flare_enemy_speed = 90.0f;  // Slightly slower, but more durable.
-const float flare_enemy_health = 12.0f; // Requires 3 duo shots, or 2 lancer shots. Incentivizes Lancer.
+const float flare_enemy_speed = 90.0f;  // a bit slow
+const float flare_enemy_health = 12.0f; // needs more than one shot from weak turrets
 
 // for mono_enemy
 const float mono_enemy_radius = 6.0f;
 const float mono_enemy_speed = 2.0f * flare_enemy_speed;
-const float mono_enemy_health = 9.0f;   // Requires 2 duo shots, but only 1 lancer shot. This makes Lancer a strong counter.
+const float mono_enemy_health = 9.0f;   // fast but weak, lancer one-shots this
 // for crawler enemy
 const float crawler_enemy_radius = 6.0f;
 const float crawler_enemy_speed = 1.5f * flare_enemy_speed;
-const float crawler_enemy_health = 15.0f; // Tougher to kill to make them more of a threat.
+const float crawler_enemy_health = 15.0f; // invis enemies should be a bit tanky
+                                          // especially cuz if they come in same line as others, 
+                                          // turrets will hit them inadvertently
 
 // for poly enemy
 const float poly_enemy_radius = 8.0f;
-const float poly_enemy_speed = locus_enemy_speed; // Match speed with Locus to act as a proper support unit.
-const float poly_enemy_health = 20.0f;  // Healers should be a bit more durable.
-const float poly_enemy_heal_amount = 2.5f; // Amount healed per tick.
+const float poly_enemy_speed = locus_enemy_speed; // follows the big guy
+const float poly_enemy_health = 20.0f;  // healers should be a bit more durable
+const float poly_enemy_heal_amount = 2.5f; // how much it heals
 
 // for locus_enemy
-const float locus_enemy_health = 150.0f; // A true tank. Duo spam will struggle significantly. This demands an upgrade.
+const float locus_enemy_health = 150.0f; // the big guy
 const float locus_enemy_speed = 75.0f;
 const float locus_enemy_radius = 16.0f;
 
 // for antumbra enemy (boss)
-const float antumbra_enemy_health = 2000.0f; // Boss health, buffed for late-game scaling
+const float antumbra_enemy_health = 2000.0f; // the bigger guy
 const float antumbra_enemy_speed = 50.0f;    // Slower than Locus
 const float antumbra_enemy_radius = 32.0f;   // Larger radius
 // ---- ----
@@ -113,14 +117,14 @@ const float ripple_turret_range = 3.0f * TILE_SIZE;
 const float smite_turret_fire_rate = 3.0f;
 const float smite_turret_range = 5.0f * TILE_SIZE;
 // lancer turret
-const float lancer_turret_fire_rate = 1.5f; // Slight buff to make it a more attractive choice.
+const float lancer_turret_fire_rate = 1.5f; // a small buff felt necessary
 const float lancer_turret_range = 6.0f * TILE_SIZE;
 
 // cyclone turret
 const float cyclone_turret_range = 9.0f * TILE_SIZE;
 const float cyclone_turret_beam_timer = 0.06f;
-const float cyclone_turret_cooldown_timer = 0.8f; // Slower fire rate
-const int cyclone_turret_max_pierce_count = 5;    // Increased pierce
+const float cyclone_turret_cooldown_timer = 0.8f; // slow but powerful
+const int cyclone_turret_max_pierce_count = 5;    // can hit many enemies
 // meltdown turret
 const float meltdown_turret_range = 5.0f * TILE_SIZE;
 const float meltdown_turret_cooldown_timer = 2.0f;
@@ -150,13 +154,14 @@ const float lancer_bullet_speed = 1000.0f;
 const float lancer_bullet_damage = 10.0f;
 
 // cyclone
-const float cyclone_beam_damage = 40.0f; // Significant damage buff
+const float cyclone_beam_damage = 40.0f; // big damage
                                          // multiplier will act on this depending on range
 
 // salvo
 const float ice_stream_damage = 0.1f; // damage per projectile
-const float ice_stream_speed = flame_bullet_speed * 1.5f; // faster than flame bullets
+const float ice_stream_speed = flame_bullet_speed * 1.5f; // faster than flames
 const float ice_stream_spread = 5.0f; // degrees
 
 // helpers
-const float max_heal_cooldown = 1.0f; // Reduced from 2.0 to double the healing frequency.
+const float max_heal_cooldown = 1.0f; // how often the poly heals
+// it's in seconds btw

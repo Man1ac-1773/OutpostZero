@@ -20,7 +20,7 @@ class WaveManager
   public:
     // getters, in case need to call from outside
     int GetWaveNumber() { return currentWaveIndex + 1; } // Returns the current wave number (1-indexed)
-    int GetStageNumber() { return currentStage; } // Returns the current difficulty stage
+    int GetStageNumber() { return currentStage; }
     bool IsWaveActive() { return state == State::SPAWNING || state == State::WAVE_IN_PROGRESS; }       
     int GetWavesUntilBoss() { return BOSS_WAVE_INTERVAL - (currentWaveIndex % BOSS_WAVE_INTERVAL); }
     int GetTotalWaves() { return (int)(allWaveScripts.size()); }
@@ -36,79 +36,79 @@ class WaveManager
         // a wave script is a vector of SpawnCommands
 
         // wave 1: 10 flare enemies, 1 second apart
-        allWaveScripts.push_back({{EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}, {EnemyType::FLARE, 1.0f}});
+        allWaveScripts.push_back(vector<SpawnCommand>(10, {EnemyType::FLARE, 1.0f}));
 
-        // wave 2: Introduce fast enemies
+        // wave 2: introducing fast enemies
         allWaveScripts.push_back({{EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}});
 
         // wave 3 => made it tighter: alternating flares and monos
         allWaveScripts.push_back({{EnemyType::FLARE, 0.4f}, {EnemyType::MONO, 0.4f}, {EnemyType::FLARE, 0.4f}, {EnemyType::MONO, 0.4f}, {EnemyType::FLARE, 0.4f},
                                   {EnemyType::MONO, 0.4f}, {EnemyType::FLARE, 0.4f}, {EnemyType::MONO, 0.4f}, {EnemyType::FLARE, 0.4f}, {EnemyType::MONO, 0.4f}});
 
-        // wave 4: A true test of damage output. The Locus is now embedded in a much denser stream of Flares.
+        // wave 4: damage output test, locus now in middle of flares
         allWaveScripts.push_back({
             {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f},
-            {EnemyType::LOCUS, 0.3f}, // The Locus now appears right in the middle of the wave.
+            {EnemyType::LOCUS, 0.3f}, 
             {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}
         });
-        // wave 5: A much denser wave of fast enemies to overwhelm basic defenses.
+        // wave 5: dense wave of fast enemies
         allWaveScripts.push_back({{EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f},
                                   {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}});
 
-        // wave 6: Healers now spawn right behind their tanks, making them a priority target.
+        // wave 6: introducing healers
         allWaveScripts.push_back({{EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 2.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.2f}, {EnemyType::POLY, 2.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.2f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.2f}});
 
-        // wave 7: A mix of invisible crawlers and fast monos to split the player's focus.
+        // wave 7: invisible enemies + fast enemies
         allWaveScripts.push_back({{EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}, {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}, {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}, {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}, {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f},
                                   {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}});
 
-        // wave 8: A pre-boss challenge focusing on overwhelming durable enemies.
+        // wave 8: pre-boss durability test
         allWaveScripts.push_back({
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f},
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}
         });
 
-        // wave 9: A pre-boss challenge focusing on overwhelming numbers and speed.
+        // wave 9: pre-boss speed and numbers test
         allWaveScripts.push_back({
             {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
             {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
             {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}
         });
 
-        // wave 10: BOSS WAVE - The Antumbra appears with supporting minions.
+        // wave 10: boss wave with minions
         allWaveScripts.push_back({
-            {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 5.0f}, // First minion wave
-            {EnemyType::ANTUMBRA, 0.1f}, // The Boss appears!
-            {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 5.0f}, // Second minion wave to distract
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, // A tank-healer pair to complicate things
-            {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f} // Final minion wave
+            {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 5.0f}, 
+            {EnemyType::ANTUMBRA, 0.1f}, 
+            {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 5.0f}, 
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, 
+            {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f} 
         });
 
-        // --- STAGE 2 WAVES (ENEMY HP x1.5) ---
-        // wave 11: A long, dense, mixed stream to test sustained DPS.
+        // --- STAGE 2 WAVES ---
+        // enemies got a health buff, health doubled
+        // wave 11: dense mixed stream
         allWaveScripts.push_back({
             {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f},
             {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f},
             {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}
         });
 
-        // wave 12: Tank check
-        allWaveScripts.push_back({
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f}, 
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 2.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}
-        });
+        // wave 12: tank check
+        vector<SpawnCommand> wave12;
+        for (int i = 0; i <= 50; i++)
+        {
+            if (i%2==0)
+                wave12.push_back({EnemyType::LOCUS, 0.1f});
+            else
+                wave12.push_back({EnemyType::POLY, 0.1f});
+        }
+        allWaveScripts.push_back(wave12);
+        delete wave12; // free memory
 
-        // wave 13: pure number overwhelm
+        // wave 13: pure number swarm
         allWaveScripts.push_back(vector<SpawnCommand>(50, {EnemyType::MONO, 0.08f}));
 
-        // wave 14: Invis Check with distractions
+        // wave 14: invis check with distractions
         allWaveScripts.push_back({
             {EnemyType::LOCUS, 3.0f},
             {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 3.0f},
@@ -120,7 +120,7 @@ class WaveManager
             {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.1f},
         });
 
-        // wave 15: Random bs very fast
+        // wave 15: random bs go
         allWaveScripts.push_back({
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, 
@@ -132,28 +132,31 @@ class WaveManager
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}
             });
 
-        // wave 16: "Wall"
+        // wave 16: harder tank check with other randoms
         vector<SpawnCommand> wave16; 
         for (int i = 0; i < 100; ++i)
         {
             if (i % 2 == 0)
                 wave16.push_back({EnemyType::LOCUS, 0.1f});
             else
-                wave16.push_back({EnemyType::FLARE, 0.1f});
+                wave16.push_back({EnemyType::POLY, 0.1f});
+            if (i % 5 == 0)
+                wave16.push_back({EnemyType::MONO, 0.05f});
         }
         allWaveScripts.push_back(wave16);
+        delete wave16; // free memory
 
-        // wave 17: Continuous monos
+        // wave 17: continuous monos
         allWaveScripts.push_back(vector<SpawnCommand>(200, {EnemyType::MONO, 0.05f}));
 
-        // wave 18: "Cloak and Dagger" - A massive wave of crawlers supported by healers.
+        // wave 18: "cloak and dagger"
         allWaveScripts.push_back({
             {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::POLY, 0.1f},
             {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::POLY, 0.1f},
             {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::POLY, 0.1f}
         });
 
-        // wave 19: The final test
+        // wave 19: the final test before the boss
         allWaveScripts.push_back({
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
@@ -165,18 +168,18 @@ class WaveManager
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f}
         });
 
-        // wave 20: TRIPLE BOSS WAVE
+        // wave 20: triple boss wave
         allWaveScripts.push_back({
-            {EnemyType::ANTUMBRA, 0.2f}, // First Boss
+            /*---*/{EnemyType::ANTUMBRA, 0.2f}, 
             {EnemyType::POLY, 0.1f}, {EnemyType::POLY, 0.1f}, {EnemyType::POLY, 0.1f}, {EnemyType::POLY, 0.1f},
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f},
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f},
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f}, 
-            {EnemyType::ANTUMBRA, 0.1f}, // Second Boss
+            /*---*/ {EnemyType::ANTUMBRA, 0.1f}, 
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f},
             {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f}, // distraction
-            {EnemyType::ANTUMBRA, 0.1f}, // Third boss
+            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f}, 
+            /*---*/{EnemyType::ANTUMBRA, 0.1f}, 
 
         });
 

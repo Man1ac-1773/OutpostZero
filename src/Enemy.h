@@ -48,9 +48,10 @@ class Enemy : public Entity
         id = next_id++;
         position = startPos;
     }
-    // idea to use multiplier as a fall-off for distance
+    // idea to use multiplier as a fall-off for distance or other factors
     void TakeDamage(ProjectileType proj_type, float multiplier)
     {
+        // different projectiles deal different damage
         switch (proj_type)
         {
         case ProjectileType::DUO_BASIC:
@@ -90,13 +91,15 @@ class Enemy : public Entity
         }
         if (hp <= 0)
         {
+            // if dead, give money, disappear, and make a boom
             playerMoney += kill_reward;
             Destroy();
             particles.SpawnExplosion(position, proj_type);
-            // Death animation
+            // Death animation => never implemented :(
             return;
         }
 
+        // if not dead, just flash white to show it got hit
         took_damage = true;
     }
     void TakeDamageByValue(ProjectileType proj_type, float amount)
@@ -111,17 +114,20 @@ class Enemy : public Entity
         took_damage = true;
     }
     float GetRadius() { return radius; }
-    // A simple place-holder function IN-CASE some enemies do actions
-    // Don't want to put it in the update function, that handles too many things
-    // Most enemies migth just have this function empty, and some have something
-    // to do in here
-    // Update : poly_enemy actually does something
+
+    /* A simple place-holder function IN-CASE some enemies do actions
+    * Don't want to put it in the update function, that handles too many things
+    * Most enemies might just have this function empty, and some have something
+    * to do in here, like a special ability
+    * Update : poly_enemy actually does something
+    */
     virtual void DoEnemyAction(vector<Enemy *> &targets, float deltaTime) {}
 
     void Update(float deltaTime) override
     {
 
         if (status_effect != StatusEffects::NONE && status_timer <= 0)
+        // if enemy has a status effect and its timer isn't running, start it
         {
             switch (status_effect)
             {
@@ -129,6 +135,7 @@ class Enemy : public Entity
             {
 
                 if (GetEnemyType() == EnemyType::CRAWLER)
+                // special case for crawler, slow reveals it
                 {
                     this->speed = original_speed * 0.3f;
                     status_timer = 2.0f;
@@ -144,6 +151,7 @@ class Enemy : public Entity
         }
 
         if (status_timer > 0)
+        // if a status timer is running, tick it down
         {
             status_timer -= deltaTime;
             if (status_timer <= 0)
@@ -154,6 +162,7 @@ class Enemy : public Entity
                 {
                     speed = original_speed;
                     if (GetEnemyType() == EnemyType::CRAWLER)
+                    // crawler goes back to being invisible
                     {
                         isVisible = false;
                     }
@@ -165,12 +174,14 @@ class Enemy : public Entity
             }
         }
         if (position.y >= GRID_ROWS * TILE_SIZE)
+        // if enemy reaches the end, u lose health
         {
             Destroy();
             player_health--;
         }
         if (position.x >= GRID_COLS * TILE_SIZE || position.y == NAN || position.x == NAN)
         {
+            // if enemy goes off screen for some reason, just delete it
             // the NAN check exists only to catch whenever a variable remains uninitialised and crashes the whole thing
             // Happened a few times and debugging was a nightmare
             // Realised I can't guarantee existence especially when rolling out new features.
@@ -184,11 +195,12 @@ class Enemy : public Entity
     virtual EnemyType GetEnemyType() = 0;
     void Update()
     {
-
+        // if the enemy is at the last path tile, make it go off screen
         if (targetPos == targets.back())
         {
             targetPos.y += 40;
         }
+        // if enemy reaches a path corner, update its target to the next corner
         if (Vector2DistanceSqr(position, targetPos) < radius)
         {
             velocity = {0, 0};
@@ -196,6 +208,7 @@ class Enemy : public Entity
             targetPos = targets[map_counter];
             return;
         }
+        // otherwise just keep moving towards the current target
         velocity = velFromSpeed(position, targetPos, speed);
     }
 
@@ -475,6 +488,10 @@ class poly_enemy : public Enemy
         }
         DrawHealthBar(hp, max_hp, position);
     }
+    /* Healer action implementation
+     * Loops through all enemies, and heals any that are within range and not full health (at once)
+     * Has a cooldown
+     */
     void DoEnemyAction(vector<Enemy *> &targets, float deltaTime) override
     {
         if (heal_cooldown > 0)
@@ -487,7 +504,7 @@ class poly_enemy : public Enemy
             if (enemy->GetEnemyType() != EnemyType::POLY && Vector2DistanceSqr(position, enemy->GetPosition()) <= range * range && enemy->hp < enemy->max_hp)
             {
                 // note that we don't care what type of target it is, just heal anything but itself
-                // we also don't care if the target has been healed this frame or not, because
+                // we also don't care if the target has been healed this frame, because
                 // multiple healers can heal the same target in one frame
                 enemy->healed_this_frame = true;
                 enemy->hp += poly_enemy_heal_amount; 
@@ -498,7 +515,7 @@ class poly_enemy : public Enemy
         }
         heal_cooldown = max_heal_cooldown;
         // cooldown only after healing everyone possible
-        // always tries to heal everyone if cooldown is allowing it
+        // always tries to heal everyone within range if cooldown is allowing it
     }
     EnemyType GetEnemyType() override { return EnemyType::POLY; }
 };

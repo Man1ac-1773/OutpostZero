@@ -16,7 +16,7 @@ Outpost Zero is a 2D tower defense game built with C++ and raylib. Players must 
 *   **Dynamic Difficulty:** The game is divided into stages, with enemy health permanently increasing after each boss wave to keep the late game challenging.
 *   **Boss Enemies:** Face off against powerful boss enemies in the occassional wave.
 *   **Raylib:** Built from the ground up in C++17 using raylib library.
-*   **Immediate-Mode GUI:** All in-game UI is handled by the and `raygui` library.
+*   **Immediate-Mode GUI:** All in-game UI is handled by the `raygui` library.
 
 ## How to Build and Run
 
@@ -90,5 +90,3 @@ The project is structured to be modular and scalable, with a clear separation of
 
 *   The textures for the turrets and some enemies are inspired by and adapted from the open-source game **Mindustry**.
 *   Some UI textures were generated with assistance from **Google Gemini**.
-
-
