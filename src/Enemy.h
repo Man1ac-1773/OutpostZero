@@ -9,12 +9,11 @@
 #include <cmath>
 #include <iostream>
 using namespace std;
+// Future work : Add more status effects and turret use? 
 enum class StatusEffects
 {
     NONE,
     SLOWED,
-    BURNING,
-    STUNNED,
 
 };
 enum class EnemyType
@@ -310,6 +309,9 @@ class Enemy : public Entity
     static inline unsigned long long next_id = 0;
 };
 
+/* The basic enemy
+* balanced speed and health, the first enemy you will face
+*/
 class flare_enemy : public Enemy
 {
   public:
@@ -354,6 +356,9 @@ class flare_enemy : public Enemy
     EnemyType GetEnemyType() override { return EnemyType::FLARE; }
 };
 
+/* The fast enemy
+* low health and high speed, it's job is to rush past turrets quickly
+*/
 class mono_enemy : public Enemy
 {
   public:
@@ -399,6 +404,10 @@ class mono_enemy : public Enemy
     EnemyType GetEnemyType() override { return EnemyType::MONO; }
 };
 
+/* The stealthy enemy
+ * Very low health, medium speed
+ * Invisible until it is slowed then it becomes visible for a short time
+ */
 class crawler_enemy : public Enemy
 {
   public:
@@ -520,7 +529,8 @@ class poly_enemy : public Enemy
     EnemyType GetEnemyType() override { return EnemyType::POLY; }
 };
 
-/* Tank like enemy
+/* The tank enemy
+* high health and low speed, it's job is to soak up damage and block paths
  */
 class locus_enemy : public Enemy
 {
@@ -565,6 +575,10 @@ class locus_enemy : public Enemy
     EnemyType GetEnemyType() override { return EnemyType::LOCUS; }
 };
 
+/* The boss 
+* very high health, medium speed
+* has no special abilities for now
+*/
 class antumbra_enemy : public Enemy
 {
   public:

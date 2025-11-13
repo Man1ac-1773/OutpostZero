@@ -1,7 +1,8 @@
 #pragma once
 #include "raylib.h"
 #include <unordered_set>
-// this above line is only here because everyone implicitly imports entity
+// this above line is only here because everyone
+// implicitly imports entity
 class Entity
 {
   public:

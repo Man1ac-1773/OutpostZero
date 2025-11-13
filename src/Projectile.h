@@ -104,6 +104,9 @@ class Projectile : public Entity
     static inline unsigned long long next_id;
 };
 
+/* The basic projectile
+ * Fired by duo_turret in a straight line
+ */
 class normal_bullet : public Projectile
 {
   public:
@@ -123,7 +126,9 @@ class normal_bullet : public Projectile
     ProjectileType getProjType() override { return ProjectileType::DUO_BASIC; }
     float GetMaxProjRange() override { return 1 << 20; }
 };
-
+/* The laser projectile
+ * Fired by lancer_turret, spawns at the mouth of the gun then travels forward
+ */
 class laser_bullet : public Projectile
 {
   public:
@@ -203,6 +208,10 @@ class laser_bullet : public Projectile
     ProjectileState state;
 };
 
+/* The flame projectile
+ * Fired by flame_turret in a straight line with some spread
+ */
+
 class flame_bullet : public Projectile
 {
   public:
@@ -250,6 +259,9 @@ class flame_bullet : public Projectile
     float GetMaxProjRange() override { return ripple_turret_range * ripple_turret_range; }
 };
 
+/* Ice bullet 
+ * Fired by the salvo turret in a small spread
+*/
 class ice_bullet : public Projectile
 {
   public:
@@ -296,6 +308,12 @@ class ice_bullet : public Projectile
     ProjectileType getProjType() override { return ProjectileType::ICE_STREAM; }
     float GetMaxProjRange() override { return salvo_turret_range * salvo_turret_range; }
 };
+
+/* Shotgun bullet
+* Fired by smite turret in a certain angular region
+* has a high pierce count because late game turret
+* Future upgrade : Maybe add bounce? 
+*/
 
 class shotgun_bullet : public Projectile
 {
