@@ -2,6 +2,7 @@
 // standard includes
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <vector>
 // custom includes
 #include "Config.h"
@@ -31,6 +32,7 @@ static Camera2D camera = {0};
 static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our entities
 static WaveManager wave_manager;
 static Turret *currentTurret = nullptr;
+static int gameSpeed = 1;
 
 Scene Game()
 {
@@ -88,38 +90,37 @@ Scene Game()
             Vector2 turretPos = {tile->rect.x + tile->rect.width / 2, tile->rect.y + tile->rect.height / 2};
             switch (current_build)
             {
-                case buildState::DUO:
-                {   // Use the global constant for build cost check
-                    if (playerMoney >= duo_turret_cost)
-                    {
-                        entities.push_back(make_unique<duo_turret>(turretPos, tile));
-                        tile->hasTurret = true;
-                        playerMoney -= duo_turret_cost; // This was correct, but I'm including it for completeness
-                    }
-                    break;
-                }
-                case buildState::LANCER:
+            case buildState::DUO:
+            { // Use the global constant for build cost check
+                if (playerMoney >= duo_turret_cost)
                 {
-                    if (playerMoney >= lancer_turret_cost)
-                    {
-                        entities.push_back(make_unique<lancer_turret>(turretPos, tile));
-                        tile->hasTurret = true;
-                        playerMoney -= lancer_turret_cost; // This was correct, but I'm including it for completeness
-                    }
-                    break;
+                    entities.push_back(make_unique<duo_turret>(turretPos, tile));
+                    tile->hasTurret = true;
+                    playerMoney -= duo_turret_cost; // This was correct, but I'm including it for completeness
                 }
-                case buildState::WAVE:
-                {
-                    if (playerMoney >= wave_turret_cost)
-                    {   
-                        entities.push_back(make_unique<wave_turret>(turretPos, tile));
-                        tile->hasTurret = true;
-                        playerMoney -= wave_turret_cost; // This was correct, but I'm including it for completeness
-                    }
-                    break;
-                }
+                break;
             }
-            
+            case buildState::LANCER:
+            {
+                if (playerMoney >= lancer_turret_cost)
+                {
+                    entities.push_back(make_unique<lancer_turret>(turretPos, tile));
+                    tile->hasTurret = true;
+                    playerMoney -= lancer_turret_cost; // This was correct, but I'm including it for completeness
+                }
+                break;
+            }
+            case buildState::WAVE:
+            {
+                if (playerMoney >= wave_turret_cost)
+                {
+                    entities.push_back(make_unique<wave_turret>(turretPos, tile));
+                    tile->hasTurret = true;
+                    playerMoney -= wave_turret_cost; // This was correct, but I'm including it for completeness
+                }
+                break;
+            }
+            }
         }
     }
 
@@ -127,9 +128,9 @@ Scene Game()
     // Calling simple Update for all entities
     for (auto &entity : entities)
     {
-        entity->Update(GetFrameTime());
+        entity->Update(GetFrameTime() * gameSpeed);
     }
-    particles.Update(GetFrameTime());
+    particles.Update(GetFrameTime() * gameSpeed);
 
     // Separate entities into turrets, enemies, and projectiles
     vector<Turret *> turret_ptrs;
@@ -158,17 +159,17 @@ Scene Game()
     // Update turrets with knowledge of enemies
     for (auto &turret : turret_ptrs)
     {
-        turret->Update(GetFrameTime(), enemy_ptrs, newProjectiles);
+        turret->Update(GetFrameTime() * gameSpeed, enemy_ptrs, newProjectiles);
     }
 
     // Update enemy
     for (auto &enemy : enemy_ptrs)
     {
-        enemy->DoEnemyAction(enemy_ptrs, GetFrameTime());
-        enemy->Update();
+        enemy->DoEnemyAction(enemy_ptrs, GetFrameTime() * gameSpeed);
+        enemy->Update(gameMap.targets);
     }
     // update wave information
-    wave_manager.Update(GetFrameTime(), entities, enemy_ptrs.size());
+    wave_manager.Update(GetFrameTime() * gameSpeed, entities, enemy_ptrs.size(), gameMap);
 
     // ---- INTERACTION PASS -----
     // Projectiles interact with enemies
@@ -261,6 +262,7 @@ Scene Game()
     Rectangle laser_turret_buttonRect = {TILE_SIZE, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
     Rectangle slow_turret_buttonRect = {2 * TILE_SIZE, screenHeight - TILE_SIZE, TILE_SIZE, TILE_SIZE};
     Rectangle nextWaveButton = {GRID_COLS * TILE_SIZE + 30, TILE_SIZE, 2 * TILE_SIZE, 2 * TILE_SIZE};
+    Rectangle speedButton = {GRID_COLS * TILE_SIZE + 30 + 2 * TILE_SIZE, TILE_SIZE, 2 * TILE_SIZE, 2 * TILE_SIZE};
     if (GuiButton(basic_turret_buttonRect, ""))
     {
         current_build = buildState::DUO;
@@ -283,10 +285,25 @@ Scene Game()
             wave_manager.StartNextWave();
         }
     }
+    if (GuiButton(speedButton, string("Speed : ").append(to_string(gameSpeed)).c_str()))
+        if (gameSpeed == 1)
+        {
+            gameSpeed = 2;
+        }
+        else if (gameSpeed == 2)
+        {
+            gameSpeed = 4;
+        }
+        else
+        {
+            gameSpeed = 1;
+        }
+    {
+    }
     /* This block is here and not merged with the input pass because
-    * I wanted to loop through turrets vectors after they have been populated
-    * in the update pass
-    */
+     * I wanted to loop through turrets vectors after they have been populated
+     * in the update pass
+     */
     if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
     {
         Vector2 mousePos = GetMousePosition();
@@ -318,25 +335,28 @@ Scene Game()
     // ---- ----
 
     // turret info draw call
-    if (currentTurret) {
+    if (currentTurret)
+    {
         if (currentTurret->DrawTurretInfo(entities))
             currentTurret = nullptr;
-    } else {
+    }
+    else
+    {
         // If no turret is selected, show build info for the turret being placed
         switch (current_build)
         {
-            case buildState::DUO:
-                duo_turret::DrawBuildInfo();
-                break;
-            case buildState::LANCER:
-                lancer_turret::DrawBuildInfo();
-                break;
-            case buildState::WAVE:
-                wave_turret::DrawBuildInfo();
-                break;
-            case buildState::NONE:
-                // Do nothing
-                break;
+        case buildState::DUO:
+            duo_turret::DrawBuildInfo();
+            break;
+        case buildState::LANCER:
+            lancer_turret::DrawBuildInfo();
+            break;
+        case buildState::WAVE:
+            wave_turret::DrawBuildInfo();
+            break;
+        case buildState::NONE:
+            // Do nothing
+            break;
         }
     }
 

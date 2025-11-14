@@ -44,11 +44,6 @@ const int poly_enemy_reward = 20;
 const int locus_enemy_reward = 40;
 const int antumbra_enemy_reward = 1000; // big money for big boss
 
-// targets
-// has been declared here because of some (possible?) use in other files, otherwise is local to the enemy class and is used there only.
-std::vector<Vector2> targets;
-Vector2 startPos;
-
 /* TILE SYSTEM CONSTANTS
  * the GRID_COLS variable is fine tuned to the layout of the map
  * Always change it in multiples of 3.

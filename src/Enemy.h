@@ -1,6 +1,7 @@
 #pragma once
 #include "Config.h"
 #include "Entity.h"
+#include "Map.h"
 #include "Particles.h"
 #include "raylib.h"
 #include "raymath.h"
@@ -9,7 +10,7 @@
 #include <cmath>
 #include <iostream>
 using namespace std;
-// Future work : Add more status effects and turret use? 
+// Future work : Add more status effects and turret use?
 enum class StatusEffects
 {
     NONE,
@@ -41,11 +42,15 @@ class Enemy : public Entity
     int kill_reward;
     StatusEffects status_effect = StatusEffects::NONE;
     float status_timer = 0.0f;
-    Vector2 targetPos = targets[map_counter];
-    Enemy()
+    Vector2 targetPos;
+    Enemy(const Map &map)
     {
         id = next_id++;
-        position = startPos;
+        position = map.startPos;
+        if (!map.targets.empty())
+        {
+            targetPos = map.targets[map_counter];
+        }
     }
     // idea to use multiplier as a fall-off for distance or other factors
     void TakeDamage(ProjectileType proj_type, float multiplier)
@@ -115,11 +120,11 @@ class Enemy : public Entity
     float GetRadius() { return radius; }
 
     /* A simple place-holder function IN-CASE some enemies do actions
-    * Don't want to put it in the update function, that handles too many things
-    * Most enemies might just have this function empty, and some have something
-    * to do in here, like a special ability
-    * Update : poly_enemy actually does something
-    */
+     * Don't want to put it in the update function, that handles too many things
+     * Most enemies might just have this function empty, and some have something
+     * to do in here, like a special ability
+     * Update : poly_enemy actually does something
+     */
     virtual void DoEnemyAction(vector<Enemy *> &targets, float deltaTime) {}
 
     void Update(float deltaTime) override
@@ -192,7 +197,7 @@ class Enemy : public Entity
     }
     virtual void Draw() override = 0;
     virtual EnemyType GetEnemyType() = 0;
-    void Update()
+    void Update(const std::vector<Vector2> &targets)
     {
         // if the enemy is at the last path tile, make it go off screen
         if (targetPos == targets.back())
@@ -310,12 +315,12 @@ class Enemy : public Entity
 };
 
 /* The basic enemy
-* balanced speed and health, the first enemy you will face
-*/
+ * balanced speed and health, the first enemy you will face
+ */
 class flare_enemy : public Enemy
 {
   public:
-    flare_enemy()
+    flare_enemy(const Map &map) : Enemy(map)
     {
         radius = flare_enemy_radius;
         speed = flare_enemy_speed;
@@ -357,12 +362,12 @@ class flare_enemy : public Enemy
 };
 
 /* The fast enemy
-* low health and high speed, it's job is to rush past turrets quickly
-*/
+ * low health and high speed, it's job is to rush past turrets quickly
+ */
 class mono_enemy : public Enemy
 {
   public:
-    mono_enemy()
+    mono_enemy(const Map &map) : Enemy(map)
     {
         radius = mono_enemy_radius;
         speed = mono_enemy_speed;
@@ -411,7 +416,7 @@ class mono_enemy : public Enemy
 class crawler_enemy : public Enemy
 {
   public:
-    crawler_enemy()
+    crawler_enemy(const Map &map) : Enemy(map)
     {
         radius = crawler_enemy_radius;
         speed = crawler_enemy_speed;
@@ -463,7 +468,7 @@ class poly_enemy : public Enemy
   public:
     float range;
     float heal_cooldown;
-    poly_enemy()
+    poly_enemy(const Map &map) : Enemy(map)
     {
         radius = poly_enemy_radius;
         speed = poly_enemy_speed;
@@ -516,7 +521,7 @@ class poly_enemy : public Enemy
                 // we also don't care if the target has been healed this frame, because
                 // multiple healers can heal the same target in one frame
                 enemy->healed_this_frame = true;
-                enemy->hp += poly_enemy_heal_amount; 
+                enemy->hp += poly_enemy_heal_amount;
                 // this flag is un-set only in the draw loop,
                 // which is why the detection and action happen here
                 // itself, and not seperately.
@@ -530,12 +535,12 @@ class poly_enemy : public Enemy
 };
 
 /* The tank enemy
-* high health and low speed, it's job is to soak up damage and block paths
+ * high health and low speed, it's job is to soak up damage and block paths
  */
 class locus_enemy : public Enemy
 {
   public:
-    locus_enemy()
+    locus_enemy(const Map &map) : Enemy(map)
     {
         radius = locus_enemy_radius;
         speed = locus_enemy_speed;
@@ -575,14 +580,14 @@ class locus_enemy : public Enemy
     EnemyType GetEnemyType() override { return EnemyType::LOCUS; }
 };
 
-/* The boss 
-* very high health, medium speed
-* has no special abilities for now
-*/
+/* The boss
+ * very high health, medium speed
+ * has no special abilities for now
+ */
 class antumbra_enemy : public Enemy
 {
   public:
-    antumbra_enemy()
+    antumbra_enemy(const Map &map) : Enemy(map)
     {
         radius = antumbra_enemy_radius;
         speed = antumbra_enemy_speed;

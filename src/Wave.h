@@ -3,6 +3,7 @@
 #include "Config.h"
 #include "Enemy.h"
 #include "Entity.h"
+#include "Map.h"
 #include <memory>
 #include <vector>
 using namespace std;
@@ -19,9 +20,12 @@ class WaveManager
 {
   public:
     // getters, in case need to call from outside
-    int GetWaveNumber() { return currentWaveIndex + 1; } // Returns the current wave number (1-indexed)
+    int GetWaveNumber()
+    {
+        return currentWaveIndex + 1;
+    } // Returns the current wave number (1-indexed)
     int GetStageNumber() { return currentStage; }
-    bool IsWaveActive() { return state == State::SPAWNING || state == State::WAVE_IN_PROGRESS; }       
+    bool IsWaveActive() { return state == State::SPAWNING || state == State::WAVE_IN_PROGRESS; }
     int GetWavesUntilBoss() { return BOSS_WAVE_INTERVAL - (currentWaveIndex % BOSS_WAVE_INTERVAL); }
     int GetTotalWaves() { return (int)(allWaveScripts.size()); }
     bool IsFinished() { return state == State::FINISHED; }
@@ -39,65 +43,214 @@ class WaveManager
         allWaveScripts.push_back(vector<SpawnCommand>(10, {EnemyType::FLARE, 1.0f}));
 
         // wave 2: introducing fast enemies
-        allWaveScripts.push_back({{EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::FLARE, 0.8f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}, {EnemyType::MONO, 0.5f}});
+        allWaveScripts.push_back({{EnemyType::FLARE, 0.8f},
+                                  {EnemyType::FLARE, 0.8f},
+                                  {EnemyType::FLARE, 0.8f},
+                                  {EnemyType::FLARE, 0.8f},
+                                  {EnemyType::FLARE, 0.8f},
+                                  {EnemyType::MONO, 0.5f},
+                                  {EnemyType::MONO, 0.5f},
+                                  {EnemyType::MONO, 0.5f},
+                                  {EnemyType::MONO, 0.5f},
+                                  {EnemyType::MONO, 0.5f}});
 
         // wave 3 => made it tighter: alternating flares and monos
-        allWaveScripts.push_back({{EnemyType::FLARE, 0.4f}, {EnemyType::MONO, 0.4f}, {EnemyType::FLARE, 0.4f}, {EnemyType::MONO, 0.4f}, {EnemyType::FLARE, 0.4f},
-                                  {EnemyType::MONO, 0.4f}, {EnemyType::FLARE, 0.4f}, {EnemyType::MONO, 0.4f}, {EnemyType::FLARE, 0.4f}, {EnemyType::MONO, 0.4f}});
+        allWaveScripts.push_back({{EnemyType::FLARE, 0.4f},
+                                  {EnemyType::MONO, 0.4f},
+                                  {EnemyType::FLARE, 0.4f},
+                                  {EnemyType::MONO, 0.4f},
+                                  {EnemyType::FLARE, 0.4f},
+                                  {EnemyType::MONO, 0.4f},
+                                  {EnemyType::FLARE, 0.4f},
+                                  {EnemyType::MONO, 0.4f},
+                                  {EnemyType::FLARE, 0.4f},
+                                  {EnemyType::MONO, 0.4f}});
 
         // wave 4: damage output test, locus now in middle of flares
         allWaveScripts.push_back({
-            {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f},
-            {EnemyType::LOCUS, 0.3f}, 
-            {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}, {EnemyType::FLARE, 0.3f}
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::LOCUS, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
+            {EnemyType::FLARE, 0.3f},
         });
         // wave 5: dense wave of fast enemies
-        allWaveScripts.push_back({{EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f},
-                                  {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::MONO, 0.15f}});
+        allWaveScripts.push_back({{EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f},
+                                  {EnemyType::MONO, 0.15f}});
 
         // wave 6: introducing healers
-        allWaveScripts.push_back({{EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 2.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.2f}, {EnemyType::POLY, 2.0f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.2f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.2f}});
+        allWaveScripts.push_back({{EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 2.0f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.2f},
+                                  {EnemyType::POLY, 2.0f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.2f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.2f}});
 
         // wave 7: invisible enemies + fast enemies
-        allWaveScripts.push_back({{EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}, {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}, {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}, {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}, {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f},
-                                  {EnemyType::CRAWLER, 0.8f}, {EnemyType::MONO, 0.4f}});
+        allWaveScripts.push_back({{EnemyType::CRAWLER, 0.8f},
+                                  {EnemyType::MONO, 0.4f},
+                                  {EnemyType::CRAWLER, 0.8f},
+                                  {EnemyType::MONO, 0.4f},
+                                  {EnemyType::CRAWLER, 0.8f},
+                                  {EnemyType::MONO, 0.4f},
+                                  {EnemyType::CRAWLER, 0.8f},
+                                  {EnemyType::MONO, 0.4f},
+                                  {EnemyType::CRAWLER, 0.8f},
+                                  {EnemyType::MONO, 0.4f},
+                                  {EnemyType::CRAWLER, 0.8f},
+                                  {EnemyType::MONO, 0.4f}});
 
         // wave 8: pre-boss durability test
         allWaveScripts.push_back({
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
         });
 
         // wave 9: pre-boss speed and numbers test
-        allWaveScripts.push_back({
-            {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
-            {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
-            {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}
-        });
+        allWaveScripts.push_back({{EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::CRAWLER, 0.2f},
+                                  {EnemyType::CRAWLER, 0.2f},
+                                  {EnemyType::CRAWLER, 0.2f},
+                                  {EnemyType::CRAWLER, 0.2f},
+                                  {EnemyType::CRAWLER, 0.2f},
+                                  {EnemyType::CRAWLER, 0.2f},
+                                  {EnemyType::CRAWLER, 0.2f},
+                                  {EnemyType::CRAWLER, 0.2f},
+                                  {EnemyType::CRAWLER, 0.2f},
+                                  {EnemyType::CRAWLER, 0.2f}});
 
         // wave 10: boss wave with minions
         allWaveScripts.push_back({
-            {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 0.5f}, {EnemyType::FLARE, 5.0f}, 
-            {EnemyType::ANTUMBRA, 0.1f}, 
-            {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 5.0f}, 
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, 
-            {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f}, {EnemyType::MONO, 1.0f} 
+            {EnemyType::FLARE, 0.5f},
+            {EnemyType::FLARE, 0.5f},
+            {EnemyType::FLARE, 0.5f},
+            {EnemyType::FLARE, 0.5f},
+            {EnemyType::FLARE, 5.0f},
+            {EnemyType::ANTUMBRA, 0.1f},
+            {EnemyType::MONO, 1.0f},
+            {EnemyType::MONO, 1.0f},
+            {EnemyType::MONO, 1.0f},
+            {EnemyType::MONO, 1.0f},
+            {EnemyType::MONO, 5.0f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::MONO, 1.0f},
+            {EnemyType::MONO, 1.0f},
+            {EnemyType::MONO, 1.0f},
+            {EnemyType::MONO, 1.0f},
         });
 
         // --- STAGE 2 WAVES ---
         // enemies got a health buff, health doubled
         // wave 11: dense mixed stream
         allWaveScripts.push_back({
-            {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f},
-            {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f},
-            {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}, {EnemyType::FLARE, 0.15f}, {EnemyType::MONO, 0.15f}
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
+            {EnemyType::FLARE, 0.15f},
+            {EnemyType::MONO, 0.15f},
         });
 
         // wave 12: tank check
         vector<SpawnCommand> wave12;
         for (int i = 0; i <= 30; i++)
         {
-            if (i%2==0)
+            if (i % 2 == 0)
                 wave12.push_back({EnemyType::LOCUS, 0.1f});
             else
                 wave12.push_back({EnemyType::POLY, 0.1f});
@@ -110,29 +263,100 @@ class WaveManager
         // wave 14: invis check with distractions
         allWaveScripts.push_back({
             {EnemyType::LOCUS, 3.0f},
-            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 3.0f},
-            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 3.0f},
-            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 3.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 3.0f},
-            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f},
-            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 3.0f},
-            {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.4f}, {EnemyType::CRAWLER, 0.1f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 3.0f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 3.0f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 3.0f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 3.0f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 3.0f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.4f},
+            {EnemyType::CRAWLER, 0.1f},
         });
 
         // wave 15: random bs go
-        allWaveScripts.push_back({
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, 
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, 
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::CRAWLER, 0.5f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}, {EnemyType::MONO, 0.1f}
-            });
+        allWaveScripts.push_back({{EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::CRAWLER, 0.5f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::CRAWLER, 0.5f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::CRAWLER, 0.5f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::CRAWLER, 0.5f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::CRAWLER, 0.5f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::CRAWLER, 0.5f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::CRAWLER, 0.5f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::CRAWLER, 0.5f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f},
+                                  {EnemyType::MONO, 0.1f}});
 
         // wave 16: harder tank check with other randoms
-        vector<SpawnCommand> wave16; 
+        vector<SpawnCommand> wave16;
         for (int i = 0; i < 60; ++i)
         {
             if (i % 2 == 0)
@@ -149,35 +373,121 @@ class WaveManager
 
         // wave 18: "cloak and dagger"
         allWaveScripts.push_back({
-            {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::POLY, 0.1f},
-            {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::POLY, 0.1f},
-            {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::CRAWLER, 0.2f}, {EnemyType::POLY, 0.1f}
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::CRAWLER, 0.2f},
+            {EnemyType::POLY, 0.1f},
         });
 
         // wave 19: the final test before the boss
-        allWaveScripts.push_back({
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f}, 
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::MONO, 0.05f}, {EnemyType::CRAWLER, 0.3f}
-        });
+        allWaveScripts.push_back({{EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::CRAWLER, 0.3f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::CRAWLER, 0.3f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::CRAWLER, 0.3f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::CRAWLER, 0.3f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::CRAWLER, 0.3f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::CRAWLER, 0.3f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::CRAWLER, 0.3f},
+                                  {EnemyType::LOCUS, 0.2f},
+                                  {EnemyType::POLY, 0.1f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::MONO, 0.05f},
+                                  {EnemyType::CRAWLER, 0.3f}});
 
         // wave 20: triple boss wave
         allWaveScripts.push_back({
-            /*---*/{EnemyType::ANTUMBRA, 0.2f}, 
-            {EnemyType::POLY, 0.1f}, {EnemyType::POLY, 0.1f}, {EnemyType::POLY, 0.1f}, {EnemyType::POLY, 0.1f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f}, 
-            /*---*/ {EnemyType::ANTUMBRA, 0.1f}, 
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f},
-            {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 0.1f}, {EnemyType::LOCUS, 0.2f}, {EnemyType::POLY, 5.0f}, 
-            /*---*/{EnemyType::ANTUMBRA, 0.1f}, 
+            /*---*/ {EnemyType::ANTUMBRA, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 5.0f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 5.0f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 5.0f},
+            /*---*/ {EnemyType::ANTUMBRA, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 5.0f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 5.0f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 0.1f},
+            {EnemyType::LOCUS, 0.2f},
+            {EnemyType::POLY, 5.0f},
+            /*---*/ {EnemyType::ANTUMBRA, 0.1f},
 
         });
 
@@ -197,7 +507,7 @@ class WaveManager
         }
     }
 
-    void Update(float deltaTime, vector<unique_ptr<Entity>> &entities, int activeEnemies)
+    void Update(float deltaTime, vector<unique_ptr<Entity>> &entities, int activeEnemies, const Map &map)
     {
         if (state == State::FINISHED)
             return;
@@ -215,21 +525,22 @@ class WaveManager
                 switch (command.type)
                 {
                 case EnemyType::FLARE:
-                    entities.push_back(make_unique<flare_enemy>());
+                    entities.push_back(make_unique<flare_enemy>(map));
                     break;
                 case EnemyType::MONO:
-                    entities.push_back(make_unique<mono_enemy>());
+                    entities.push_back(make_unique<mono_enemy>(map));
                     break;
                 case EnemyType::LOCUS:
-                    entities.push_back(make_unique<locus_enemy>());
+                    entities.push_back(make_unique<locus_enemy>(map));
                     break;
                 case EnemyType::CRAWLER:
-                    entities.push_back(make_unique<crawler_enemy>()); break;
+                    entities.push_back(make_unique<crawler_enemy>(map));
+                    break;
                 case EnemyType::POLY:
-                    entities.push_back(make_unique<poly_enemy>());
+                    entities.push_back(make_unique<poly_enemy>(map));
                     break;
                 case EnemyType::ANTUMBRA:
-                    entities.push_back(make_unique<antumbra_enemy>());
+                    entities.push_back(make_unique<antumbra_enemy>(map));
                     break;
                 }
 
