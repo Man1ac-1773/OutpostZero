@@ -103,7 +103,7 @@ class WaveManager
                 wave12.push_back({EnemyType::POLY, 0.1f});
         }
         allWaveScripts.push_back(wave12);
-        delete wave12; // free memory
+
 
         // wave 13: pure number swarm
         allWaveScripts.push_back(vector<SpawnCommand>(50, {EnemyType::MONO, 0.08f}));
@@ -144,7 +144,6 @@ class WaveManager
                 wave16.push_back({EnemyType::MONO, 0.05f});
         }
         allWaveScripts.push_back(wave16);
-        delete wave16; // free memory
 
         // wave 17: continuous monos
         allWaveScripts.push_back(vector<SpawnCommand>(200, {EnemyType::MONO, 0.05f}));
