@@ -16,7 +16,7 @@
  */
 
 // return value of velocity as a Vector2
-inline Vector2 velFromSpeed(const Vector2 &startPos, const Vector2 &targetPos, float speed) { return Vector2Scale(Vector2Normalize(targetPos - startPos), speed); }
+inline Vector2 velFromSpeed(const Vector2 &startPos, const Vector2 &targetPos, float speed) { return Vector2Scale(Vector2Normalize(Vector2Subtract(targetPos, startPos)), speed); }
 // it is a simple one-liner, I don't even know why i created a seperate function for it
 // "Felt cute, might delete later" lol
 
