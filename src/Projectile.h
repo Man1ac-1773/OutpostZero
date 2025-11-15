@@ -50,13 +50,7 @@ class Projectile : public Entity
         position += Vector2Scale(velocity, deltaTime);
         particles.SpawnTrail(position, velocity, getProjType());
     }
-    void Draw() override
-    {
-        if (active)
-        {
-            DrawCircleV(position, radius, color);
-        }
-    }
+    void Draw() override {/* empty because no need to draw anything for this class */} 
     static void LoadTextures()
     {
         BulletImage = LoadImage("assets/projectiles/smallBullet.png");
