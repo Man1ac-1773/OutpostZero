@@ -93,6 +93,7 @@ class Enemy : public Entity
         {
             // if dead, give money, disappear, and make a boom
             playerMoney += kill_reward;
+            enemies_killed++;
             Destroy();
             particles.SpawnExplosion(position, proj_type);
             // Death animation => never implemented :(
@@ -107,6 +108,7 @@ class Enemy : public Entity
         hp -= amount;
         if (hp <= 0)
         {
+            enemies_killed++;
             Destroy();
             playerMoney += kill_reward;
             particles.SpawnExplosion(position, proj_type);

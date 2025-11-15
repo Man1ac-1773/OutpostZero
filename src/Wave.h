@@ -197,7 +197,7 @@ class WaveManager
             spawnTimer = 0;
         }
     }
-
+    
     void Update(float deltaTime, vector<unique_ptr<Entity>> &entities, int activeEnemies)
     {
         if (state == State::FINISHED)
@@ -266,6 +266,12 @@ class WaveManager
                 }
             }
         }
+    }
+    void reset(){
+        state = State::WAITING_FOR_PLAYER;
+        currentWaveIndex = 0;
+        currentCommandIndex = 0;
+        spawnTimer = 0;
     }
 
   private:

@@ -29,6 +29,7 @@ extern Vector2 startPos;
 extern int player_health;
 extern int playerMoney;
 extern float enemy_health_multiplier;
+extern int enemies_killed; 
 
 
 // map constants

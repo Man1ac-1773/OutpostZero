@@ -9,6 +9,7 @@ LDFLAGS = $(DEBUG_FLAGS)
 BUILD_DIR = build
 
 TARGET = $(BUILD_DIR)/output
+# raylib being compiled is a dependancy
 RAYLIB_DIR := lib/lib/raylib/src
 RAYLIB_LIB := $(RAYLIB_DIR)/libraylib.a
 

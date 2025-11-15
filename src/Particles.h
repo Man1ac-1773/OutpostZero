@@ -139,4 +139,9 @@ class ParticleSystem
         Vector2 jitter = {GetRandomValue(-10, 0) / 100.0f, GetRandomValue(-10, 0) / 100.0f};
         Spawn(pos, Vector2Add(vel, jitter), c, 0.2f, 2.0f, proj_type);
     }
+    
+    void cleanup()
+    {
+        particles.clear();
+    }
 };

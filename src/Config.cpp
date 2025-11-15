@@ -23,6 +23,7 @@ const Color mouseHoverColor = Color{100, 255, 100, 50};
 int player_health = 10; // max enemies that can cross u
 int playerMoney = 250; // money u start with
 float enemy_health_multiplier = 1.0f; // makes enemies beefier each stage
+int enemies_killed = 0;
 
 // turret costs
 const int duo_turret_cost = 100;

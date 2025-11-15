@@ -28,6 +28,7 @@ static buildState current_build;
 static Map gameMap;
 static bool initialized = false;
 static Camera2D camera = {0};
+static bool gameOver = false;
 static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our entities
 static WaveManager wave_manager;
 static Turret *currentTurret = nullptr;
@@ -53,28 +54,6 @@ Scene Game()
     {
         current_build = buildState::NONE;
     }
-    /*
-    // Spawn enemy at mouse
-    if (IsKeyPressed(KEY_X))
-    {
-        entities.push_back(make_unique<flare_enemy>());
-    }
-    if (IsKeyPressed(KEY_Z))
-    {
-        entities.push_back(make_unique<antumbra_enemy>());
-    }
-    if (IsKeyPressed(KEY_C))
-    {
-        entities.push_back(make_unique<crawler_enemy>());
-    }
-    if (IsKeyPressed(KEY_A))
-    {
-        entities.push_back(make_unique<poly_enemy>());
-    }
-    if (IsKeyPressed(KEY_S))
-    {
-        entities.push_back(make_unique<locus_enemy>());
-    } */
 
     // Spawn turret at mouse (only on buildable tiles)
     if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
@@ -124,13 +103,16 @@ Scene Game()
     }
 
     // ------ UPDATE PASS ------
-    // Calling simple Update for all entities
-    for (auto &entity : entities)
+    if (!gameOver)
     {
-        entity->Update(GetFrameTime());
+        // Calling simple Update for all entities
+        for (auto &entity : entities)
+        {
+            entity->Update(GetFrameTime());
+        }
+        particles.Update(GetFrameTime());
     }
-    particles.Update(GetFrameTime());
-
+    
     // Separate entities into turrets, enemies, and projectiles
     vector<Turret *> turret_ptrs;
     vector<Enemy *> enemy_ptrs;
@@ -156,64 +138,69 @@ Scene Game()
     }
 
     // Update turrets with knowledge of enemies
-    for (auto &turret : turret_ptrs)
+    if (!gameOver)
     {
-        turret->Update(GetFrameTime(), enemy_ptrs, newProjectiles);
-    }
-
-    // Update enemy
-    for (auto &enemy : enemy_ptrs)
-    {
-        enemy->DoEnemyAction(enemy_ptrs, GetFrameTime());
-        enemy->Update();
-    }
-    // update wave information
-    wave_manager.Update(GetFrameTime(), entities, enemy_ptrs.size());
-
-    // ---- INTERACTION PASS -----
-    // Projectiles interact with enemies
-    for (auto *projectile : projectile_ptrs)
-    {
-        // checking each projectile with each enemy is highly inefficient, but I don't know how to optimise this yet
-        for (auto *enemy : enemy_ptrs)
+        for (auto &turret : turret_ptrs)
         {
-            if (!enemy->IsActive() || !projectile->IsActive())
-                continue;
-            /* for collision checking
-             * we are basically checking if this projectile
-             * has the enemy_id in it's "currently colliding" stack,
-             * So as to prevent cases where collisions are detected each frame,
-             * before the projectile has had a chance to leave the hitbox of
-             * enemy.
-             * If they are colliding => check if they have already collided
-             * else => remove from current_colliding stack;
-             */
-            bool colliding = CheckCollisionCircles(projectile->GetPosition(), projectile->GetRadius(), enemy->GetPosition(), enemy->GetRadius());
-            if (colliding)
+            turret->Update(GetFrameTime(), enemy_ptrs, newProjectiles);
+        }
+
+        // Update enemy
+        for (auto &enemy : enemy_ptrs)
+        {
+            enemy->DoEnemyAction(enemy_ptrs, GetFrameTime());
+            enemy->Update();
+        }
+        // update wave information
+        wave_manager.Update(GetFrameTime(), entities, enemy_ptrs.size());
+
+        // ---- INTERACTION PASS -----
+        // Projectiles interact with enemies
+        for (auto *projectile : projectile_ptrs)
+        {
+            // checking each projectile with each enemy is highly inefficient, but I don't know how to optimise this yet
+            for (auto *enemy : enemy_ptrs)
             {
-                // New collision this frame
-                if (projectile->current_colliding.find(enemy->id) == projectile->current_colliding.end())
+                if (!enemy->IsActive() || !projectile->IsActive())
+                    continue;
+                /* for collision checking
+                 * we are basically checking if this projectile
+                 * has the enemy_id in it's "currently colliding" stack,
+                 * So as to prevent cases where collisions are detected each frame,
+                 * before the projectile has had a chance to leave the hitbox of
+                 * enemy.
+                 * If they are colliding => check if they have already collided
+                 * else => remove from current_colliding stack;
+                 */
+                bool colliding = CheckCollisionCircles(projectile->GetPosition(), projectile->GetRadius(), enemy->GetPosition(), enemy->GetRadius());
+                if (colliding)
                 {
-                    projectile->current_colliding.insert(enemy->id);
-                    projectile->ReducePierceCount();
-                    enemy->TakeDamage(projectile->getProjType(), GetDamageFalloff(1.0f, 0.0f, projectile->enemies_hit));
+                    // New collision this frame
+                    if (projectile->current_colliding.find(enemy->id) == projectile->current_colliding.end())
+                    {
+                        projectile->current_colliding.insert(enemy->id);
+                        projectile->ReducePierceCount();
+                        enemy->TakeDamage(projectile->getProjType(), GetDamageFalloff(1.0f, 0.0f, projectile->enemies_hit));
+                    }
+                }
+                else
+                {
+                    // has collided
+                    projectile->current_colliding.erase(enemy->id);
                 }
             }
-            else
-            {
-                // has collided
-                projectile->current_colliding.erase(enemy->id);
-            }
         }
+
+        // --- CLEANUP AND ADDITION PASS ---
+        for (auto &p : newProjectiles)
+        {
+            entities.push_back(std::move(p));
+        }
+
+        entities.erase(remove_if(entities.begin(), entities.end(), [](const auto &entity) { return !entity->IsActive(); }), entities.end());
     }
 
-    // --- CLEANUP AND ADDITION PASS ---
-    for (auto &p : newProjectiles)
-    {
-        entities.push_back(std::move(p));
-    }
-
-    entities.erase(remove_if(entities.begin(), entities.end(), [](const auto &entity) { return !entity->IsActive(); }), entities.end());
+    
 
     // ---- DRAWING ----
     ClearBackground(RAYWHITE);
@@ -269,12 +256,12 @@ Scene Game()
     if (GuiButton(laser_turret_buttonRect, ""))
     {
         current_build = buildState::LANCER;
-        currentTurret = nullptr; // Deselect any currently selected turret
+        currentTurret = nullptr; 
     }
     if (GuiButton(slow_turret_buttonRect, ""))
     {
         current_build = buildState::WAVE;
-        currentTurret = nullptr; // Deselect any currently selected turret
+        currentTurret = nullptr; 
     }
     if (GuiButton(nextWaveButton, "Next wave"))
     {
@@ -344,12 +331,43 @@ Scene Game()
     DrawFPS(screenWidth - 80, 10);
     DrawText(TextFormat("Health : %d", player_health), screenWidth - MeasureText("Health : x      ", 20), screenHeight - 28, 20, RED);
     DrawText(TextFormat(" : %d", playerMoney), screenWidth - 80, 40, 20, GREEN);
+
     // game over condition
-    if (player_health <= 0)
+    if (player_health <= 0 && !gameOver)
     {
-        DrawText("GAME OVER !! ", screenWidth / 2.0f - 300, screenHeight / 2.0f - 30, 100, RED);
-        for_each(enemy_ptrs.begin(), enemy_ptrs.end(), [](Enemy *e) { e->Destroy(); });
+        gameOver = true;
+        for_each(entities.begin(), entities.end(), [](unique_ptr<Entity> &e) {
+            if (dynamic_cast<Enemy*>(e.get())) {
+                e->Destroy();
+            }
+        });
     }
+
+    if (gameOver)
+    {
+        DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.6f));
+        DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 100) / 2, screenHeight / 2 - 150, 100, RED);
+        
+        DrawText(TextFormat("Waves Survived: %d", wave_manager.GetWaveNumber() -1), screenWidth/2 - MeasureText("Waves Survived: XX", 20)/2, screenHeight/2 - 20, 20, RAYWHITE);
+        DrawText(TextFormat("Enemies Killed: %d", enemies_killed), screenWidth/2 - MeasureText("Enemies Killed: XXX", 20)/2, screenHeight/2 + 10, 20, RAYWHITE);
+
+        Rectangle backToMenuButton = { (float)screenWidth/2 - 100, (float)screenHeight/2 + 50, 200, 50 };
+        if (GuiButton(backToMenuButton, "Back to Menu"))
+        {
+            initialized = false; // Reset game state for next time
+            gameOver = false; 
+            entities.clear(); // to-note that all raw pointers like Enemy* which was made from this
+                              // becomes invalid after this, be careful when using them
+            particles.cleanup();
+            // reset every global game variable
+            player_health = 10;
+            playerMoney = 250;
+            wave_manager.reset(); // reset waves
+            enemies_killed = 0;
+            return Scene::INTRO;
+        }
+    }
+
     // wave counter
     DrawText(TextFormat("Wave: %d / %d", wave_manager.GetWaveNumber(), wave_manager.GetTotalWaves()), GRID_COLS * TILE_SIZE + 30, screenHeight - 80, 20, BLACK);
     DrawText(TextFormat("Stage: %d", wave_manager.GetStageNumber()), GRID_COLS * TILE_SIZE + 30, screenHeight - 50, 20, BLACK);

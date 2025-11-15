@@ -69,7 +69,7 @@ inline void DrawHealthBar(float curr_health, float max_health, Vector2 entity_po
 /* Calculate damage falloff based off of how far enemy is
  * distance => square distance of enemy to turret
  * max_range => of turret
- * Goal is to return 1 at max_range, and scale it larger as it goes closer
+ * Goal is to return 0.5 at max_range, and scale it larger as it goes closer
  * but clamp it at some value
  */
 inline float GetDamageFalloff(float distSqr, float range, int enemiesHit = 0)
