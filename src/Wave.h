@@ -12,7 +12,7 @@ struct SpawnCommand
     float delayUntilNext; // time to next spawn
 };
 
-// --- WaveManager Class ---
+// --- WaveManager Class ---    
 // Handles spawning of waves and storing their data
 // waits for user to press the button
 class WaveManager
@@ -276,17 +276,17 @@ class WaveManager
 
   private:
     vector<vector<SpawnCommand>> allWaveScripts;
-    int currentWaveIndex;
-    int currentCommandIndex;
+    int currentWaveIndex; // which wave we're on
+    int currentCommandIndex; // which command in the wave script we're on
     int currentStage = 1;
-    float spawnTimer;
+    float spawnTimer;      // countdown timer until next spawn
 
     enum class State
     {
         WAITING_FOR_PLAYER,
         SPAWNING,
         WAVE_IN_PROGRESS, // Spawning done, waiting for enemies to be cleared
-        FINISHED
+        FINISHED 
     };
     State state;
 };

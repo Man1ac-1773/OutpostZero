@@ -340,7 +340,7 @@ Scene Game()
     {
         gameOver = true;
         for_each(entities.begin(), entities.end(), [](unique_ptr<Entity> &e) {
-            if (dynamic_cast<Enemy*>(e.get())) {
+            if (dynamic_cast<Enemy*>(e.get())) { // .get() returns the raw pointer 
                 e->Destroy();
             }
         });
@@ -353,6 +353,7 @@ Scene Game()
 
         int yPos = screenHeight / 2 - 50;
         int xPos = screenWidth / 2 - 150;
+        // blit main information in left side 
         DrawText(TextFormat("Waves Survived: %d", wave_manager.GetWaveNumber() - 1), xPos, yPos, 20, RAYWHITE);
         DrawText(TextFormat("Total Enemies Killed: %d", enemies_killed), xPos, yPos + 25, 20, RAYWHITE);
         DrawText(TextFormat("Total Damage Dealt: %llu", stat_manager.total_damage_done), xPos, yPos + 50, 20, RAYWHITE);
@@ -363,6 +364,7 @@ Scene Game()
         yPos = screenHeight / 2 - 50;
         DrawText("Kills by Type:", xPos, yPos, 20, LIGHTGRAY);
         yPos += 25;
+        // blit auxilliary information on right side
         for (auto const& [type, count] : stat_manager.enemies_killed_by_type)
         {
             std::string typeName;

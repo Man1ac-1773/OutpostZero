@@ -10,27 +10,25 @@
 
 class Projectile : public Entity
 {
-  public:
-    float radius;
-    Color color;
-    bool active;
-    Vector2 start_pos;
-    Vector2 target_pos;
-    int pierce_count;
-    std::unordered_set<int> current_colliding;
-    unsigned long long id;
+  public: 
+    float radius;                 
+    bool active;                
+    Vector2 start_pos;           
+    Vector2 target_pos;          
+    int pierce_count;          
+    std::unordered_set<int> current_colliding; // to not hit same enemy twice
+    unsigned long long id;     
     int enemies_hit = 0;
     Projectile(Vector2 startPos, Vector2 targetPos)
     {
         id = next_id++;
         start_pos = startPos;
         target_pos = targetPos;
-        position = startPos; // starting position
-        color = RED;         // color of the projectile
-        active = true;       // state of the projectile
+        position = startPos; 
+        active = true;       
     }
-    virtual ProjectileType getProjType() = 0;
-    virtual float GetMaxProjRange() = 0;
+    virtual ProjectileType getProjType() = 0; 
+    virtual float GetMaxProjRange() = 0;      
     float GetRadius() const { return radius; }
     void ReducePierceCount()
     {
@@ -107,6 +105,7 @@ class Projectile : public Entity
 
 class normal_bullet : public Projectile
 {
+    // basic bullet from duo turret
   public:
     normal_bullet(Vector2 startPos, Vector2 targetPos) : Projectile(startPos, targetPos)
     {
@@ -127,6 +126,7 @@ class normal_bullet : public Projectile
 
 class laser_bullet : public Projectile
 {
+    // fast bullet from lancer turret
   public:
     laser_bullet(Vector2 startPos, Vector2 targetPos) : Projectile(startPos, targetPos)
     {
@@ -206,6 +206,7 @@ class laser_bullet : public Projectile
 
 class flame_bullet : public Projectile
 {
+    // bullet for flamethrower
   public:
     float speed;
     float spreadAngle = 10.0f;
@@ -253,6 +254,7 @@ class flame_bullet : public Projectile
 
 class ice_bullet : public Projectile
 {
+    // bullet for ice turret
   public:
     float speed;
     float spreadAngle = 5.0f;
@@ -300,6 +302,7 @@ class ice_bullet : public Projectile
 
 class shotgun_bullet : public Projectile
 {
+    // bullet for shotgun turret, hits many enemies
   public:
     shotgun_bullet(Vector2 startPos, Vector2 targetPos) : Projectile(startPos, targetPos)
     {

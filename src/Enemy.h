@@ -120,7 +120,7 @@ class Enemy : public Entity
 
     void Update(float deltaTime) override
     {
-
+        // this runs every frame for enemy
         if (status_effect != StatusEffects::NONE && status_timer <= 0)
         // if enemy has a status effect and its timer isn't running, start it
         {

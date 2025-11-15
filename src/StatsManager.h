@@ -4,6 +4,11 @@
 #include <map>
 using namespace std; 
 
+/* class that handles information about player work
+ * total damage, kill by type and money spent
+ * should've added time played also but meh
+ */
+
 class StatsManager
 {
   public:

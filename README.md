@@ -20,7 +20,7 @@ Outpost Zero is a 2D tower defense game built with C++ and raylib. Players must 
 
 ## How to Build and Run
 
-These instructions are for POSIX-compliant systems (Linux, macOS) and Windows users with WSL.
+These instructions are for Linux users. 
 
 ### Prerequisites
 
