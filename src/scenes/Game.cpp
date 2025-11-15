@@ -359,7 +359,7 @@ Scene Game()
         DrawText(TextFormat("Total Money Spent: %d", stat_manager.total_money_spent), xPos, yPos + 75, 20, RAYWHITE);
 
         // Kills per enemy type
-        xPos += 300; 
+        xPos += 300;
         yPos = screenHeight / 2 - 50;
         DrawText("Kills by Type:", xPos, yPos, 20, LIGHTGRAY);
         yPos += 25;

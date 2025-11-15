@@ -95,7 +95,7 @@ class WaveManager
 
         // wave 12: tank check
         vector<SpawnCommand> wave12;
-        for (int i = 0; i <= 50; i++)
+        for (int i = 0; i <= 30; i++)
         {
             if (i%2==0)
                 wave12.push_back({EnemyType::LOCUS, 0.1f});
@@ -134,7 +134,7 @@ class WaveManager
 
         // wave 16: harder tank check with other randoms
         vector<SpawnCommand> wave16; 
-        for (int i = 0; i < 100; ++i)
+        for (int i = 0; i < 50; ++i)
         {
             if (i % 2 == 0)
                 wave16.push_back({EnemyType::LOCUS, 0.1f});
