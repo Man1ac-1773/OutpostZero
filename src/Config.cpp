@@ -1,9 +1,12 @@
 #include "Config.h"
 #include "Particles.h"
+#include "StatsManager.h"
 #include <raylib.h>
 // initial screen dimensions
 int screenWidth = 1200;
 int screenHeight = 650;
+
+
 
 // intro
 const int introBoxWidth = 250;
@@ -24,6 +27,8 @@ int player_health = 10; // max enemies that can cross u
 int playerMoney = 250; // money u start with
 float enemy_health_multiplier = 1.0f; // makes enemies beefier each stage
 int enemies_killed = 0;
+StatsManager stat_manager; 
+
 
 // turret costs
 const int duo_turret_cost = 100;

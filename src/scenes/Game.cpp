@@ -72,6 +72,7 @@ Scene Game()
                     if (playerMoney >= duo_turret_cost)
                     {
                         entities.push_back(make_unique<duo_turret>(turretPos, tile));
+                        stat_manager.MoneySpent(duo_turret_cost);
                         tile->hasTurret = true;
                         playerMoney -= duo_turret_cost; // This was correct, but I'm including it for completeness
                     }
@@ -82,6 +83,7 @@ Scene Game()
                     if (playerMoney >= lancer_turret_cost)
                     {
                         entities.push_back(make_unique<lancer_turret>(turretPos, tile));
+                        stat_manager.MoneySpent(lancer_turret_cost);
                         tile->hasTurret = true;
                         playerMoney -= lancer_turret_cost; // This was correct, but I'm including it for completeness
                     }
@@ -92,6 +94,7 @@ Scene Game()
                     if (playerMoney >= wave_turret_cost)
                     {   
                         entities.push_back(make_unique<wave_turret>(turretPos, tile));
+                        stat_manager.MoneySpent(wave_turret_cost);
                         tile->hasTurret = true;
                         playerMoney -= wave_turret_cost; // This was correct, but I'm including it for completeness
                     }
@@ -347,22 +350,45 @@ Scene Game()
     {
         DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.6f));
         DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 100) / 2, screenHeight / 2 - 150, 100, RED);
-        
-        DrawText(TextFormat("Waves Survived: %d", wave_manager.GetWaveNumber() -1), screenWidth/2 - MeasureText("Waves Survived: XX", 20)/2, screenHeight/2 - 20, 20, RAYWHITE);
-        DrawText(TextFormat("Enemies Killed: %d", enemies_killed), screenWidth/2 - MeasureText("Enemies Killed: XXX", 20)/2, screenHeight/2 + 10, 20, RAYWHITE);
 
-        Rectangle backToMenuButton = { (float)screenWidth/2 - 100, (float)screenHeight/2 + 50, 200, 50 };
+        int yPos = screenHeight / 2 - 50;
+        int xPos = screenWidth / 2 - 150;
+        DrawText(TextFormat("Waves Survived: %d", wave_manager.GetWaveNumber() - 1), xPos, yPos, 20, RAYWHITE);
+        DrawText(TextFormat("Total Enemies Killed: %d", enemies_killed), xPos, yPos + 25, 20, RAYWHITE);
+        DrawText(TextFormat("Total Damage Dealt: %llu", stat_manager.total_damage_done), xPos, yPos + 50, 20, RAYWHITE);
+        DrawText(TextFormat("Total Money Spent: %d", stat_manager.total_money_spent), xPos, yPos + 75, 20, RAYWHITE);
+
+        // Kills per enemy type
+        xPos += 300; 
+        yPos = screenHeight / 2 - 50;
+        DrawText("Kills by Type:", xPos, yPos, 20, LIGHTGRAY);
+        yPos += 25;
+        for (auto const& [type, count] : stat_manager.enemies_killed_by_type)
+        {
+            std::string typeName;
+            switch(type) {
+                case EnemyType::FLARE: typeName = "Flare"; break;
+                case EnemyType::MONO: typeName = "Mono"; break;
+                case EnemyType::CRAWLER: typeName = "Crawler"; break;
+                case EnemyType::POLY: typeName = "Poly"; break;
+                case EnemyType::LOCUS: typeName = "Locus"; break;
+                case EnemyType::ANTUMBRA: typeName = "Antumbra"; break;
+            }
+            DrawText(TextFormat("- %s: %d", typeName.c_str(), count), xPos, yPos, 20, RAYWHITE);
+            yPos += 25;
+        }
+
+        Rectangle backToMenuButton = {(float)screenWidth / 2 - 100, (float)screenHeight / 2 + 150, 200, 50};
         if (GuiButton(backToMenuButton, "Back to Menu"))
         {
             initialized = false; // Reset game state for next time
             gameOver = false; 
-            entities.clear(); // to-note that all raw pointers like Enemy* which was made from this
-                              // becomes invalid after this, be careful when using them
+            entities.clear(); // raw pointers invalid now
             particles.cleanup();
-            // reset every global game variable
             player_health = 10;
             playerMoney = 250;
-            wave_manager.reset(); // reset waves
+            wave_manager.reset();
+            stat_manager.reset();
             enemies_killed = 0;
             return Scene::INTRO;
         }

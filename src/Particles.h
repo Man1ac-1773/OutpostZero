@@ -1,19 +1,10 @@
 #pragma once
 #include "raylib.h"
 #include "raymath.h"
+#include "Types.h"
 #include <cmath>
 #include <vector>
 
-enum class ProjectileType
-{
-    DUO_BASIC,
-    FLAME,
-    SMITE,
-    LASER,
-    CYCLONE_BEAM,
-    MELTDOWN_BEAM,
-    ICE_STREAM,
-};
 
 struct Particle
 {

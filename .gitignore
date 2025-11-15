@@ -7,3 +7,5 @@ output
 .direnv
 compile_commands.json
 /assets/.obsidian/*
+.vscode/
+.clang-format

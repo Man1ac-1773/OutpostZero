@@ -1,6 +1,7 @@
 #pragma once
 #include "Config.h"
 #include "Entity.h"
+#include "Types.h"
 #include "Particles.h"
 #include "raylib.h"
 #include "raymath.h"

@@ -1,7 +1,12 @@
 #pragma once
 #include <Particles.h>
 #include <raylib.h>
+#include "Types.h"
+#include "StatsManager.h"
 #include <vector>
+
+class StatsManager; // Forward declaration
+
 // initial screen dimensions
 extern int screenWidth;
 extern int screenHeight;
@@ -30,6 +35,7 @@ extern int player_health;
 extern int playerMoney;
 extern float enemy_health_multiplier;
 extern int enemies_killed; 
+extern StatsManager stat_manager;
 
 
 // map constants

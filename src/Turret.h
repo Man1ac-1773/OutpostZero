@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "Particles.h"
 #include "Projectile.h"
+#include "Types.h"
 #include "raygui.h"
 #include "raylib.h"
 #include "raymath.h"
@@ -17,22 +18,6 @@
  * Using classes and inheritance to handle multiple objects
  * using virtual functions which are overriden so that the main loop calls the correct function for each object
  */
-
-enum class TurretType
-{
-    // projectile turrets
-    DUO,
-    RIPPLE,
-    SMITE,
-    // laser turrets
-    LANCER,
-    CYCLONE,
-    MELTDOWN,
-    // effects turrets
-    WAVE,
-    SALVO,
-    TSUNAMI,
-};
 
 class Turret : public Entity
 {
@@ -431,6 +416,7 @@ class ripple_turret : public Turret
         {
             entities.push_back(make_unique<smite_turret>(this->position, this->tileOfTurret));
             playerMoney -= smite_turret_cost;
+            stat_manager.MoneySpent(smite_turret_cost);
             this->Destroy();
             return true;
         }
@@ -502,6 +488,7 @@ class duo_turret : public Turret
         {
             entities.push_back(make_unique<ripple_turret>(this->position, this->tileOfTurret));
             playerMoney -= ripple_turret_cost;
+            stat_manager.MoneySpent(ripple_turret_cost);
             this->Destroy();
             return true;
         }
@@ -805,6 +792,7 @@ class cyclone_turret : public Turret
         {
             entities.push_back(make_unique<meltdown_turret>(this->position, this->tileOfTurret));
             playerMoney -= meltdown_turret_cost;
+            stat_manager.MoneySpent(meltdown_turret_cost);
             this->Destroy();
             return true;
         }
@@ -870,6 +858,7 @@ class lancer_turret : public Turret
         {
             entities.push_back(make_unique<cyclone_turret>(this->position, this->tileOfTurret));
             playerMoney -= cyclone_turret_cost;
+            stat_manager.MoneySpent(cyclone_turret_cost);
             this->Destroy();
             return true;
         }
@@ -1047,6 +1036,7 @@ class wave_turret : public Turret
         {
             entities.push_back(make_unique<salvo_turret>(this->position, this->tileOfTurret));
             playerMoney -= salvo_turret_cost;
+            stat_manager.MoneySpent(salvo_turret_cost);
             this->Destroy();
             return true;
         }

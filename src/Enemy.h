@@ -4,28 +4,13 @@
 #include "Particles.h"
 #include "raylib.h"
 #include "raymath.h"
+#include "Types.h"
 #include "utils.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
 using namespace std;
-enum class StatusEffects
-{
-    NONE,
-    SLOWED,
-    BURNING,
-    STUNNED,
 
-};
-enum class EnemyType
-{
-    FLARE,
-    MONO,
-    CRAWLER,
-    POLY,
-    LOCUS,
-    ANTUMBRA,
-};
 class Enemy : public Entity
 {
   public:
@@ -52,36 +37,37 @@ class Enemy : public Entity
     void TakeDamage(ProjectileType proj_type, float multiplier)
     {
         // different projectiles deal different damage
+        float damage = 0;
         switch (proj_type)
         {
         case ProjectileType::DUO_BASIC:
         {
-            hp -= normal_bullet_damage * multiplier;
+            damage = normal_bullet_damage * multiplier;
             break;
         }
         case ProjectileType::FLAME:
         {
-            hp -= flame_bullet_damage * multiplier;
+            damage = flame_bullet_damage * multiplier;
             break;
         }
         case ProjectileType::SMITE:
         {
-            hp -= shotgun_bullet_damage * multiplier;
+            damage = shotgun_bullet_damage * multiplier;
             break;
         }
         case ProjectileType::LASER:
         {
-            hp -= lancer_bullet_damage * multiplier;
+            damage = lancer_bullet_damage * multiplier;
             break;
         }
         case ProjectileType::CYCLONE_BEAM:
         {
-            hp -= cyclone_beam_damage * multiplier;
+            damage = cyclone_beam_damage * multiplier;
             break;
         }
         case ProjectileType::ICE_STREAM:
         {
-            hp -= ice_stream_damage * multiplier;
+            damage = ice_stream_damage * multiplier;
             if (status_effect != StatusEffects::SLOWED)
             {
                 status_effect = StatusEffects::SLOWED;
@@ -89,11 +75,16 @@ class Enemy : public Entity
             break;
         }
         }
+
+        hp -= damage;
+        stat_manager.DamageDealt(damage);
+
         if (hp <= 0)
         {
             // if dead, give money, disappear, and make a boom
             playerMoney += kill_reward;
             enemies_killed++;
+            stat_manager.EnemyKilled(GetEnemyType());
             Destroy();
             particles.SpawnExplosion(position, proj_type);
             // Death animation => never implemented :(
@@ -106,9 +97,11 @@ class Enemy : public Entity
     void TakeDamageByValue(ProjectileType proj_type, float amount)
     {
         hp -= amount;
+        stat_manager.DamageDealt(amount);
         if (hp <= 0)
         {
             enemies_killed++;
+            stat_manager.EnemyKilled(GetEnemyType());
             Destroy();
             playerMoney += kill_reward;
             particles.SpawnExplosion(position, proj_type);
