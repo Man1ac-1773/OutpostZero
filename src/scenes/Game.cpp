@@ -29,6 +29,7 @@ static Map gameMap;
 static bool initialized = false;
 static Camera2D camera = {0};
 static bool gameOver = false;
+static bool gameWon = false;
 static vector<unique_ptr<Entity>> entities; // Use a vector to hold all our entities
 static WaveManager wave_manager;
 static Turret *currentTurret = nullptr;
@@ -106,7 +107,7 @@ Scene Game()
     }
 
     // ------ UPDATE PASS ------
-    if (!gameOver)
+    if (!gameOver && !gameWon)
     {
         // Calling simple Update for all entities
         for (auto &entity : entities)
@@ -141,7 +142,7 @@ Scene Game()
     }
 
     // Update turrets with knowledge of enemies
-    if (!gameOver)
+    if (!gameOver && !gameWon)
     {
         for (auto &turret : turret_ptrs)
         {
@@ -335,6 +336,18 @@ Scene Game()
     DrawText(TextFormat("Health : %d", player_health), screenWidth - MeasureText("Health : x      ", 20), screenHeight - 28, 20, RED);
     DrawText(TextFormat(" : %d", playerMoney), screenWidth - 80, 40, 20, GREEN);
 
+    // game win condition
+    if (wave_manager.IsFinished() && !gameWon && !gameOver)
+    {
+        gameWon = true;
+        for_each(entities.begin(), entities.end(), [](unique_ptr<Entity> &e) {
+            if (dynamic_cast<Enemy*>(e.get())) {
+                e->Destroy();
+            }
+        });
+    }
+
+
     // game over condition
     if (player_health <= 0 && !gameOver)
     {
@@ -346,10 +359,17 @@ Scene Game()
         });
     }
 
-    if (gameOver)
+    if (gameOver || gameWon)
     {
         DrawRectangle(0, 0, screenWidth, screenHeight, Fade(BLACK, 0.6f));
-        DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 100) / 2, screenHeight / 2 - 150, 100, RED);
+        if (gameWon)
+        {
+            DrawText("YOU WIN", screenWidth / 2 - MeasureText("YOU WIN", 100) / 2, screenHeight / 2 - 150, 100, GREEN);
+        }
+        else
+        {
+            DrawText("GAME OVER", screenWidth / 2 - MeasureText("GAME OVER", 100) / 2, screenHeight / 2 - 150, 100, RED);
+        }
 
         int yPos = screenHeight / 2 - 50;
         int xPos = screenWidth / 2 - 150;
@@ -384,6 +404,7 @@ Scene Game()
         if (GuiButton(backToMenuButton, "Back to Menu"))
         {
             initialized = false; // Reset game state for next time
+            gameWon = false;
             gameOver = false; 
             entities.clear(); // raw pointers invalid now
             particles.cleanup();
