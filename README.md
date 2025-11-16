@@ -69,6 +69,8 @@ The core objective is to prevent enemies from reaching the end of a pre-defined 
 
 *   **Enemies:** You will face a variety of enemies, each requiring different strategies to defeat.
 *   **Economy:** Defeating enemies earns you currency, which you can use to build new turrets or upgrade existing ones. Managing your economy is key to victory.
+*   For more information on how to play, refer `TUTORIAL.md`.
+
 
 ## Code Architecture
 The project is structured to be modular and scalable, with a clear separation of concerns.
