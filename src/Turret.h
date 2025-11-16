@@ -569,7 +569,7 @@ class meltdown_turret : public Turret
         else
         {
             cooldown_timer -= deltaTime;
-            recoilOffset = Lerp(recoilOffset, 0.0f, 1.5f * deltaTime);
+            recoilOffset = Lerp(recoilOffset, 0.0f, 0.1f);
         }
     }
     void Update(float deltaTime, const std::vector<Enemy *> &targets, std::vector<std::unique_ptr<Entity>> &newProjectiles) override
