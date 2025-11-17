@@ -13,7 +13,7 @@ int main()
 {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     SetConfigFlags(FLAG_VSYNC_HINT);
-    InitWindow(screenWidth, screenHeight, "Castle Defenders 2D");
+    InitWindow(screenWidth, screenHeight, "Outpost Zero");
     SetExitKey(KEY_NULL);
     SetTargetFPS(60);
 
