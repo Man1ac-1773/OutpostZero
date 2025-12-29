@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -I$(SRC_DIR) -I$(LIB_DIR) -MMD -MP
+CXXFLAGS = -Wall -I$(SRC_DIR) -I$(LIB_DIR) -I$(RAYLIB_DIR) -MMD -MP
 
 # The next line is for debugging purposes, when using gdb
 # DEBUG_FLAGS = -g -O0 
