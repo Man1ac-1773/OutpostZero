@@ -2,7 +2,7 @@
 ## Game details
 - This game is a simplistic sci-fi tower defense game. 
 - Enemies spawn at one point, and travel a pre-defined path towards the end. 
-- Once the enemies cross the entire path, they deplete your health, 1 per enemy. # Outpost Zero
+- Once the enemies cross the entire path, they deplete your health, 1 per enemy.
 
 ## Description
 
